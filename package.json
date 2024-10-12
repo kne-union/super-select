@@ -70,6 +70,7 @@
     ]
   },
   "peerDependencies": {
+    "antd": ">=5",
     "react": "*",
     "react-dom": "*"
   },
@@ -82,5 +83,12 @@
     "prettier": "^3.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.5.1",
+    "@kne/global-context": "^1.1.0",
+    "@kne/use-control-value": "^0.1.8",
+    "@kne/use-resize": "^0.1.1",
+    "classnames": "^2.5.1"
   }
 }

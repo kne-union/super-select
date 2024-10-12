@@ -2,14 +2,21 @@
   "isFull": false,
   "list": [
     {
-      "title": "这里填写示例标题",
-      "description": "这里填写示例说明",
-      "code": "./base.js",
+      "title": "select-input",
+      "description": "用于显示一个选择框，可以下拉展开选项或者以modal展示选项",
+      "code": "./select-input.js",
       "scope": [
         {
           "name": "_SuperSelect",
           "packageName": "@kne/current-lib_super-select",
           "importStatement": "import * as _SuperSelect from \"@kne/super-select\""
+        },
+        {
+          "name": "antd",
+          "packageName": "antd"
+        },
+        {
+          "packageName": "@kne/current-lib_super-select/dist/index.css"
         }
       ]
     }

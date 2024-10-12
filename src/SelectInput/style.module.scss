@@ -1,0 +1,88 @@
+.select-input {
+  --line-height: 30px;
+  background-color: #fff;
+  font-size: var(--font-size-default);
+  border: 1px solid var(--font-color-grey-3);
+  border-radius: 2px;
+  cursor: pointer;
+  width: 100%;
+  min-width: 150px;
+  position: relative;
+  padding: 0 11px;
+  align-items: flex-start;
+
+  :global {
+    .ant-tag {
+      background: var(--bg-color-grey-3);
+    }
+  }
+
+  &:not(.disabled):hover {
+    border-color: var(--primary-color);
+  }
+
+  &.disabled {
+    background: var(--bg-color-grey-2);
+    color: var(--font-color-grey-2);
+    cursor: not-allowed;
+
+    :global {
+      .ant-tag {
+        color: var(--font-color-grey-2);
+      }
+
+      .ant-tag-close-icon {
+        display: none;
+      }
+    }
+  }
+
+  &.wrap {
+    .select-input-inner {
+      flex-wrap: wrap;
+    }
+  }
+
+  &.large {
+    --line-height: 40px;
+  }
+
+  &.small {
+    --line-height: 24px;
+  }
+}
+
+.select-input-inner {
+  display: flex;
+  align-items: center;
+  padding-right: 6px;
+  overflow: hidden;
+  min-height: var(--line-height);
+
+  :global(.ant-tag) {
+    margin: 2px 4px 2px 0;
+  }
+}
+
+.select-input-icon {
+  line-height: var(--line-height);
+  font-size: 12px;
+  color: var(--font-color-grey-2);
+}
+
+.placeholder {
+  color: var(--font-color-grey-2);
+}
+
+.overlay-content {
+  min-width: 300px;
+  width: var(--overlay-width);
+}
+
+.overlay {
+  :global {
+    .ant-popover-inner {
+      padding: 0;
+    }
+  }
+}
