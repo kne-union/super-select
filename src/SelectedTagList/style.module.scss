@@ -3,7 +3,6 @@
 }
 
 .tag-list {
-  padding: 12px 0 12px 12px;
   box-sizing: border-box;
 
   :global {
@@ -11,10 +10,6 @@
       background: var(--bg-color-grey-3);
     }
   }
-}
-
-.tag-list-outer {
-  border-top: solid 1px var(--font-color-grey-4);
 }
 
 .tag-container {

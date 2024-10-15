@@ -1,5 +1,9 @@
 .list {
   max-height: 300px;
+
+  &:not(.is-popup) {
+    max-height: 400px;
+  }
 }
 
 .default-list {
@@ -24,6 +28,7 @@
   transition: background 300ms;
   position: relative;
   border-bottom-color: transparent !important;
+  align-items: flex-start;
 
   &:not(.is-selected):hover {
     background: var(--bg-color-grey-1);
@@ -56,4 +61,32 @@
 
 .single-checked {
   flex-basis: 14px;
+}
+
+.select-all {
+  &.is-popup {
+    padding: 5px 12px;
+  }
+
+  &:not(.is-popup) {
+    padding: 5px 0;
+  }
+}
+
+.select-tag {
+  border-top: solid 1px var(--font-color-grey-4);
+
+  &.is-popup {
+    padding: 12px 0 12px 12px;
+  }
+
+  &:not(.is-popup) {
+    padding: 12px 0 12px;
+  }
+}
+
+.select-search {
+  &.is-popup {
+    padding: 12px;
+  }
 }
