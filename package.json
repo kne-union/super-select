@@ -1,6 +1,6 @@
 {
   "name": "@kne/super-select",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "用于复杂信息选择.",
   "syntax": {
     "esmodules": true
@@ -86,7 +86,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
-    "@kne/global-context": "^1.1.0",
+    "@kne/global-context": "^1.1.1",
     "@kne/scroll-loader": "^0.1.2",
     "@kne/search-input": "^0.1.0",
     "@kne/use-control-value": "^0.1.8",

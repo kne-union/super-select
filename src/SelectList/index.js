@@ -14,8 +14,48 @@ const SelectList = ({ children, ...p }) => {
   const props = Object.assign(
     {},
     {
-      renderList: ({ props, isSelectedAll, value, list, onSelect, setValue, onOpenChange }) => {
+      renderItem: ({ item, props, isSelectedAll, value, onSelect, setValue, onOpenChange }) => {
         const { single, isPopup } = props;
+        const isChecked = value.some(target => target.value === item.value);
+        return (
+          <List.Item
+            className={classnames(style['default-list-item'], {
+              [style['is-selected']]: isChecked
+            })}
+            key={item.value}
+            onClick={() => {
+              if (item.disabled) {
+                return;
+              }
+              if (isSelectedAll) {
+                return;
+              }
+              if (single) {
+                setValue([item]);
+              } else {
+                onSelect(item);
+              }
+              if (isPopup && single) {
+                onOpenChange(false);
+              }
+            }}
+          >
+            {!single && (
+              <Flex>
+                <Checkbox checked={isSelectedAll || isChecked} disabled={isSelectedAll || item.disabled} />
+              </Flex>
+            )}
+            <Flex vertical gag={8} flex={1}>
+              <div className={style['default-item-label']}>{item.label}</div>
+              {item.description && <div className={style['default-item-description']}>{item.description}</div>}
+            </Flex>
+            {single && <div className={style['single-checked']}>{isChecked && <CheckOutlined />}</div>}
+          </List.Item>
+        );
+      },
+      renderList: contextProps => {
+        const { props, isSelectedAll, list } = contextProps;
+        const { renderItem } = props;
         return (
           <List
             className={classnames(style['default-list'], {
@@ -23,44 +63,7 @@ const SelectList = ({ children, ...p }) => {
             })}
             size="small"
             dataSource={list}
-            renderItem={item => {
-              const isChecked = value.some(target => target.value === item.value);
-              return (
-                <List.Item
-                  className={classnames(style['default-list-item'], {
-                    [style['is-selected']]: isChecked
-                  })}
-                  key={item.value}
-                  onClick={() => {
-                    if (item.disabled) {
-                      return;
-                    }
-                    if (isSelectedAll) {
-                      return;
-                    }
-                    if (single) {
-                      setValue([item]);
-                    } else {
-                      onSelect(item);
-                    }
-                    if (isPopup && single) {
-                      onOpenChange(false);
-                    }
-                  }}
-                >
-                  {!single && (
-                    <Flex>
-                      <Checkbox checked={isSelectedAll || isChecked} disabled={isSelectedAll || item.disabled} />
-                    </Flex>
-                  )}
-                  <Flex vertical gag={8} flex={1}>
-                    <div className={style['default-item-label']}>{item.label}</div>
-                    {item.description && <div className={style['default-item-description']}>{item.description}</div>}
-                  </Flex>
-                  {single && <div className={style['single-checked']}>{isChecked && <CheckOutlined />}</div>}
-                </List.Item>
-              );
-            }}
+            renderItem={item => renderItem(Object.assign({}, contextProps, { item }))}
           />
         );
       }
@@ -76,6 +79,9 @@ const SelectList = ({ children, ...p }) => {
         const components = {
           search: ((api && typeof getSearchProps === 'function') || (options && typeof getSearchCallback === 'function')) && (
             <SearchInput
+              className={classnames(style['select-search'], 'select-search', {
+                'is-popup': isPopup
+              })}
               placeholder={searchPlaceholder}
               value={searchText}
               onSearch={value => {
@@ -85,11 +91,21 @@ const SelectList = ({ children, ...p }) => {
               showSearchButton={!isPopup}
             />
           ),
-          selectedAll: !single && allowSelectedAll && <SelectedAll />,
+          selectedAll: !single && allowSelectedAll && (
+            <div
+              className={classnames(style['selected-all'], 'selected-all', {
+                'is-popup': isPopup
+              })}
+            >
+              <SelectedAll />
+            </div>
+          ),
           fetchList: (
             <FetchScrollLoader
               {...props}
-              className={style['list']}
+              className={classnames(style['list'], 'select-list', {
+                'is-popup': isPopup
+              })}
               api={Object.assign(
                 {},
                 options
@@ -119,10 +135,18 @@ const SelectList = ({ children, ...p }) => {
               }}
             </FetchScrollLoader>
           ),
-          selectedTag: showSelectedTag && <SelectedTagList />
+          selectedTag: showSelectedTag && (
+            <div
+              className={classnames(style['selected-tag'], 'selected-tag', {
+                'is-popup': isPopup
+              })}
+            >
+              <SelectedTagList />
+            </div>
+          )
         };
         if (typeof children === 'function') {
-          return children(components);
+          return children(Object.assign({}, targetProps, { components }));
         }
         return (
           <Flex vertical>

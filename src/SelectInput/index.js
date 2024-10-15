@@ -165,7 +165,7 @@ const SelectInput = p => {
     <Flex
       {...props}
       ref={inputRef}
-      className={classnames(className, style['select-input'], {
+      className={classnames(className, style['select-input'], 'select-input', {
         [style['wrap']]: labelWrap,
         [style['disabled']]: disabled
       })}
@@ -177,7 +177,7 @@ const SelectInput = p => {
         setHover(false);
       }}
     >
-      <div className={style['select-input-inner']}>
+      <div className={classnames(style['select-input-inner'], 'select-input-inner')}>
         {(value || []).length > 0 ? (
           single || value[0].value === selectedAllValue.value ? (
             value[0].label
@@ -199,10 +199,10 @@ const SelectInput = p => {
             })
           )
         ) : (
-          <span className={style['placeholder']}>{placeholder}</span>
+          <span className={classnames(style['placeholder'], 'select-input-placeholder')}>{placeholder}</span>
         )}
       </div>
-      <div className={style['select-input-icon']}>
+      <div className={classnames(style['select-input-icon'], 'select-input-icon')}>
         {!disabled && allowClear && hover && (value || []).length > 0 ? (
           <CloseCircleFilled
             onClick={e => {
