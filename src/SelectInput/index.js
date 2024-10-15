@@ -96,7 +96,8 @@ const SelectInput = p => {
     { locale }
   );
 
-  const [value, setValue] = useControlValue(props);
+  const [stateValue, setValue] = useControlValue(props);
+  const value = stateValue || [];
   const [searchText, setSearchText] = useState('');
   const [open, setOpen] = useState(false);
   const [hover, setHover] = useState(false);
@@ -178,7 +179,7 @@ const SelectInput = p => {
       }}
     >
       <div className={classnames(style['select-input-inner'], 'select-input-inner')}>
-        {(value || []).length > 0 ? (
+        {value.length > 0 ? (
           single || value[0].value === selectedAllValue.value ? (
             value[0].label
           ) : (
@@ -203,7 +204,7 @@ const SelectInput = p => {
         )}
       </div>
       <div className={classnames(style['select-input-icon'], 'select-input-icon')}>
-        {!disabled && allowClear && hover && (value || []).length > 0 ? (
+        {!disabled && allowClear && hover && value.length > 0 ? (
           <CloseCircleFilled
             onClick={e => {
               e.stopPropagation();
@@ -219,7 +220,7 @@ const SelectInput = p => {
 
   const contextProps = {
     props,
-    value,
+    value: value,
     setValue,
     searchText,
     setSearchText,
