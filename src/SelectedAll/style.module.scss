@@ -1,0 +1,15 @@
+.selected-all {
+  padding: 5px 12px;
+
+  :global(.ant-checkbox) + span {
+    padding-inline-end: 0;
+  }
+
+  :global(.ant-checkbox-wrapper) {
+    margin-inline-end: 0 !important;
+  }
+}
+
+.selected-all-outer {
+  border-top: solid 1px var(--font-color-grey-4);
+}

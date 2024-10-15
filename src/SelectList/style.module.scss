@@ -1,0 +1,59 @@
+.list {
+  max-height: 300px;
+}
+
+.default-list {
+  &.is-selected-all {
+    background: var(--bg-color-grey-3);
+    cursor: not-allowed;
+
+    .item-label {
+      color: var(--font-color-grey-2);
+    }
+
+    .list-item {
+      pointer-events: none;
+    }
+  }
+}
+
+.default-list-item {
+  padding: 5px 12px !important;
+  border-bottom: none;
+  cursor: pointer;
+  transition: background 300ms;
+  position: relative;
+  border-bottom-color: transparent !important;
+
+  &:not(.is-selected):hover {
+    background: var(--bg-color-grey-1);
+  }
+
+  &.is-selected {
+    background: var(--primary-color-1);
+
+    .default-item-label,
+    .default-item-des,
+    .single-checked {
+      color: var(--primary-color);
+    }
+  }
+
+  &.is-disabled {
+    color: var(--font-color-grey-2);
+    cursor: not-allowed;
+  }
+}
+
+.default-item-label,
+.default-item-description {
+  transition: color 300ms;
+}
+
+.default-item-description {
+  color: var(--font-color-grey-1);
+}
+
+.single-checked {
+  flex-basis: 14px;
+}

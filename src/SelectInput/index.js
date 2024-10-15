@@ -17,58 +17,63 @@ const pxToNumber = value => {
   return match ? Number(match[0]) : 0;
 };
 
-const ModalContent = ({ open, onOpenChange, props, value: propsValue, setValue: propsSetValue, hover, inputWidth, onAdd, onRemove, children }) => {
-  const [value, setValue] = useState(propsValue);
-
+const ModalContent = ({ children, ...others }) => {
+  const [value, setValue] = useState(others.value);
+  const { placeholder } = others.props;
+  const { open, onOpenChange } = others;
+  const contextProps = Object.assign({}, others, {
+    value,
+    setValue,
+    onAdd: item => others.onAdd(item, setValue),
+    onSelect: item => others.onSelect(item, setValue),
+    onRemove: item => others.onRemove(item, setValue),
+    children
+  });
   return (
     <Modal
       width={1000}
       open={open}
-      title={props.placeholder}
+      title={placeholder}
       onCancel={() => {
         onOpenChange(false);
       }}
       onOk={() => {
-        propsSetValue(value);
+        others.setValue(value);
         onOpenChange(false);
       }}
     >
-      {children({
-        props,
-        value,
-        setValue,
-        hover,
-        inputWidth,
-        onAdd,
-        onRemove
-      })}
+      <Provider value={contextProps}>{children(contextProps)}</Provider>
     </Modal>
   );
 };
 
 const SelectInput = p => {
-  const lang = Object.assign(
+  const locale = Object.assign(
     {},
     {
       placeholder: '请选择',
       selectAll: '全选',
+      selected: '已选',
+      search: '搜索',
+      numberOf: '%s个',
       maxLengthError: '最大数量不能超过%s',
       defaultChildren: '下拉内容，需要调用方实现'
     },
-    p.lang
+    p.locale
   );
   const props = Object.assign(
     {},
     {
-      children: () => lang.defaultChildren,
+      children: () => locale.defaultChildren,
       maxLength: null,
       single: false,
       disabled: false,
       isPopup: true,
       defaultValue: [],
-      placeholder: lang.placeholder,
+      placeholder: locale.placeholder,
+      searchPlaceholder: locale.search,
       allowSelectedAll: false,
-      selectedAllValue: { value: 'all', label: lang.selectAll },
+      selectedAllValue: { value: 'all', label: locale.selectAll },
       placement: 'bottomLeft',
       labelWrap: true,
       showSelectedTag: true,
@@ -77,10 +82,11 @@ const SelectInput = p => {
       renderModal: props => <ModalContent {...props} />
     },
     p,
-    { lang }
+    { locale }
   );
 
   const [value, setValue] = useControlValue(props);
+  const [searchText, setSearchText] = useState('');
   const [open, setOpen] = useState(false);
   const [hover, setHover] = useState(false);
   const [inputWidth, setInputWidth] = useState(0);
@@ -95,8 +101,16 @@ const SelectInput = p => {
 
   const { message } = App.useApp();
 
-  const onRemove = item => {
-    setValue(value => {
+  const checkMaxLength = (value, maxLength) => {
+    if (Number.isInteger(maxLength) && maxLength > 0 && value.length >= maxLength) {
+      message.error(locale.maxLengthError.replace('%s', maxLength));
+      return false;
+    }
+    return true;
+  };
+
+  const onRemove = (item, currentSetValue) => {
+    (currentSetValue || setValue)(value => {
       const newValue = value.slice(0);
       const index = value.findIndex(currentItem => currentItem.value === item.value);
       if (index > -1) {
@@ -106,16 +120,31 @@ const SelectInput = p => {
     });
   };
 
-  const onAdd = item => {
-    setValue(value => {
-      if (Number.isInteger(maxLength) && maxLength > 0 && value.length > maxLength) {
-        message.error(lang.maxLengthError.replace('%s', maxLength));
+  const onAdd = (item, currentSetValue) => {
+    (currentSetValue || setValue)(value => {
+      if (checkMaxLength(value, maxLength)) {
         return value;
       }
       const newValue = value.slice(0);
       const index = value.findIndex(currentItem => currentItem.value === item.value);
       if (index === -1) {
         newValue.push(item);
+      }
+      return newValue;
+    });
+  };
+
+  const onSelect = (item, currentSetValue) => {
+    (currentSetValue || setValue)(value => {
+      const newValue = value.slice(0);
+      const index = value.findIndex(currentItem => currentItem.value === item.value);
+      if (index === -1 && !checkMaxLength(value, maxLength)) {
+        return value;
+      }
+      if (index === -1) {
+        newValue.push(item);
+      } else {
+        newValue.splice(index, 1);
       }
       return newValue;
     });
@@ -165,7 +194,8 @@ const SelectInput = p => {
       <div className={style['select-input-icon']}>
         {!disabled && allowClear && hover && (value || []).length > 0 ? (
           <CloseCircleFilled
-            onClick={() => {
+            onClick={e => {
+              e.stopPropagation();
               setValue([]);
             }}
           />
@@ -175,8 +205,25 @@ const SelectInput = p => {
       </div>
     </Flex>
   );
+
+  const contextProps = {
+    props,
+    value,
+    setValue,
+    searchText,
+    setSearchText,
+    hover,
+    inputWidth,
+    onAdd,
+    onRemove,
+    onSelect,
+    open: !disabled && open,
+    onOpenChange: setOpen,
+    children
+  };
+
   return (
-    <Provider value={{ props, value, setValue, hover, inputWidth, onAdd, onRemove }}>
+    <Provider value={contextProps}>
       {isPopup ? (
         <Popover
           open={!disabled && open}
@@ -194,15 +241,7 @@ const SelectInput = p => {
                 e.stopPropagation();
               }}
             >
-              {children({
-                props,
-                value,
-                setValue,
-                hover,
-                inputWidth,
-                onAdd,
-                onRemove
-              })}
+              {children(contextProps)}
             </div>
           }
         >
@@ -215,22 +254,12 @@ const SelectInput = p => {
               setOpen(true);
             }
           })}
-          {renderModal({
-            open: !disabled && open,
-            onOpenChange: setOpen,
-            props,
-            value,
-            setValue,
-            hover,
-            inputWidth,
-            onAdd,
-            onRemove,
-            children
-          })}
+          {renderModal(contextProps)}
         </>
       )}
     </Provider>
   );
 };
 
+export * from './context';
 export default SelectInput;
