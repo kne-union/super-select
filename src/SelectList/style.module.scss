@@ -63,30 +63,30 @@
   flex-basis: 14px;
 }
 
-.select-all {
-  &.is-popup {
+.selected-all {
+  &:global(.is-popup) {
     padding: 5px 12px;
   }
 
-  &:not(.is-popup) {
+  &:not(:global(.is-popup)) {
     padding: 5px 0;
   }
 }
 
-.select-tag {
+.selected-tag {
   border-top: solid 1px var(--font-color-grey-4);
 
-  &.is-popup {
+  &:global(.is-popup) {
     padding: 12px 0 12px 12px;
   }
 
-  &:not(.is-popup) {
+  &:not(:global(.is-popup)) {
     padding: 12px 0 12px;
   }
 }
 
 .select-search {
-  &.is-popup {
+  &:global(.is-popup) {
     padding: 12px;
   }
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { Flex, Checkbox } from 'antd';
 import get from 'lodash/get';
 import { useContext } from '../SelectInput';
+import classnames from 'classnames';
 import style from './style.module.scss';
 
 const SelectedAll = () => {
@@ -15,7 +16,7 @@ const SelectedAll = () => {
   );
   const isSelectedAll = computedIsSelectAll(value, selectedAllValue);
   return (
-    <Flex justify="space-between" className={style['selected-all']}>
+    <Flex justify="space-between" className={classnames(style['selected-all'], 'selected-all')}>
       <Flex gap={8}>
         <span>{locale.selected}:</span>
         <span>{isSelectedAll ? selectedAllValue.label : typeof unit === 'function' ? unit(value.length) : value.length}</span>

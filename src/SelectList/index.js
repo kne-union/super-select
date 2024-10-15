@@ -79,8 +79,8 @@ const SelectList = ({ children, ...p }) => {
         const components = {
           search: ((api && typeof getSearchProps === 'function') || (options && typeof getSearchCallback === 'function')) && (
             <SearchInput
-              className={classnames(style['select-search'], {
-                [style['is-popup']]: isPopup
+              className={classnames(style['select-search'], 'select-search', {
+                'is-popup': isPopup
               })}
               placeholder={searchPlaceholder}
               value={searchText}
@@ -93,8 +93,8 @@ const SelectList = ({ children, ...p }) => {
           ),
           selectedAll: !single && allowSelectedAll && (
             <div
-              className={classnames(style['select-all'], {
-                [style['is-popup']]: isPopup
+              className={classnames(style['selected-all'], 'selected-all', {
+                'is-popup': isPopup
               })}
             >
               <SelectedAll />
@@ -103,8 +103,8 @@ const SelectList = ({ children, ...p }) => {
           fetchList: (
             <FetchScrollLoader
               {...props}
-              className={classnames(style['list'], {
-                [style['is-popup']]: isPopup
+              className={classnames(style['list'], 'select-list', {
+                'is-popup': isPopup
               })}
               api={Object.assign(
                 {},
@@ -137,8 +137,8 @@ const SelectList = ({ children, ...p }) => {
           ),
           selectedTag: showSelectedTag && (
             <div
-              className={classnames(style['select-tag'], {
-                [style['is-popup']]: isPopup
+              className={classnames(style['selected-tag'], 'selected-tag', {
+                'is-popup': isPopup
               })}
             >
               <SelectedTagList />

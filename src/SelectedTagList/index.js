@@ -2,6 +2,7 @@ import React from 'react';
 import { Flex, Tag } from 'antd';
 import { useContext } from '../SelectInput';
 import SimpleBar from 'simplebar-react';
+import classnames from 'classnames';
 import style from './style.module.scss';
 import 'simplebar-react/dist/simplebar.min.css';
 
@@ -10,7 +11,7 @@ const SelectedTagList = () => {
   const { locale, single, maxLength } = Object.assign({}, props);
 
   return (
-    <Flex className={style['tag-list']} gap={8}>
+    <Flex className={classnames(style['tag-list'], 'selected-tag-list')} gap={8}>
       <div className={style['label']}>
         {locale.selected}
         {!single && value.length > 0 && `(${value.length}${Number.isInteger(maxLength) ? `/${maxLength}` : ''})`}:
