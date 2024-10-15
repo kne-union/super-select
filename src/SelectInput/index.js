@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Provider } from './context';
 import useResize from '@kne/use-resize';
 import useControlValue from '@kne/use-control-value';
 import classnames from 'classnames';
+import isEqual from 'lodash/isEqual';
 import { Tag, Flex, Popover, Modal, App } from 'antd';
 import { DownOutlined, CloseCircleFilled } from '@ant-design/icons';
 import style from './style.module.scss';
@@ -18,33 +19,24 @@ const pxToNumber = value => {
 };
 
 const ModalContent = ({ children, ...others }) => {
-  const [value, setValue] = useState(others.value);
-  const { placeholder } = others.props;
-  const { open, onOpenChange } = others;
+  const { open, value: propsValue } = others;
+  const [value, setValue] = useState(propsValue);
+  useEffect(() => {
+    if (open && !isEqual(value, propsValue)) {
+      setValue(propsValue);
+    }
+  }, [open]);
   const contextProps = Object.assign({}, others, {
     value,
     setValue,
+    onComplete: () => others.setValue(value),
     onAdd: item => others.onAdd(item, setValue),
     onSelect: item => others.onSelect(item, setValue),
     onRemove: item => others.onRemove(item, setValue),
     children
   });
-  return (
-    <Modal
-      width={1000}
-      open={open}
-      title={placeholder}
-      onCancel={() => {
-        onOpenChange(false);
-      }}
-      onOk={() => {
-        others.setValue(value);
-        onOpenChange(false);
-      }}
-    >
-      <Provider value={contextProps}>{children(contextProps)}</Provider>
-    </Modal>
-  );
+
+  return <Provider value={contextProps}>{children(contextProps)}</Provider>;
 };
 
 const SelectInput = p => {
@@ -79,7 +71,26 @@ const SelectInput = p => {
       showSelectedTag: true,
       allowClear: true,
       extra: null,
-      renderModal: props => <ModalContent {...props} />
+      renderModal: contextProps => {
+        const { props, open, onComplete, onOpenChange } = contextProps;
+        const { placeholder, children } = props;
+        return (
+          <Modal
+            width={1000}
+            open={open}
+            title={placeholder}
+            onCancel={() => {
+              onOpenChange(false);
+            }}
+            onOk={() => {
+              onComplete();
+              onOpenChange(false);
+            }}
+          >
+            {children(contextProps)}
+          </Modal>
+        );
+      }
     },
     p,
     { locale }
@@ -254,7 +265,7 @@ const SelectInput = p => {
               setOpen(true);
             }
           })}
-          {renderModal(contextProps)}
+          <ModalContent {...contextProps}>{renderModal}</ModalContent>
         </>
       )}
     </Provider>
