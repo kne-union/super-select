@@ -148,9 +148,9 @@ const SelectInput = p => {
 
   const onSelect = (item, currentSetValue) => {
     (currentSetValue || setValue)(value => {
-      const newValue = value.slice(0);
-      const index = value.findIndex(currentItem => currentItem.value === item.value);
-      if (index === -1 && !checkMaxLength(value, maxLength)) {
+      const newValue = (value || []).slice(0);
+      const index = newValue.findIndex(currentItem => currentItem.value === item.value);
+      if (index === -1 && !checkMaxLength(newValue, maxLength)) {
         return value;
       }
       if (index === -1) {
