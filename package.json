@@ -1,7 +1,7 @@
 {
   "name": "@kne/super-select",
   "version": "0.1.0",
-  "description": "用于复杂信息选择",
+  "description": "用于复杂信息选择.",
   "syntax": {
     "esmodules": true
   },
