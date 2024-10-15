@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.js": "/super-select/static/js/main.1795eb75.js",
-    "super_select_0_1_1.js": "/super-select/remoteEntry.js",
-    "static/css/414.26bd48cd.chunk.css": "/super-select/static/css/414.26bd48cd.chunk.css",
+    "main.js": "/super-select/static/js/main.daaf3873.js",
+    "super_select_0_1_2.js": "/super-select/remoteEntry.js",
+    "static/css/414.1b9e8cf7.chunk.css": "/super-select/static/css/414.1b9e8cf7.chunk.css",
     "static/js/414.77187c01.chunk.js": "/super-select/static/js/414.77187c01.chunk.js",
     "static/css/194.b5f50ce0.chunk.css": "/super-select/static/css/194.b5f50ce0.chunk.css",
-    "static/js/638.5ef2cddc.chunk.js": "/super-select/static/js/638.5ef2cddc.chunk.js",
+    "static/js/638.65205c67.chunk.js": "/super-select/static/js/638.65205c67.chunk.js",
     "static/js/488.1f3f7ac8.chunk.js": "/super-select/static/js/488.1f3f7ac8.chunk.js",
     "static/js/848.fc160bf6.chunk.js": "/super-select/static/js/848.fc160bf6.chunk.js",
     "static/js/446.e2cfe535.chunk.js": "/super-select/static/js/446.e2cfe535.chunk.js",
     "static/js/233.f669f95c.chunk.js": "/super-select/static/js/233.f669f95c.chunk.js",
-    "static/css/268.d0ef82e1.chunk.css": "/super-select/static/css/268.d0ef82e1.chunk.css",
-    "static/js/268.13e33a70.chunk.js": "/super-select/static/js/268.13e33a70.chunk.js",
+    "static/css/268.678ace1f.chunk.css": "/super-select/static/css/268.678ace1f.chunk.css",
+    "static/js/268.7cad5e9a.chunk.js": "/super-select/static/js/268.7cad5e9a.chunk.js",
     "static/js/201.88e638b7.chunk.js": "/super-select/static/js/201.88e638b7.chunk.js",
     "static/js/344.24ac3ee4.chunk.js": "/super-select/static/js/344.24ac3ee4.chunk.js",
     "static/js/467.ab29d3d7.chunk.js": "/super-select/static/js/467.ab29d3d7.chunk.js",
@@ -23,20 +23,20 @@
     "static/js/480.985fc9d4.chunk.js": "/super-select/static/js/480.985fc9d4.chunk.js",
     "static/js/800.ceaabb39.chunk.js": "/super-select/static/js/800.ceaabb39.chunk.js",
     "static/js/32.4a730056.chunk.js": "/super-select/static/js/32.4a730056.chunk.js",
-    "static/js/223.58b9e55d.chunk.js": "/super-select/static/js/223.58b9e55d.chunk.js",
+    "static/js/223.9fa1d44a.chunk.js": "/super-select/static/js/223.9fa1d44a.chunk.js",
     "index.html": "/super-select/index.html",
-    "main.1795eb75.js.map": "/super-select/static/js/main.1795eb75.js.map",
+    "main.daaf3873.js.map": "/super-select/static/js/main.daaf3873.js.map",
     "remoteEntry.js.map": "/super-select/remoteEntry.js.map",
-    "414.26bd48cd.chunk.css.map": "/super-select/static/css/414.26bd48cd.chunk.css.map",
+    "414.1b9e8cf7.chunk.css.map": "/super-select/static/css/414.1b9e8cf7.chunk.css.map",
     "414.77187c01.chunk.js.map": "/super-select/static/js/414.77187c01.chunk.js.map",
     "194.b5f50ce0.chunk.css.map": "/super-select/static/css/194.b5f50ce0.chunk.css.map",
-    "638.5ef2cddc.chunk.js.map": "/super-select/static/js/638.5ef2cddc.chunk.js.map",
+    "638.65205c67.chunk.js.map": "/super-select/static/js/638.65205c67.chunk.js.map",
     "488.1f3f7ac8.chunk.js.map": "/super-select/static/js/488.1f3f7ac8.chunk.js.map",
     "848.fc160bf6.chunk.js.map": "/super-select/static/js/848.fc160bf6.chunk.js.map",
     "446.e2cfe535.chunk.js.map": "/super-select/static/js/446.e2cfe535.chunk.js.map",
     "233.f669f95c.chunk.js.map": "/super-select/static/js/233.f669f95c.chunk.js.map",
-    "268.d0ef82e1.chunk.css.map": "/super-select/static/css/268.d0ef82e1.chunk.css.map",
-    "268.13e33a70.chunk.js.map": "/super-select/static/js/268.13e33a70.chunk.js.map",
+    "268.678ace1f.chunk.css.map": "/super-select/static/css/268.678ace1f.chunk.css.map",
+    "268.7cad5e9a.chunk.js.map": "/super-select/static/js/268.7cad5e9a.chunk.js.map",
     "201.88e638b7.chunk.js.map": "/super-select/static/js/201.88e638b7.chunk.js.map",
     "344.24ac3ee4.chunk.js.map": "/super-select/static/js/344.24ac3ee4.chunk.js.map",
     "467.ab29d3d7.chunk.js.map": "/super-select/static/js/467.ab29d3d7.chunk.js.map",
@@ -48,9 +48,9 @@
     "480.985fc9d4.chunk.js.map": "/super-select/static/js/480.985fc9d4.chunk.js.map",
     "800.ceaabb39.chunk.js.map": "/super-select/static/js/800.ceaabb39.chunk.js.map",
     "32.4a730056.chunk.js.map": "/super-select/static/js/32.4a730056.chunk.js.map",
-    "223.58b9e55d.chunk.js.map": "/super-select/static/js/223.58b9e55d.chunk.js.map"
+    "223.9fa1d44a.chunk.js.map": "/super-select/static/js/223.9fa1d44a.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.1795eb75.js"
+    "static/js/main.daaf3873.js"
   ]
 }
