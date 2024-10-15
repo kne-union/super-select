@@ -28,7 +28,6 @@
   transition: background 300ms;
   position: relative;
   border-bottom-color: transparent !important;
-  align-items: flex-start;
 
   &:not(.is-selected):hover {
     background: var(--bg-color-grey-1);
