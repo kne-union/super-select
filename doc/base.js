@@ -17,7 +17,7 @@ const BaseExample = () => {
     <SuperSelect allowSelectedAll options={optionList} isPopup={false} getSearchCallback={(searchText, item) => {
       return item.label.indexOf(searchText) > -1;
     }} />
-    <SuperSelect allowSelectedAll api={{
+    <SuperSelect api={{
       data: {}, loader: ({ data }) => {
         const { searchText } = data;
         if (!searchText) {
@@ -31,7 +31,7 @@ const BaseExample = () => {
         };
       }
     }} isPopup={false} getSearchProps={(searchText) => {
-      return { data: { searchText } };
+      return { searchText };
     }} />
   </Space>;
 };
