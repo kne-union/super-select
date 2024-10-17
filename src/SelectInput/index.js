@@ -180,16 +180,21 @@ const SelectInput = p => {
         setHover(false);
       }}
     >
-      {prefix && (
-        <span
-          className={classnames(style['select-input-prefix'], 'select-input-prefix')}
-          onClick={e => {
-            e.stopPropagation();
-          }}
-        >
-          {typeof prefix === 'function' ? prefix(contextProps) : prefix}
-        </span>
-      )}
+      {(() => {
+        const current = typeof prefix === 'function' ? prefix(contextProps) : prefix;
+        return (
+          current && (
+            <span
+              className={classnames(style['select-input-prefix'], 'select-input-prefix')}
+              onClick={e => {
+                e.stopPropagation();
+              }}
+            >
+              {current}
+            </span>
+          )
+        );
+      })()}
       <div className={classnames(style['select-input-inner'], 'select-input-inner')}>
         {value.length > 0 ? (
           single || value[0].value === selectedAllValue.value ? (
@@ -227,16 +232,21 @@ const SelectInput = p => {
           <DownOutlined />
         )}
       </div>
-      {suffix && (
-        <span
-          className={classnames(style['select-input-suffix'], 'select-input-suffix')}
-          onClick={e => {
-            e.stopPropagation();
-          }}
-        >
-          {typeof suffix === 'function' ? suffix(contextProps) : suffix}
-        </span>
-      )}
+      {(() => {
+        const current = typeof suffix === 'function' ? suffix(contextProps) : suffix;
+        return (
+          current && (
+            <span
+              className={classnames(style['select-input-suffix'], 'select-input-suffix')}
+              onClick={e => {
+                e.stopPropagation();
+              }}
+            >
+              {current}
+            </span>
+          )
+        );
+      })()}
     </Flex>
   );
 
