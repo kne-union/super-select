@@ -70,6 +70,8 @@ const SelectInput = p => {
       labelWrap: true,
       showSelectedTag: true,
       allowClear: true,
+      prefix: null,
+      suffix: null,
       extra: null,
       renderModal: contextProps => {
         const { props, open, onComplete, onOpenChange } = contextProps;
@@ -107,7 +109,7 @@ const SelectInput = p => {
     setInputWidth(el.clientWidth);
   });
 
-  const { children, className, maxLength, overlayClassName, single, labelWrap, isPopup, allowClear, disabled, placeholder, selectedAllValue, overlayWidth, placement, renderModal } = props;
+  const { children, prefix, suffix, className, maxLength, overlayClassName, single, labelWrap, isPopup, allowClear, disabled, placeholder, selectedAllValue, overlayWidth, placement, renderModal } = props;
 
   const popupOverlayWidth = numberToPx(Math.max(inputWidth, pxToNumber(overlayWidth)));
 
@@ -178,6 +180,16 @@ const SelectInput = p => {
         setHover(false);
       }}
     >
+      {prefix && (
+        <span
+          className={classnames(style['select-input-prefix'], 'select-input-prefix')}
+          onClick={e => {
+            e.stopPropagation();
+          }}
+        >
+          {prefix}
+        </span>
+      )}
       <div className={classnames(style['select-input-inner'], 'select-input-inner')}>
         {value.length > 0 ? (
           single || value[0].value === selectedAllValue.value ? (
@@ -215,6 +227,16 @@ const SelectInput = p => {
           <DownOutlined />
         )}
       </div>
+      {suffix && (
+        <span
+          className={classnames(style['select-input-suffix'], 'select-input-suffix')}
+          onClick={e => {
+            e.stopPropagation();
+          }}
+        >
+          {suffix}
+        </span>
+      )}
     </Flex>
   );
 

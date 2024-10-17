@@ -11,11 +11,11 @@
     background: var(--bg-color-grey-3);
     cursor: not-allowed;
 
-    .item-label {
+    :global(.select-list-item-label) {
       color: var(--font-color-grey-2);
     }
 
-    .list-item {
+    .default-list-item {
       pointer-events: none;
     }
   }
@@ -47,6 +47,11 @@
     cursor: not-allowed;
   }
 
+  :global(.select-list-item-content) {
+    overflow: hidden;
+    margin-right: 8px;
+  }
+
   :global(.select-list-item-label),
   :global(.select-list-item-description) {
     transition: color 300ms;
@@ -58,7 +63,7 @@
 }
 
 .single-checked {
-  flex-basis: 14px;
+  flex: 0 0 14px;
 }
 
 .selected-all {

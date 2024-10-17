@@ -16,10 +16,10 @@ const SelectList = ({ children, ...p }) => {
     {
       renderItemContent: ({ item }) => {
         return (
-          <Flex vertical gag={8} flex={1}>
+          <>
             <div className={'select-list-item-label'}>{item.label}</div>
             {item.description && <div className={'select-list-item-description'}>{item.description}</div>}
-          </Flex>
+          </>
         );
       },
       renderItem: contextProps => {
@@ -54,7 +54,9 @@ const SelectList = ({ children, ...p }) => {
                 <Checkbox checked={isSelectedAll || isChecked} disabled={isSelectedAll || item.disabled} />
               </Flex>
             )}
-            {renderItemContent(contextProps)}
+            <Flex vertical gag={8} flex={1} className={'select-list-item-content'}>
+              {renderItemContent(contextProps)}
+            </Flex>
             {single && <div className={style['single-checked']}>{isChecked && <CheckOutlined />}</div>}
           </List.Item>
         );
@@ -109,7 +111,7 @@ const SelectList = ({ children, ...p }) => {
           fetchList: (
             <FetchScrollLoader
               {...props}
-              className={classnames(style['list'], 'select-list', {
+              className={classnames(style['list'], 'select-list-scroll-list', {
                 'is-popup': isPopup
               })}
               searchText={searchText}
@@ -120,17 +122,16 @@ const SelectList = ({ children, ...p }) => {
                   ? {
                       data: { options, searchText },
                       loader: ({ data }) => {
+                        console.log(data);
                         const { options, searchText } = data;
                         if (typeof getSearchCallback === 'function') {
                           const newOptions = options.filter(item => getSearchCallback(searchText, item));
                           return {
-                            pageData: newOptions,
-                            totalCount: newOptions.length
+                            pageData: newOptions
                           };
                         }
                         return {
-                          pageData: options,
-                          totalCount: options.length
+                          pageData: options
                         };
                       }
                     }

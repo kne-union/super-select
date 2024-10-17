@@ -61,7 +61,7 @@ render(<BaseExample />);
 
 ```jsx
 const { default: SuperSelect } = _SuperSelect;
-const { Space } = antd;
+const { Space, Button } = antd;
 
 const optionList = Array.from({ length: 20 }).map((item, key) => {
   return {
@@ -71,8 +71,11 @@ const optionList = Array.from({ length: 20 }).map((item, key) => {
 
 const BaseExample = () => {
   return <Space wrap>
-    <SuperSelect options={optionList} />
-    <SuperSelect single options={optionList} />
+    <SuperSelect options={optionList} suffix={<Button type="text">预览</Button>}
+                 prefix={<Button type="text">查看</Button>} />
+    <SuperSelect single options={[...optionList, {
+      value: 'other', label: '超长label项超长label项超长label项超长label项超长label项超长label项超长label项超长label项'
+    }]} />
     <SuperSelect allowSelectedAll options={optionList} maxLength={10} getSearchCallback={(searchText, item) => {
       return item.label.indexOf(searchText) > -1;
     }} />
