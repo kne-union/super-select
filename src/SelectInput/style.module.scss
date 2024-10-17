@@ -58,6 +58,8 @@
   padding-right: 6px;
   overflow: hidden;
   min-height: var(--line-height);
+  white-space: nowrap;
+  text-overflow: ellipsis;
 
   :global(.ant-tag) {
     margin: 2px 4px 2px 0;
@@ -91,4 +93,12 @@
       padding: 0;
     }
   }
+}
+
+.select-input-prefix {
+  transform: translateX(-11px);
+}
+
+.select-input-suffix {
+  transform: translateX(11px);
 }

@@ -21,6 +21,7 @@ const SelectedTagList = () => {
           {value.map(item => {
             return (
               <Tag
+                className={style['tag']}
                 key={item.value}
                 closable
                 bordered={false}
@@ -29,7 +30,7 @@ const SelectedTagList = () => {
                   onRemove(item);
                 }}
               >
-                {item.label}
+                <span className={style['tag-inner']}>{item.label}</span>
               </Tag>
             );
           })}
