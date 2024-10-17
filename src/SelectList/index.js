@@ -14,12 +14,21 @@ const SelectList = ({ children, ...p }) => {
   const props = Object.assign(
     {},
     {
-      renderItem: ({ item, props, isSelectedAll, value, onSelect, setValue, onOpenChange }) => {
-        const { single, isPopup } = props;
+      renderItemContent: ({ item }) => {
+        return (
+          <Flex vertical gag={8} flex={1}>
+            <div className={'select-list-item-label'}>{item.label}</div>
+            {item.description && <div className={'select-list-item-description'}>{item.description}</div>}
+          </Flex>
+        );
+      },
+      renderItem: contextProps => {
+        const { item, props, isSelectedAll, value, onSelect, setValue, onOpenChange } = contextProps;
+        const { single, isPopup, renderItemContent } = props;
         const isChecked = value.some(target => target.value === item.value);
         return (
           <List.Item
-            className={classnames(style['default-list-item'], {
+            className={classnames(style['default-list-item'], 'select-list-item', {
               [style['is-selected']]: isChecked
             })}
             key={item.value}
@@ -45,10 +54,7 @@ const SelectList = ({ children, ...p }) => {
                 <Checkbox checked={isSelectedAll || isChecked} disabled={isSelectedAll || item.disabled} />
               </Flex>
             )}
-            <Flex vertical gag={8} flex={1}>
-              <div className={style['default-item-label']}>{item.label}</div>
-              {item.description && <div className={style['default-item-description']}>{item.description}</div>}
-            </Flex>
+            {renderItemContent(contextProps)}
             {single && <div className={style['single-checked']}>{isChecked && <CheckOutlined />}</div>}
           </List.Item>
         );
@@ -79,7 +85,7 @@ const SelectList = ({ children, ...p }) => {
         const components = {
           search: ((api && typeof getSearchProps === 'function') || (options && typeof getSearchCallback === 'function')) && (
             <SearchInput
-              className={classnames(style['select-search'], 'select-search', {
+              className={classnames(style['select-search'], 'select-list-search', {
                 'is-popup': isPopup
               })}
               placeholder={searchPlaceholder}
@@ -91,13 +97,13 @@ const SelectList = ({ children, ...p }) => {
               showSearchButton={!isPopup}
             />
           ),
-          selectedAll: !single && allowSelectedAll && (
+          selectedAll: (
             <div
-              className={classnames(style['selected-all'], 'selected-all', {
+              className={classnames(style['selected-all'], 'select-list-selected-all', {
                 'is-popup': isPopup
               })}
             >
-              <SelectedAll />
+              {!single && allowSelectedAll && <SelectedAll />}
             </div>
           ),
           fetchList: (
@@ -106,6 +112,8 @@ const SelectList = ({ children, ...p }) => {
               className={classnames(style['list'], 'select-list', {
                 'is-popup': isPopup
               })}
+              searchText={searchText}
+              getSearchProps={getSearchProps}
               api={Object.assign(
                 {},
                 options
@@ -126,7 +134,7 @@ const SelectList = ({ children, ...p }) => {
                         };
                       }
                     }
-                  : merge({}, api, typeof getSearchProps === 'function' && searchText ? getSearchProps(searchText) : {})
+                  : api
               )}
             >
               {fetchProps => {
@@ -137,7 +145,7 @@ const SelectList = ({ children, ...p }) => {
           ),
           selectedTag: showSelectedTag && (
             <div
-              className={classnames(style['selected-tag'], 'selected-tag', {
+              className={classnames(style['selected-tag'], 'select-list-selected-tag', {
                 'is-popup': isPopup
               })}
             >

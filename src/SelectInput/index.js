@@ -4,7 +4,7 @@ import useResize from '@kne/use-resize';
 import useControlValue from '@kne/use-control-value';
 import classnames from 'classnames';
 import isEqual from 'lodash/isEqual';
-import { Tag, Flex, Popover, Modal, App } from 'antd';
+import { Tag, Flex, Popover, Dropdown, Modal, App } from 'antd';
 import { DownOutlined, CloseCircleFilled } from '@ant-design/icons';
 import style from './style.module.scss';
 
@@ -237,15 +237,14 @@ const SelectInput = p => {
   return (
     <Provider value={contextProps}>
       {isPopup ? (
-        <Popover
+        <Dropdown
           open={!disabled && open}
           onOpenChange={setOpen}
           placement={placement}
           arrow={false}
-          transitionName=""
           overlayClassName={classnames(style['overlay'], overlayClassName)}
           trigger="click"
-          content={
+          dropdownRender={() => (
             <div
               style={{ '--overlay-width': popupOverlayWidth }}
               className={classnames(style['overlay-content'], 'over-content')}
@@ -255,10 +254,10 @@ const SelectInput = p => {
             >
               {children(contextProps)}
             </div>
-          }
+          )}
         >
           <span>{inputInnerRender()}</span>
-        </Popover>
+        </Dropdown>
       ) : (
         <>
           {inputInnerRender({
