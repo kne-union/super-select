@@ -187,7 +187,7 @@ const SelectInput = p => {
             e.stopPropagation();
           }}
         >
-          {prefix}
+          {typeof prefix === 'function' ? prefix(contextProps) : prefix}
         </span>
       )}
       <div className={classnames(style['select-input-inner'], 'select-input-inner')}>
@@ -234,7 +234,7 @@ const SelectInput = p => {
             e.stopPropagation();
           }}
         >
-          {suffix}
+          {typeof suffix === 'function' ? suffix(contextProps) : suffix}
         </span>
       )}
     </Flex>
