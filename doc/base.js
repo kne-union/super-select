@@ -3,7 +3,7 @@ const { Space, Button } = antd;
 
 const optionList = Array.from({ length: 20 }).map((item, key) => {
   return {
-    label: `第${key + 1}项`, value: key + 1
+    label: `第${key + 1}项`, value: key + 1, disabled: key === 1
   };
 });
 
@@ -33,7 +33,7 @@ const BaseExample = () => {
           pageData: newOptionList, totalCount: newOptionList.length
         };
       }
-    }} isPopup={false} getSearchProps={(searchText) => {
+    }} isPopup={false} getSearchProps={({ searchText }) => {
       return { searchText };
     }} />
   </Space>;

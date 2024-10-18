@@ -38,6 +38,25 @@
           "packageName": "@kne/current-lib_super-select/dist/index.css"
         }
       ]
+    },
+    {
+      "title": "select--table-list",
+      "description": "表格列表选择，适合更加复杂的数据选择",
+      "code": "./select-table-list.js",
+      "scope": [
+        {
+          "name": "_SuperSelect",
+          "packageName": "@kne/current-lib_super-select",
+          "importStatement": "import * as _SuperSelect from \"@kne/super-select\""
+        },
+        {
+          "name": "antd",
+          "packageName": "antd"
+        },
+        {
+          "packageName": "@kne/current-lib_super-select/dist/index.css"
+        }
+      ]
     }
   ]
 }

@@ -14,7 +14,10 @@ const numberToPx = val => {
 
 const pxToNumber = value => {
   if (!value) return 0;
-  const match = value.match(/^\d*(\.\d*)?/);
+  if (Number.isInteger(value)) {
+    return value;
+  }
+  const match = value.toString().match(/^\d*(\.\d*)?/);
   return match ? Number(match[0]) : 0;
 };
 
@@ -65,6 +68,8 @@ const SelectInput = p => {
       placeholder: locale.placeholder,
       searchPlaceholder: locale.search,
       allowSelectedAll: false,
+      labelKey: 'label',
+      valueKey: 'value',
       selectedAllValue: { value: 'all', label: locale.selectAll },
       placement: 'bottomLeft',
       labelWrap: true,
@@ -98,6 +103,11 @@ const SelectInput = p => {
     { locale }
   );
 
+  props.selectedAllValue = {
+    [props.valueKey]: props.selectedAllValue.value,
+    [props.labelKey]: props.selectedAllValue.label
+  };
+
   const [stateValue, setValue] = useControlValue(props);
   const value = stateValue || [];
   const [searchText, setSearchText] = useState('');
@@ -109,7 +119,7 @@ const SelectInput = p => {
     setInputWidth(el.clientWidth);
   });
 
-  const { children, prefix, suffix, className, maxLength, overlayClassName, single, labelWrap, isPopup, allowClear, disabled, placeholder, selectedAllValue, overlayWidth, placement, renderModal } = props;
+  const { children, prefix, suffix, className, maxLength, overlayClassName, single, labelWrap, isPopup, allowClear, disabled, placeholder, selectedAllValue, overlayWidth, placement, renderModal, labelKey, valueKey } = props;
 
   const popupOverlayWidth = numberToPx(Math.max(inputWidth, pxToNumber(overlayWidth)));
 
@@ -126,7 +136,7 @@ const SelectInput = p => {
   const onRemove = (item, currentSetValue) => {
     (currentSetValue || setValue)(value => {
       const newValue = value.slice(0);
-      const index = value.findIndex(currentItem => currentItem.value === item.value);
+      const index = value.findIndex(currentItem => currentItem[valueKey] === item[valueKey]);
       if (index > -1) {
         newValue.splice(index, 1);
       }
@@ -140,7 +150,7 @@ const SelectInput = p => {
         return value;
       }
       const newValue = value.slice(0);
-      const index = value.findIndex(currentItem => currentItem.value === item.value);
+      const index = value.findIndex(currentItem => currentItem[valueKey] === item[valueKey]);
       if (index === -1) {
         newValue.push(item);
       }
@@ -151,7 +161,7 @@ const SelectInput = p => {
   const onSelect = (item, currentSetValue) => {
     (currentSetValue || setValue)(value => {
       const newValue = (value || []).slice(0);
-      const index = newValue.findIndex(currentItem => currentItem.value === item.value);
+      const index = newValue.findIndex(currentItem => currentItem[valueKey] === item[valueKey]);
       if (index === -1 && !checkMaxLength(newValue, maxLength)) {
         return value;
       }
@@ -197,13 +207,13 @@ const SelectInput = p => {
       })()}
       <div className={classnames(style['select-input-inner'], 'select-input-inner')}>
         {value.length > 0 ? (
-          single || value[0].value === selectedAllValue.value ? (
-            value[0].label
+          single || value[0][valueKey] === selectedAllValue[valueKey] ? (
+            value[0][labelKey]
           ) : (
             value.map(item => {
               return (
                 <Tag
-                  key={item.value}
+                  key={item[valueKey]}
                   closable
                   bordered={false}
                   onClose={e => {
@@ -211,7 +221,7 @@ const SelectInput = p => {
                     onRemove(item);
                   }}
                 >
-                  {item.label}
+                  {item[labelKey]}
                 </Tag>
               );
             })

@@ -1,0 +1,134 @@
+.list {
+  max-height: 300px;
+
+  &:not(.is-popup) {
+    max-height: 400px;
+  }
+}
+
+.header {
+  border-left: 1px solid #f0f0f0;
+
+  .col {
+    background: var(--bg-color-grey-1);
+    transition: background-color 300ms;
+  }
+}
+
+.body {
+  border-left: 1px solid #f0f0f0;
+
+  .col {
+    cursor: pointer;
+  }
+
+  &.is-selected-all {
+    cursor: not-allowed;
+    background: var(--bg-color-grey-3);
+
+    .col {
+      pointer-events: none;
+      color: var(--font-color-grey-2);
+    }
+  }
+
+  &.is-selected {
+    background: var(--primary-color-1);
+    color: var(--primary-color);
+  }
+
+  &.is-disabled {
+    cursor: not-allowed;
+
+    .col {
+      pointer-events: none;
+      color: var(--font-color-grey-2);
+    }
+  }
+
+  &:hover:not(.is-selected-all):not(.is-selected):not(.is-disabled) .col {
+    background: var(--bg-color-grey-1);
+  }
+}
+
+.col {
+  padding: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.right-options {
+  border-left: 1px solid #f0f0f0;
+  padding: 8px;
+
+  .no-padding-btn {
+    &:global(.ant-btn) {
+      padding: 0;
+    }
+  }
+
+  :global {
+    .ant-tag {
+      background: var(--bg-color-grey-3);
+    }
+  }
+}
+
+.tag {
+  display: flex;
+  margin-inline-end: 0;
+}
+
+.tag-inner {
+  display: block;
+  max-width: 100px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.single-checked {
+  flex: 0 0 30px;
+}
+
+.select-search {
+  display: flex;
+
+  &:global(.is-popup) {
+    padding: 8px;
+  }
+}
+
+.tags-search {
+  display: flex;
+}
+
+.descriptions {
+  border-bottom: 1px solid #eeeeee;
+  border-right: 1px solid #eeeeee;
+  line-height: 20px;
+
+  &:not(:last-child) {
+    border-bottom: none;
+  }
+}
+
+.descriptions-col-label,
+.descriptions-col-content {
+  font-size: var(--font-size-default);
+  padding: 8px 16px;
+  border-top: 1px solid #eeeeee;
+  border-left: 1px solid #eeeeee;
+  line-height: 20px;
+  word-break: break-all;
+}
+
+.descriptions-col-label {
+  background: var(--bg-color-grey-1);
+  color: var(--font-color-grey);
+}
+
+.descriptions-col-content {
+  word-break: break-all;
+  white-space: pre-line;
+}
