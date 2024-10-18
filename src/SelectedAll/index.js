@@ -7,14 +7,14 @@ import style from './style.module.scss';
 
 const SelectedAll = () => {
   const { props, value, setValue } = useContext();
-  const { unit, selectedAllValue, locale } = Object.assign(
+  const { unit, selectedAllValue, locale, valueKey } = Object.assign(
     {},
     {
       unit: number => locale.numberOf.replace('%s', number)
     },
     props
   );
-  const isSelectedAll = computedIsSelectAll(value, selectedAllValue);
+  const isSelectedAll = computedIsSelectAll(value, selectedAllValue, valueKey);
   return (
     <Flex justify="space-between" className={classnames(style['selected-all'], 'selected-all')}>
       <Flex gap={8}>
@@ -40,8 +40,8 @@ const SelectedAll = () => {
   );
 };
 
-export const computedIsSelectAll = (value, selectedAllValue) => {
-  return value?.length === 1 && get(value, '[0].value') === selectedAllValue.value;
+export const computedIsSelectAll = (value, selectedAllValue, valueKey = 'value') => {
+  return value?.length === 1 && get(value, `[0][${valueKey}]`) === selectedAllValue[valueKey];
 };
 
 export default SelectedAll;

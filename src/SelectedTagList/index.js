@@ -8,7 +8,7 @@ import 'simplebar-react/dist/simplebar.min.css';
 
 const SelectedTagList = () => {
   const { props, value, onRemove } = useContext();
-  const { locale, single, maxLength } = Object.assign({}, props);
+  const { locale, single, maxLength, labelKey, valueKey } = Object.assign({}, props);
 
   return (
     <Flex className={classnames(style['tag-list'], 'selected-tag-list')} gap={8}>
@@ -22,7 +22,7 @@ const SelectedTagList = () => {
             return (
               <Tag
                 className={style['tag']}
-                key={item.value}
+                key={item[valueKey]}
                 closable
                 bordered={false}
                 onClose={e => {
@@ -30,7 +30,7 @@ const SelectedTagList = () => {
                   onRemove(item);
                 }}
               >
-                <span className={style['tag-inner']}>{item.label}</span>
+                <span className={style['tag-inner']}>{item[labelKey]}</span>
               </Tag>
             );
           })}

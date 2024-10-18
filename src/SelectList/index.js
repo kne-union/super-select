@@ -3,7 +3,6 @@ import { Flex, List, Checkbox } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
 import SelectInput from '../SelectInput';
 import SearchInput from '@kne/search-input';
-import merge from 'lodash/merge';
 import SelectedAll, { computedIsSelectAll } from '../SelectedAll';
 import SelectedTagList from '../SelectedTagList';
 import { FetchScrollLoader } from '@kne/scroll-loader';
@@ -14,24 +13,26 @@ const SelectList = ({ children, ...p }) => {
   const props = Object.assign(
     {},
     {
-      renderItemContent: ({ item }) => {
+      renderItemContent: ({ item, props }) => {
+        const { labelKey } = props;
         return (
           <>
-            <div className={'select-list-item-label'}>{item.label}</div>
+            <div className={'select-list-item-label'}>{item[labelKey]}</div>
             {item.description && <div className={'select-list-item-description'}>{item.description}</div>}
           </>
         );
       },
       renderItem: contextProps => {
         const { item, props, isSelectedAll, value, onSelect, setValue, onOpenChange } = contextProps;
-        const { single, isPopup, renderItemContent } = props;
-        const isChecked = value.some(target => target.value === item.value);
+        const { single, isPopup, renderItemContent, valueKey } = props;
+        const isChecked = value.some(target => target[valueKey] === item[valueKey]);
         return (
           <List.Item
             className={classnames(style['default-list-item'], 'select-list-item', {
-              [style['is-selected']]: isChecked
+              [style['is-selected']]: isChecked,
+              [style['is-disabled']]: item.disabled
             })}
-            key={item.value}
+            key={item[valueKey]}
             onClick={() => {
               if (item.disabled) {
                 return;
@@ -82,8 +83,7 @@ const SelectList = ({ children, ...p }) => {
     <SelectInput {...props}>
       {targetProps => {
         const { props, value, searchText, setSearchText } = targetProps;
-        const { isPopup, getSearchProps, getSearchCallback, searchPlaceholder } = props;
-        const { single, allowSelectedAll, showSelectedTag, api, options, renderList, selectedAllValue } = props;
+        const { isPopup, getSearchProps, getSearchCallback, searchPlaceholder, valueKey, single, allowSelectedAll, showSelectedTag, api, options, renderList, selectedAllValue } = props;
         const components = {
           search: ((api && typeof getSearchProps === 'function') || (options && typeof getSearchCallback === 'function')) && (
             <SearchInput
@@ -114,7 +114,7 @@ const SelectList = ({ children, ...p }) => {
               className={classnames(style['list'], 'select-list-scroll-list', {
                 'is-popup': isPopup
               })}
-              searchText={searchText}
+              searchProps={{ searchText }}
               getSearchProps={getSearchProps}
               api={Object.assign(
                 {},
@@ -122,7 +122,6 @@ const SelectList = ({ children, ...p }) => {
                   ? {
                       data: { options, searchText },
                       loader: ({ data }) => {
-                        console.log(data);
                         const { options, searchText } = data;
                         if (typeof getSearchCallback === 'function') {
                           const newOptions = options.filter(item => getSearchCallback(searchText, item));
@@ -139,7 +138,7 @@ const SelectList = ({ children, ...p }) => {
               )}
             >
               {fetchProps => {
-                const isSelectedAll = computedIsSelectAll(value, selectedAllValue);
+                const isSelectedAll = computedIsSelectAll(value, selectedAllValue, valueKey);
                 return renderList(Object.assign({}, fetchProps, targetProps, { isSelectedAll }));
               }}
             </FetchScrollLoader>
