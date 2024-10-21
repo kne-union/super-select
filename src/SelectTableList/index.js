@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useRef } from 'react';
+import React, { useState, Fragment, useRef, forwardRef } from 'react';
 import SelectInput from '../SelectInput';
 import { Flex, Row, Col, Button, Checkbox, Tag, Popover } from 'antd';
 import { FetchScrollLoader } from '@kne/scroll-loader';
@@ -11,7 +11,7 @@ import style from './style.module.scss';
 import 'simplebar-react/dist/simplebar.min.css';
 import { CheckOutlined } from '@ant-design/icons';
 
-const SelectTableList = p => {
+const SelectTableList = forwardRef((p, ref) => {
   const [filter, setFilter] = useState({});
   const [tagSearchText, setTagSearchText] = useState('');
   const props = Object.assign(
@@ -54,7 +54,7 @@ const SelectTableList = p => {
   const bodyRef = useRef(null);
 
   return (
-    <SelectInput {...props}>
+    <SelectInput {...props} ref={ref}>
       {targetProps => {
         const { props, value, setValue, onSelect, onRemove, onOpenChange } = targetProps;
         const { filterRender, columns, options, getSearchCallback, getTagSearchCallback, api, selectedAllValue, isPopup, locale, single, maxLength, getSearchProps, searchPlaceholder, allowSelectedAll, labelKey, valueKey } = props;
@@ -258,6 +258,6 @@ const SelectTableList = p => {
       }}
     </SelectInput>
   );
-};
+});
 
 export default SelectTableList;
