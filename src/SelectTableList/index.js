@@ -12,14 +12,13 @@ import 'simplebar-react/dist/simplebar.min.css';
 import { CheckOutlined } from '@ant-design/icons';
 
 const SelectTableList = forwardRef((p, ref) => {
-  const [filter, setFilter] = useState({});
   const [tagSearchText, setTagSearchText] = useState('');
   const props = Object.assign(
     {},
     {
       overlayWidth: '600px',
       filterRender: contextProps => {
-        const { props, filter, setFilter } = contextProps;
+        const { props, searchProps, setSearchProps } = contextProps;
         const { isPopup, searchPlaceholder, api, getSearchProps, options, getSearchCallback, labelKey } = props;
         if (!((api && typeof getSearchProps === 'function') || (options && typeof getSearchCallback === 'function'))) {
           return null;
@@ -30,9 +29,9 @@ const SelectTableList = forwardRef((p, ref) => {
               'is-popup': isPopup
             })}
             placeholder={searchPlaceholder}
-            value={filter.searchText || ''}
+            value={searchProps.searchText || ''}
             onSearch={value => {
-              setFilter(filter => Object.assign({}, filter, { searchText: value }));
+              setSearchProps(searchProps => Object.assign({}, searchProps, { searchText: value }));
             }}
             simple={isPopup}
             showSearchButton={!isPopup}
@@ -57,12 +56,13 @@ const SelectTableList = forwardRef((p, ref) => {
     <SelectInput {...props} ref={ref}>
       {targetProps => {
         const { props, value, setValue, onSelect, onRemove, onOpenChange } = targetProps;
-        const { filterRender, columns, options, getSearchCallback, getTagSearchCallback, api, selectedAllValue, isPopup, locale, single, maxLength, getSearchProps, searchPlaceholder, allowSelectedAll, labelKey, valueKey } = props;
+        const { filterRender, columns, options, getSearchCallback, getTagSearchCallback, api, selectedAllValue, isPopup, locale, single, maxLength, getSearchProps, searchPlaceholder, allowSelectedAll, labelKey, valueKey, searchProps } =
+          props;
         const isSelectedAll = computedIsSelectAll(value, selectedAllValue, valueKey);
         return (
           <Row wrap={false} ref={bodyRef}>
             <Col span={single ? 24 : 16}>
-              <div>{filterRender(Object.assign({}, targetProps, { filter, setFilter }))}</div>
+              <div>{filterRender(Object.assign({}, targetProps))}</div>
               <Row wrap={false} className={classnames(style['header'], 'select-table-list-header')}>
                 {!single && (
                   <Col className={classnames(style['col'], 'select-table-list-col')}>
@@ -101,17 +101,17 @@ const SelectTableList = forwardRef((p, ref) => {
                 className={classnames(style['list'], 'select-table-list-scroll-list', {
                   'is-popup': isPopup
                 })}
-                searchProps={filter}
+                searchProps={searchProps}
                 getSearchProps={getSearchProps}
                 api={Object.assign(
                   {},
                   options
                     ? {
-                        data: { options, filter },
+                        data: { options, searchProps },
                         loader: ({ data }) => {
-                          const { options, filter } = data;
+                          const { options, searchProps } = data;
                           if (typeof getSearchCallback === 'function') {
-                            const newOptions = options.filter(item => getSearchCallback(filter, item, targetProps));
+                            const newOptions = options.filter(item => getSearchCallback(searchProps, item, targetProps));
                             return {
                               pageData: newOptions
                             };

@@ -4,8 +4,10 @@ import useResize from '@kne/use-resize';
 import useControlValue from '@kne/use-control-value';
 import classnames from 'classnames';
 import isEqual from 'lodash/isEqual';
-import { Tag, Flex, Popover, Dropdown, Modal, App } from 'antd';
+import last from 'lodash/last';
+import { Tag, Flex, Dropdown, Modal, App } from 'antd';
 import { DownOutlined, CloseCircleFilled } from '@ant-design/icons';
+import { isNotEmpty } from '@kne/is-empty';
 import style from './style.module.scss';
 
 const numberToPx = val => {
@@ -108,9 +110,30 @@ const SelectInput = forwardRef((p, ref) => {
     [props.labelKey]: props.selectedAllValue.label
   };
 
-  const [stateValue, setValue] = useControlValue(props);
-  const value = stateValue || [];
-  const [searchText, setSearchText] = useState('');
+  const { children, prefix, suffix, className, maxLength, overlayClassName, single, labelWrap, isPopup, allowClear, disabled, placeholder, selectedAllValue, overlayWidth, placement, renderModal, labelKey, valueKey } = props;
+
+  const transformValue = value => {
+    if (single) {
+      return isNotEmpty(value) ? [value] : [];
+    } else {
+      return Array.isArray(value) ? value : [];
+    }
+  };
+
+  const [value, setValue] = useControlValue(
+    Object.assign(
+      {},
+      props,
+      {
+        onChange: value => {
+          props.onChange && props.onChange(props.single ? last(value) : value);
+        }
+      },
+      'value' in props ? { value: transformValue(props.value) } : { defaultValue: transformValue(props.defaultValue) }
+    )
+  );
+
+  const [searchProps, setSearchProps] = useState({});
   const [open, setOpen] = useState(false);
   const [hover, setHover] = useState(false);
   const [inputWidth, setInputWidth] = useState(0);
@@ -118,8 +141,6 @@ const SelectInput = forwardRef((p, ref) => {
   const inputRef = useResize(el => {
     setInputWidth(el.clientWidth);
   });
-
-  const { children, prefix, suffix, className, maxLength, overlayClassName, single, labelWrap, isPopup, allowClear, disabled, placeholder, selectedAllValue, overlayWidth, placement, renderModal, labelKey, valueKey } = props;
 
   const popupOverlayWidth = numberToPx(Math.max(inputWidth, pxToNumber(overlayWidth)));
 
@@ -264,8 +285,8 @@ const SelectInput = forwardRef((p, ref) => {
     props,
     value: value,
     setValue,
-    searchText,
-    setSearchText,
+    searchProps,
+    setSearchProps,
     hover,
     inputWidth,
     onAdd,
