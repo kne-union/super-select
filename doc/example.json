@@ -57,6 +57,25 @@
           "packageName": "@kne/current-lib_super-select/dist/index.css"
         }
       ]
+    },
+    {
+      "title": "ref",
+      "description": "展示ref的使用",
+      "code": "./ref.js",
+      "scope": [
+        {
+          "name": "_SuperSelect",
+          "packageName": "@kne/current-lib_super-select",
+          "importStatement": "import * as _SuperSelect from \"@kne/super-select\""
+        },
+        {
+          "name": "antd",
+          "packageName": "antd"
+        },
+        {
+          "packageName": "@kne/current-lib_super-select/dist/index.css"
+        }
+      ]
     }
   ]
 }

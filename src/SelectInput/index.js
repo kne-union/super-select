@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { Provider } from './context';
 import useResize from '@kne/use-resize';
 import useControlValue from '@kne/use-control-value';
@@ -42,7 +42,7 @@ const ModalContent = ({ children, ...others }) => {
   return <Provider value={contextProps}>{children(contextProps)}</Provider>;
 };
 
-const SelectInput = p => {
+const SelectInput = forwardRef((p, ref) => {
   const locale = Object.assign(
     {},
     {
@@ -276,6 +276,10 @@ const SelectInput = p => {
     children
   };
 
+  useImperativeHandle(ref, () => {
+    return contextProps;
+  });
+
   return (
     <Provider value={contextProps}>
       {isPopup ? (
@@ -312,7 +316,7 @@ const SelectInput = p => {
       )}
     </Provider>
   );
-};
+});
 
 export * from './context';
 export default SelectInput;

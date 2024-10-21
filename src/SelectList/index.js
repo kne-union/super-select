@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Flex, List, Checkbox } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
 import SelectInput from '../SelectInput';
@@ -9,7 +9,7 @@ import { FetchScrollLoader } from '@kne/scroll-loader';
 import classnames from 'classnames';
 import style from './style.module.scss';
 
-const SelectList = ({ children, ...p }) => {
+const SelectList = forwardRef(({ children, ...p }, ref) => {
   const props = Object.assign(
     {},
     {
@@ -80,7 +80,7 @@ const SelectList = ({ children, ...p }) => {
     p
   );
   return (
-    <SelectInput {...props}>
+    <SelectInput {...props} ref={ref}>
       {targetProps => {
         const { props, value, searchText, setSearchText } = targetProps;
         const { isPopup, getSearchProps, getSearchCallback, searchPlaceholder, valueKey, single, allowSelectedAll, showSelectedTag, api, options, renderList, selectedAllValue } = props;
@@ -167,6 +167,6 @@ const SelectList = ({ children, ...p }) => {
       }}
     </SelectInput>
   );
-};
+});
 
 export default SelectList;
