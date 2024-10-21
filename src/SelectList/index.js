@@ -82,7 +82,7 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
   return (
     <SelectInput {...props} ref={ref}>
       {targetProps => {
-        const { props, value, searchText, setSearchText } = targetProps;
+        const { props, value, searchProps, setSearchProps } = targetProps;
         const { isPopup, getSearchProps, getSearchCallback, searchPlaceholder, valueKey, single, allowSelectedAll, showSelectedTag, api, options, renderList, selectedAllValue } = props;
         const components = {
           search: ((api && typeof getSearchProps === 'function') || (options && typeof getSearchCallback === 'function')) && (
@@ -91,9 +91,9 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
                 'is-popup': isPopup
               })}
               placeholder={searchPlaceholder}
-              value={searchText}
+              value={searchProps.searchText}
               onSearch={value => {
-                setSearchText(value);
+                setSearchProps(searchProps => Object.assign({}, searchProps, { searchText: value }));
               }}
               simple={isPopup}
               showSearchButton={!isPopup}
@@ -114,17 +114,17 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
               className={classnames(style['list'], 'select-list-scroll-list', {
                 'is-popup': isPopup
               })}
-              searchProps={{ searchText }}
+              searchProps={searchProps}
               getSearchProps={getSearchProps}
               api={Object.assign(
                 {},
                 options
                   ? {
-                      data: { options, searchText },
+                      data: { options, searchProps },
                       loader: ({ data }) => {
-                        const { options, searchText } = data;
+                        const { options, searchProps } = data;
                         if (typeof getSearchCallback === 'function') {
-                          const newOptions = options.filter(item => getSearchCallback(searchText, item));
+                          const newOptions = options.filter(item => getSearchCallback(searchProps, item));
                           return {
                             pageData: newOptions
                           };

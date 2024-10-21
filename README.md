@@ -76,21 +76,21 @@ const BaseExample = () => {
     <SuperSelect single options={[...optionList, {
       value: 'other', label: '超长label项超长label项超长label项超长label项超长label项超长label项超长label项超长label项'
     }]} />
-    <SuperSelect allowSelectedAll options={optionList} maxLength={10} getSearchCallback={(searchText, item) => {
-      return item.label.indexOf(searchText) > -1;
+    <SuperSelect allowSelectedAll options={optionList} maxLength={10} getSearchCallback={({ searchText }, item) => {
+      return !searchText || item.label.indexOf(searchText) > -1;
     }} />
-    <SuperSelect allowSelectedAll options={optionList} isPopup={false} getSearchCallback={(searchText, item) => {
-      return item.label.indexOf(searchText) > -1;
+    <SuperSelect allowSelectedAll options={optionList} isPopup={false} getSearchCallback={({ searchText }, item) => {
+      return !searchText || item.label.indexOf(searchText) > -1;
     }} />
     <SuperSelect api={{
       data: {}, loader: ({ data }) => {
-        const { searchText } = data;
+        const { searchText } = data.searchProps;
         if (!searchText) {
           return {
             pageData: optionList, totalCount: optionList.length
           };
         }
-        const newOptionList = optionList.filter((item) => item.label.indexOf(searchText) > -1);
+        const newOptionList = optionList.filter((item) => !searchText || item.label.indexOf(searchText) > -1);
         return {
           pageData: newOptionList, totalCount: newOptionList.length
         };
