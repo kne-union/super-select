@@ -74,7 +74,7 @@ const SelectInput = forwardRef((p, ref) => {
       valueKey: 'value',
       selectedAllValue: { value: 'all', label: locale.selectAll },
       placement: 'bottomLeft',
-      labelWrap: true,
+      labelWrap: false,
       showSelectedTag: true,
       allowClear: true,
       prefix: null,
@@ -195,92 +195,6 @@ const SelectInput = forwardRef((p, ref) => {
     });
   };
 
-  const inputInnerRender = (props = {}) => (
-    <Flex
-      {...props}
-      ref={inputRef}
-      className={classnames(className, style['select-input'], 'select-input', {
-        [style['wrap']]: labelWrap,
-        [style['disabled']]: disabled
-      })}
-      justify="space-between"
-      onMouseOver={() => {
-        setHover(true);
-      }}
-      onMouseOut={() => {
-        setHover(false);
-      }}
-    >
-      {(() => {
-        const current = typeof prefix === 'function' ? prefix(contextProps) : prefix;
-        return (
-          current && (
-            <span
-              className={classnames(style['select-input-prefix'], 'select-input-prefix')}
-              onClick={e => {
-                e.stopPropagation();
-              }}
-            >
-              {current}
-            </span>
-          )
-        );
-      })()}
-      <div className={classnames(style['select-input-inner'], 'select-input-inner')}>
-        {value.length > 0 ? (
-          single || value[0][valueKey] === selectedAllValue[valueKey] ? (
-            value[0][labelKey]
-          ) : (
-            value.map(item => {
-              return (
-                <Tag
-                  key={item[valueKey]}
-                  closable
-                  bordered={false}
-                  onClose={e => {
-                    e.preventDefault();
-                    onRemove(item);
-                  }}
-                >
-                  {item[labelKey]}
-                </Tag>
-              );
-            })
-          )
-        ) : (
-          <span className={classnames(style['placeholder'], 'select-input-placeholder')}>{placeholder}</span>
-        )}
-      </div>
-      <div className={classnames(style['select-input-icon'], 'select-input-icon')}>
-        {!disabled && allowClear && hover && value.length > 0 ? (
-          <CloseCircleFilled
-            onClick={e => {
-              e.stopPropagation();
-              setValue([]);
-            }}
-          />
-        ) : (
-          <DownOutlined />
-        )}
-      </div>
-      {(() => {
-        const current = typeof suffix === 'function' ? suffix(contextProps) : suffix;
-        return (
-          current && (
-            <span
-              className={classnames(style['select-input-suffix'], 'select-input-suffix')}
-              onClick={e => {
-                e.stopPropagation();
-              }}
-            >
-              {current}
-            </span>
-          )
-        );
-      })()}
-    </Flex>
-  );
-
   const contextProps = {
     props,
     value: value,
@@ -295,6 +209,97 @@ const SelectInput = forwardRef((p, ref) => {
     open: !disabled && open,
     onOpenChange: setOpen,
     children
+  };
+
+  const inputInnerRender = (props = {}) => {
+    if (typeof contextProps.props.inputRender === 'function') {
+      return contextProps.props.inputRender(props, contextProps);
+    }
+    return (
+      <Flex
+        {...props}
+        ref={inputRef}
+        className={classnames(className, style['select-input'], 'select-input', {
+          [style['wrap']]: labelWrap,
+          [style['disabled']]: disabled
+        })}
+        justify="space-between"
+        onMouseOver={() => {
+          setHover(true);
+        }}
+        onMouseOut={() => {
+          setHover(false);
+        }}
+      >
+        {(() => {
+          const current = typeof prefix === 'function' ? prefix(contextProps) : prefix;
+          return (
+            current && (
+              <span
+                className={classnames(style['select-input-prefix'], 'select-input-prefix')}
+                onClick={e => {
+                  e.stopPropagation();
+                }}
+              >
+                {current}
+              </span>
+            )
+          );
+        })()}
+        <div className={classnames(style['select-input-inner'], 'select-input-inner')}>
+          {value.length > 0 ? (
+            single || value[0][valueKey] === selectedAllValue[valueKey] ? (
+              value[0][labelKey]
+            ) : (
+              value.map(item => {
+                return (
+                  <Tag
+                    key={item[valueKey]}
+                    closable
+                    bordered={false}
+                    onClose={e => {
+                      e.preventDefault();
+                      onRemove(item);
+                    }}
+                  >
+                    {item[labelKey]}
+                  </Tag>
+                );
+              })
+            )
+          ) : (
+            <span className={classnames(style['placeholder'], 'select-input-placeholder')}>{placeholder}</span>
+          )}
+        </div>
+        <div className={classnames(style['select-input-icon'], 'select-input-icon')}>
+          {!disabled && allowClear && hover && value.length > 0 ? (
+            <CloseCircleFilled
+              onClick={e => {
+                e.stopPropagation();
+                setValue([]);
+              }}
+            />
+          ) : (
+            <DownOutlined />
+          )}
+        </div>
+        {(() => {
+          const current = typeof suffix === 'function' ? suffix(contextProps) : suffix;
+          return (
+            current && (
+              <span
+                className={classnames(style['select-input-suffix'], 'select-input-suffix')}
+                onClick={e => {
+                  e.stopPropagation();
+                }}
+              >
+                {current}
+              </span>
+            )
+          );
+        })()}
+      </Flex>
+    );
   };
 
   useImperativeHandle(ref, () => {
