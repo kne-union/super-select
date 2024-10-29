@@ -37,7 +37,7 @@ const BaseExample = () => {
       return { searchText };
     }} />
 
-    <SuperSelect options={optionList} inputRender={({ value }) => {
+    <SuperSelect defaultOpen options={optionList} inputRender={({ value }) => {
       return <Button type="link">编辑</Button>;
     }} />
   </Space>;
