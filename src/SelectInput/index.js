@@ -63,10 +63,10 @@ const SelectInput = forwardRef((p, ref) => {
     {
       children: () => locale.defaultChildren,
       maxLength: null,
+      defaultOpen: false,
       single: false,
       disabled: false,
       isPopup: true,
-      defaultValue: [],
       placeholder: locale.placeholder,
       searchPlaceholder: locale.search,
       allowSelectedAll: false,
@@ -134,7 +134,11 @@ const SelectInput = forwardRef((p, ref) => {
   );
 
   const [searchProps, setSearchProps] = useState({});
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useControlValue(props, {
+    defaultValue: 'defaultOpen',
+    value: 'open',
+    onChange: 'onOpenChange'
+  });
   const [hover, setHover] = useState(false);
   const [inputWidth, setInputWidth] = useState(0);
 
