@@ -182,7 +182,12 @@ const SelectTableList = forwardRef((p, ref) => {
               </FetchScrollLoader>
             </Col>
             {!single && (
-              <Col className={classnames(style['right-options'])} span={8}>
+              <Col
+                className={classnames(style['right-options'], {
+                  'is-popup': isPopup
+                })}
+                span={8}
+              >
                 <SearchInput
                   className={style['tags-search']}
                   placeholder={searchPlaceholder}

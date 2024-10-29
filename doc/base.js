@@ -36,6 +36,10 @@ const BaseExample = () => {
     }} isPopup={false} getSearchProps={({ searchText }) => {
       return { searchText };
     }} />
+
+    <SuperSelect options={optionList} inputRender={({ value }) => {
+      return <Button type="link">编辑</Button>;
+    }} />
   </Space>;
 };
 
