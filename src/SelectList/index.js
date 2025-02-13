@@ -6,6 +6,7 @@ import SearchInput from '@kne/search-input';
 import SelectedAll, { computedIsSelectAll } from '../SelectedAll';
 import SelectedTagList from '../SelectedTagList';
 import { FetchScrollLoader } from '@kne/scroll-loader';
+import '@kne/scroll-loader/dist/index.css';
 import classnames from 'classnames';
 import style from './style.module.scss';
 
@@ -18,7 +19,7 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
         return (
           <>
             <div className={'select-list-item-label'}>{item[labelKey]}</div>
-            {item.description && <div className={'select-list-item-description'}>{item.description}</div>}
+            {item.description && <div className={classnames(style['select-list-item-description'],'select-list-item-description')}>{item.description}</div>}
           </>
         );
       },
