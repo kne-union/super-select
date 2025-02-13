@@ -99,3 +99,9 @@
     padding: 12px;
   }
 }
+
+.select-list-item-description {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
