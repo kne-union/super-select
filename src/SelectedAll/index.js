@@ -4,13 +4,20 @@ import get from 'lodash/get';
 import { useContext } from '../SelectInput';
 import classnames from 'classnames';
 import style from './style.module.scss';
+import zhCn from '../locale/zh-CN';
+import { createWithIntlProvider, useIntl } from '@kne/react-intl';
 
-const SelectedAll = () => {
+const SelectedAll = createWithIntlProvider(
+  'zh-CN',
+  zhCn,
+  'super-select'
+)(() => {
+  const { formatMessage } = useIntl();
   const { props, value, setValue } = useContext();
-  const { unit, selectedAllValue, locale, valueKey } = Object.assign(
+  const { unit, selectedAllValue, valueKey } = Object.assign(
     {},
     {
-      unit: number => locale.numberOf.replace('%s', number)
+      unit: number => formatMessage({ id: 'numberOf' }, { number })
     },
     props
   );
@@ -18,7 +25,7 @@ const SelectedAll = () => {
   return (
     <Flex justify="space-between" className={classnames(style['selected-all'], 'selected-all')}>
       <Flex gap={8}>
-        <span>{locale.selected}:</span>
+        <span>{formatMessage({ id: 'selected' })}:</span>
         <span>{isSelectedAll ? selectedAllValue.label : typeof unit === 'function' ? unit(value.length) : value.length}</span>
       </Flex>
       <span>
@@ -33,12 +40,12 @@ const SelectedAll = () => {
             }
           }}
         >
-          {locale.selectAll}
+          {formatMessage({ id: 'selectAll' })}
         </Checkbox>
       </span>
     </Flex>
-  );
-};
+  )
+});
 
 export const computedIsSelectAll = (value, selectedAllValue, valueKey = 'value') => {
   return value?.length === 1 && get(value, `[0][${valueKey}]`) === selectedAllValue[valueKey];

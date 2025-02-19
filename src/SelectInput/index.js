@@ -9,6 +9,8 @@ import { Tag, Flex, Dropdown, Modal, App } from 'antd';
 import { DownOutlined, CloseCircleFilled } from '@ant-design/icons';
 import { isNotEmpty } from '@kne/is-empty';
 import style from './style.module.scss';
+import zhCn from '../locale/zh-CN';
+import { createWithIntlProvider, useIntl } from '@kne/react-intl';
 
 const numberToPx = val => {
   return typeof val === 'number' ? `${val}px` : val;
@@ -44,35 +46,28 @@ const ModalContent = ({ children, ...others }) => {
   return <Provider value={contextProps}>{children(contextProps)}</Provider>;
 };
 
-const SelectInput = forwardRef((p, ref) => {
-  const locale = Object.assign(
-    {},
-    {
-      placeholder: '请选择',
-      selectAll: '全选',
-      selected: '已选',
-      search: '搜索',
-      numberOf: '%s个',
-      maxLengthError: '最大数量不能超过%s',
-      defaultChildren: '下拉内容，需要调用方实现'
-    },
-    p.locale
-  );
+const SelectInput = createWithIntlProvider(
+  'zh-CN',
+  zhCn,
+  'super-select'
+)(forwardRef((p, ref) => {
+  const intl = useIntl();
+  const { formatMessage } = intl;
   const props = Object.assign(
     {},
     {
-      children: () => locale.defaultChildren,
+      children: () => formatMessage({ id: 'defaultChildren' }),
       maxLength: null,
       defaultOpen: false,
       single: false,
       disabled: false,
       isPopup: true,
-      placeholder: locale.placeholder,
-      searchPlaceholder: locale.search,
+      placeholder: formatMessage({ id: 'placeholder' }),
+      searchPlaceholder: formatMessage({ id: 'search' }),
       allowSelectedAll: false,
       labelKey: 'label',
       valueKey: 'value',
-      selectedAllValue: { value: 'all', label: locale.selectAll },
+      selectedAllValue: { value: 'all', label: formatMessage({ id: 'selectAll' }) },
       placement: 'bottomLeft',
       labelWrap: false,
       showSelectedTag: true,
@@ -101,8 +96,7 @@ const SelectInput = forwardRef((p, ref) => {
         );
       }
     },
-    p,
-    { locale }
+    p
   );
 
   props.selectedAllValue = {
@@ -152,7 +146,7 @@ const SelectInput = forwardRef((p, ref) => {
 
   const checkMaxLength = (value, maxLength) => {
     if (Number.isInteger(maxLength) && maxLength > 0 && value.length >= maxLength) {
-      message.error(locale.maxLengthError.replace('%s', maxLength));
+      message.error(formatMessage({id: 'maxLengthError'}, {maxLength}));
       return false;
     }
     return true;
@@ -346,7 +340,7 @@ const SelectInput = forwardRef((p, ref) => {
       )}
     </Provider>
   );
-});
+}));
 
 export * from './context';
 export default SelectInput;

@@ -3,17 +3,21 @@ import { Flex, Tag } from 'antd';
 import { useContext } from '../SelectInput';
 import SimpleBar from 'simplebar-react';
 import classnames from 'classnames';
+import { createWithIntlProvider, useIntl } from '@kne/react-intl';
 import style from './style.module.scss';
 import 'simplebar-react/dist/simplebar.min.css';
 
-const SelectedTagList = () => {
+import zhCn from '../locale/zh-CN';
+
+const SelectedTagList = createWithIntlProvider('zh-CN', zhCn, 'super-select')(() => {
+  const { formatMessage } = useIntl();
   const { props, value, onRemove } = useContext();
-  const { locale, single, maxLength, labelKey, valueKey } = Object.assign({}, props);
+  const { single, maxLength, labelKey, valueKey } = Object.assign({}, props);
 
   return (
     <Flex className={classnames(style['tag-list'], 'selected-tag-list')} gap={8}>
       <div className={style['label']}>
-        {locale.selected}
+        {formatMessage({ id: 'selected' })}
         {!single && value.length > 0 && `(${value.length}${Number.isInteger(maxLength) ? `/${maxLength}` : ''})`}:
       </div>
       <SimpleBar className={style['tag-container']}>
@@ -38,6 +42,6 @@ const SelectedTagList = () => {
       </SimpleBar>
     </Flex>
   );
-};
+});
 
 export default SelectedTagList;
