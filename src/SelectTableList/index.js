@@ -7,11 +7,15 @@ import { computedIsSelectAll } from '../SelectedAll';
 import get from 'lodash/get';
 import classnames from 'classnames';
 import SimpleBar from 'simplebar-react';
+import { createWithIntlProvider, useIntl } from '@kne/react-intl';
 import style from './style.module.scss';
 import 'simplebar-react/dist/simplebar.min.css';
 import { CheckOutlined } from '@ant-design/icons';
 
-const SelectTableList = forwardRef((p, ref) => {
+import zhCn from '../locale/zh-CN';
+
+const SelectTableList = createWithIntlProvider('zh-CN', zhCn, 'super-select')(forwardRef((p, ref) => {
+  const { formatMessage } = useIntl();
   const [tagSearchText, setTagSearchText] = useState('');
   const props = Object.assign(
     {},
@@ -56,7 +60,7 @@ const SelectTableList = forwardRef((p, ref) => {
     <SelectInput {...props} ref={ref}>
       {targetProps => {
         const { props, value, setValue, onSelect, onRemove, onOpenChange } = targetProps;
-        const { filterRender, columns, options, getSearchCallback, getTagSearchCallback, api, selectedAllValue, isPopup, locale, single, maxLength, getSearchProps, searchPlaceholder, allowSelectedAll, labelKey, valueKey, searchProps } =
+        const { filterRender, columns, options, getSearchCallback, getTagSearchCallback, api, selectedAllValue, isPopup, single, maxLength, getSearchProps, searchPlaceholder, allowSelectedAll, labelKey, valueKey, searchProps } =
           props;
         const isSelectedAll = computedIsSelectAll(value, selectedAllValue, valueKey);
         return (
@@ -107,20 +111,20 @@ const SelectTableList = forwardRef((p, ref) => {
                   {},
                   options
                     ? {
-                        data: { options, searchProps },
-                        loader: ({ data }) => {
-                          const { options, searchProps } = data;
-                          if (typeof getSearchCallback === 'function') {
-                            const newOptions = options.filter(item => getSearchCallback(searchProps, item, targetProps));
-                            return {
-                              pageData: newOptions
-                            };
-                          }
+                      data: { options, searchProps },
+                      loader: ({ data }) => {
+                        const { options, searchProps } = data;
+                        if (typeof getSearchCallback === 'function') {
+                          const newOptions = options.filter(item => getSearchCallback(searchProps, item, targetProps));
                           return {
-                            pageData: options
+                            pageData: newOptions
                           };
                         }
+                        return {
+                          pageData: options
+                        };
                       }
+                    }
                     : api
                 )}
               >
@@ -199,7 +203,7 @@ const SelectTableList = forwardRef((p, ref) => {
                 />
                 <Row wrap={false} justify={'space-between'} align={'middle'}>
                   <Col>
-                    {locale.selected}
+                    {formatMessage({ id: 'selected' })}
                     {value.length > 0 && `(${value.length}${Number.isInteger(maxLength) ? `/${maxLength}` : ''})`}:
                   </Col>
                   <Col>
@@ -263,6 +267,6 @@ const SelectTableList = forwardRef((p, ref) => {
       }}
     </SelectInput>
   );
-});
+}));
 
 export default SelectTableList;

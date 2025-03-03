@@ -84,7 +84,7 @@ const BaseExample = () => {
     }} />
     <SuperSelect api={{
       data: {}, loader: ({ data }) => {
-        const { searchText } = data.searchProps;
+        const searchText = data.searchProps && data.searchProps.searchText;
         if (!searchText) {
           return {
             pageData: optionList, totalCount: optionList.length
