@@ -17,12 +17,12 @@ const columns = [{
 
 const BaseExample = () => {
   return <Space wrap>
-    <SelectTableList options={optionList} columns={columns} valueKey="id" />
-    <SelectTableList single options={optionList} columns={columns} valueKey="id" />
-    <SelectTableList allowSelectedAll options={optionList} columns={columns} valueKey="id" />
-    <SelectTableList options={optionList} columns={columns} isPopup={false} valueKey="id" />
-    <SelectTableList allowSelectedAll options={optionList} columns={columns} isPopup={false} valueKey="id" />
-    <SelectTableList single options={optionList} columns={columns} isPopup={false} valueKey="id" />
+    <SelectTableList options={optionList} columns={columns} valueKey="id" footer={<Button type="link">预览</Button>}/>
+    <SelectTableList single options={optionList} columns={columns} valueKey="id" footer={<Button type="link">预览</Button>}/>
+    <SelectTableList allowSelectedAll options={optionList} columns={columns} valueKey="id" footer={<Button type="link">预览</Button>}/>
+    <SelectTableList options={optionList} columns={columns} isPopup={false} valueKey="id" footer={<Button type="link">预览</Button>}/>
+    <SelectTableList allowSelectedAll options={optionList} columns={columns} isPopup={false} valueKey="id" footer={<Button type="link">预览</Button>}/>
+    <SelectTableList single options={optionList} columns={columns} isPopup={false} valueKey="id" footer={<Button type="link">预览</Button>}/>
   </Space>;
 };
 

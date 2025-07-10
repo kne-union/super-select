@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useRef } from 'react';
 import { Flex, List, Checkbox } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
 import SelectInput from '../SelectInput';
@@ -11,6 +11,7 @@ import classnames from 'classnames';
 import style from './style.module.scss';
 
 const SelectList = forwardRef(({ children, ...p }, ref) => {
+  const fetchListRef = useRef(null);
   const props = Object.assign(
     {},
     {
@@ -19,7 +20,7 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
         return (
           <>
             <div className={'select-list-item-label'}>{item[labelKey]}</div>
-            {item.description && <div className={classnames(style['select-list-item-description'],'select-list-item-description')}>{item.description}</div>}
+            {item.description && <div className={classnames(style['select-list-item-description'], 'select-list-item-description')}>{item.description}</div>}
           </>
         );
       },
@@ -83,8 +84,8 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
   return (
     <SelectInput {...props} ref={ref}>
       {targetProps => {
-        const { props, value, searchProps, setSearchProps } = targetProps;
-        const { isPopup, getSearchProps, getSearchCallback, searchPlaceholder, valueKey, single, allowSelectedAll, showSelectedTag, api, options, renderList, selectedAllValue } = props;
+        const { props, value, searchProps, setSearchProps, onOpenChange } = targetProps;
+        const { footer, isPopup, getSearchProps, getSearchCallback, searchPlaceholder, valueKey, single, allowSelectedAll, showSelectedTag, api, options, renderList, selectedAllValue } = props;
         const components = {
           search: ((api && typeof getSearchProps === 'function') || (options && typeof getSearchCallback === 'function')) && (
             <SearchInput
@@ -137,6 +138,7 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
                     }
                   : api
               )}
+              ref={fetchListRef}
             >
               {fetchProps => {
                 const isSelectedAll = computedIsSelectAll(value, selectedAllValue, valueKey);
@@ -162,6 +164,20 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
             {components.search}
             {components.selectedAll}
             {components.fetchList}
+            {footer && (
+              <div className={classnames(style['footer'], 'select-list-footer')}>
+                {typeof footer === 'function'
+                  ? footer({
+                      reload: () => {
+                        fetchListRef.current && fetchListRef.current.reload();
+                      },
+                      close: () => {
+                        onOpenChange(false);
+                      }
+                    })
+                  : footer}
+              </div>
+            )}
             {components.selectedTag}
           </Flex>
         );
