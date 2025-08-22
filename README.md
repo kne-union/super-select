@@ -439,16 +439,24 @@ const options = [
 const BaseExample = () => {
   return (
     <Space wrap>
-      <SelectTree
-        options={options}
-        valueKey="id"
-        labelKey="name"
-      />
+      <SelectTree options={options} valueKey="id" labelKey="name" />
 
-      <SelectTree single
-        options={options}
-        valueKey="id"
-        labelKey="name"
+      <SelectTree single options={options} valueKey="id" labelKey="name" />
+
+      <SelectTree
+        name="tree"
+        label="树选择"
+        options={[
+          {
+            value: '1',
+            label: '父节点'
+          },
+          {
+            value: '2',
+            label: '子节点',
+            parentId: '1'
+          }
+        ]}
       />
     </Space>
   );

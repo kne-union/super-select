@@ -1,6 +1,7 @@
 import React, { forwardRef, useRef, useState } from 'react';
 import { Flex, Checkbox, Tree } from 'antd';
 import memoize from 'lodash/memoize';
+import isNil from 'lodash/isNil';
 import { CheckOutlined } from '@ant-design/icons';
 import SelectInput from '../SelectInput';
 import SelectedAll, { computedIsSelectAll } from '../SelectedAll';
@@ -11,18 +12,18 @@ import 'simplebar-react/dist/simplebar.min.css';
 import classnames from 'classnames';
 import style from './style.module.scss';
 
-const parseTreeData = memoize((data = []) => {
+const parseTreeData = memoize((data = [], { parentKey, valueKey, childrenKey }) => {
   const parseTree = output => {
     return output.map(node => {
       const children = data.filter(item => {
-        return item.parentId === node.id;
+        return !isNil(node[valueKey]) && item[parentKey] === node[valueKey];
       });
-      return Object.assign({}, node, { children: parseTree(children) });
+      return Object.assign({}, node, { [childrenKey]: parseTree(children) });
     });
   };
 
   return {
-    treeData: parseTree(data.filter(item => !item.parentId)),
+    treeData: parseTree(data.filter(item => !item[parentKey])),
     ids: data.map(item => item.id)
   };
 });
@@ -33,6 +34,8 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
   const props = Object.assign(
     {},
     {
+      parentKey: 'parentId',
+      childrenKey: 'children',
       renderItemContent: ({ item, props }) => {
         const { labelKey } = props;
         return (
@@ -83,8 +86,8 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
       },
       renderTree: contextProps => {
         const { props, isSelectedAll, data } = contextProps;
-        const { renderItem, valueKey, labelKey, childrenKey } = props;
-        const { treeData, ids } = parseTreeData(data);
+        const { renderItem, valueKey, labelKey, childrenKey, parentKey } = props;
+        const { treeData, ids } = parseTreeData(data, { valueKey, parentKey, childrenKey });
         return (
           <Tree
             className={classnames(style['default-list'], {
@@ -93,7 +96,7 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
             showIcon
             selectable={false}
             expandedKeys={expandedKeys}
-            fieldNames={{ title: labelKey, key: valueKey, children: childrenKey || 'children' }}
+            fieldNames={{ title: labelKey, key: valueKey, children: childrenKey }}
             treeData={treeData}
             onExpand={expandedKeys => {
               setExpandedKeys(expandedKeys);
