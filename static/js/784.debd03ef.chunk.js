@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_kne_components_super_select=self.webpackChunk_kne_components_super_select||[]).push([[784],{8151:(e,s,n)=>{n.r(s),n.d(s,{default:()=>r,manifest:()=>c});const r={SuperSelect:n(58872).A},c={name:"super-select",version:"0.1.22","open-version":!0,"public-url":"/super-select",modules:[{name:"super-select",baseDir:"/home/runner/work/super-select/super-select",description:"\u7528\u4e8e\u590d\u6742\u4fe1\u606f\u9009\u62e9.",packageName:"@kne/super-select"}]}}}]);
+//# sourceMappingURL=784.debd03ef.chunk.js.map
