@@ -129,7 +129,6 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
             <Fetch
               {...Object.assign(
                 {},
-                props,
                 options
                   ? {
                       data: { options },
