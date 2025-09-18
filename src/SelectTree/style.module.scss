@@ -21,6 +21,16 @@
       pointer-events: none;
     }
   }
+
+  :global {
+    .ant-tree-treenode {
+      width: 100%;
+    }
+
+    .ant-tree-node-content-wrapper {
+      flex: 1;
+    }
+  }
 }
 
 .default-list-item {
