@@ -103,6 +103,29 @@
 | children   | 自定义渲染内容     | function(props)         | -     |
 | locale     | 国际化配置       | object                  | 默认中文  |
 
+#### SelectTree
+
+树形选择组件，适用于层级数据的展示和选择。
+
+| 属性名               | 说明                | 类型                            | 默认值                 |
+|-------------------|-------------------|-------------------------------|---------------------|
+| value             | 当前选中的值            | array                         | []                  |
+| onChange          | 选中值变化时的回调函数       | function(value, item, {type}) | -                   |
+| dataSource        | 数据源               | array                         | []                  |
+| idField           | 数据项唯一标识字段         | string                        | 'id'                |
+| multiple          | 是否支持多选            | boolean                       | false               |
+| max               | 最多可选数量            | number                        | -                   |
+| disabled          | 是否禁用              | boolean                       | false               |
+| readOnly          | 是否只读              | boolean                       | false               |
+| className         | 自定义类名             | string                        | -                   |
+| style             | 自定义样式             | object                        | -                   |
+| renderItem        | 自定义树节点渲染         | function(item, index)         | -                   |
+| emptyContent      | 无数据时的显示内容        | ReactNode                     | -                   |
+| locale            | 国际化配置             | object                        | 默认中文                |
+| onExceed          | 超出最大可选数量时的回调      | function(value, item)         | -                   |
+| onSelect          | 选择时的回调            | function(value, item)         | -                   |
+| onDeselect        | 取消选择时的回调          | function(value, item)         | -                   |
+
 #### SelectedTagList
 
 已选项标签列表组件，以标签形式展示已选中的项目。
