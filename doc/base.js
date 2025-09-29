@@ -81,6 +81,17 @@ const BaseExample = () => {
           );
         }}
       />
+
+      <SuperSelect
+        options={[]}
+        footer={({ close, reload }) => {
+          return (
+            <Button type="link" onClick={reload}>
+              添加
+            </Button>
+          );
+        }}
+      />
     </Space>
   );
 };

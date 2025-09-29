@@ -6,8 +6,22 @@
   }
 }
 
+.empty {
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.single-body {
+  .body,
+  .header {
+    border-right: 1px solid #f0f0f0;
+  }
+}
+
 .header {
   border-left: 1px solid #f0f0f0;
+  border-top: 1px solid #f0f0f0;
 
   .col {
     background: var(--bg-color-grey-1);
@@ -17,6 +31,12 @@
 
 .body {
   border-left: 1px solid #f0f0f0;
+
+  &:last-child {
+    .col {
+      border-bottom-color: transparent;
+    }
+  }
 
   .col {
     cursor: pointer;

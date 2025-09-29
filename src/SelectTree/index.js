@@ -1,5 +1,5 @@
 import React, { forwardRef, useRef, useState } from 'react';
-import { Flex, Checkbox, Tree } from 'antd';
+import { Flex, Checkbox, Tree, Empty } from 'antd';
 import memoize from 'lodash/memoize';
 import isNil from 'lodash/isNil';
 import { CheckOutlined } from '@ant-design/icons';
@@ -88,6 +88,9 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
         const { props, isSelectedAll, data } = contextProps;
         const { renderItem, valueKey, labelKey, childrenKey, parentKey } = props;
         const { treeData, ids } = parseTreeData(data, { valueKey, parentKey, childrenKey });
+        if (!(treeData && treeData.length > 0)) {
+          return props.empty || <Empty />;
+        }
         return (
           <Tree
             className={classnames(style['default-list'], {
@@ -159,6 +162,20 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
             >
               <SelectedTagList />
             </div>
+          ),
+          footer: footer && (
+            <div className={classnames(style['footer'], 'select-list-footer')}>
+              {typeof footer === 'function'
+                ? footer({
+                    reload: () => {
+                      fetchListRef.current && fetchListRef.current.reload();
+                    },
+                    close: () => {
+                      onOpenChange(false);
+                    }
+                  })
+                : footer}
+            </div>
           )
         };
         if (typeof children === 'function') {
@@ -169,20 +186,7 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
             {components.search}
             {components.selectedAll}
             {components.treeList}
-            {footer && (
-              <div className={classnames(style['footer'], 'select-tree-footer')}>
-                {typeof footer === 'function'
-                  ? footer({
-                      reload: () => {
-                        fetchListRef.current && fetchListRef.current.reload();
-                      },
-                      close: () => {
-                        onOpenChange(false);
-                      }
-                    })
-                  : footer}
-              </div>
-            )}
+            {components.footer}
             {components.selectedTag}
           </Flex>
         );

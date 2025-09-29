@@ -1,5 +1,5 @@
 import React, { forwardRef, useRef } from 'react';
-import { Flex, List, Checkbox } from 'antd';
+import { Flex, List, Checkbox, Empty } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
 import SelectInput from '../SelectInput';
 import SearchInput from '@kne/search-input';
@@ -67,6 +67,9 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
       renderList: contextProps => {
         const { props, isSelectedAll, list } = contextProps;
         const { renderItem } = props;
+        if (!(list && list.length > 0)) {
+          return props.empty || <Empty className={style['empty']} />;
+        }
         return (
           <List
             className={classnames(style['default-list'], {
@@ -154,6 +157,20 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
             >
               <SelectedTagList />
             </div>
+          ),
+          footer: footer && (
+            <div className={classnames(style['footer'], 'select-list-footer')}>
+              {typeof footer === 'function'
+                ? footer({
+                    reload: () => {
+                      fetchListRef.current && fetchListRef.current.reload();
+                    },
+                    close: () => {
+                      onOpenChange(false);
+                    }
+                  })
+                : footer}
+            </div>
           )
         };
         if (typeof children === 'function') {
@@ -164,20 +181,7 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
             {components.search}
             {components.selectedAll}
             {components.fetchList}
-            {footer && (
-              <div className={classnames(style['footer'], 'select-list-footer')}>
-                {typeof footer === 'function'
-                  ? footer({
-                      reload: () => {
-                        fetchListRef.current && fetchListRef.current.reload();
-                      },
-                      close: () => {
-                        onOpenChange(false);
-                      }
-                    })
-                  : footer}
-              </div>
-            )}
+            {components.footer}
             {components.selectedTag}
           </Flex>
         );
