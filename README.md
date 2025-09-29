@@ -196,6 +196,17 @@ const BaseExample = () => {
           );
         }}
       />
+
+      <SuperSelect
+        options={[]}
+        footer={({ close, reload }) => {
+          return (
+            <Button type="link" onClick={reload}>
+              添加
+            </Button>
+          );
+        }}
+      />
     </Space>
   );
 };
@@ -228,12 +239,19 @@ const columns = [{
 
 const BaseExample = () => {
   return <Space wrap>
-    <SelectTableList options={optionList} columns={columns} valueKey="id" footer={<Button type="link">预览</Button>}/>
-    <SelectTableList single options={optionList} columns={columns} valueKey="id" footer={<Button type="link">预览</Button>}/>
-    <SelectTableList allowSelectedAll options={optionList} columns={columns} valueKey="id" footer={<Button type="link">预览</Button>}/>
-    <SelectTableList options={optionList} columns={columns} isPopup={false} valueKey="id" footer={<Button type="link">预览</Button>}/>
-    <SelectTableList allowSelectedAll options={optionList} columns={columns} isPopup={false} valueKey="id" footer={<Button type="link">预览</Button>}/>
-    <SelectTableList single options={optionList} columns={columns} isPopup={false} valueKey="id" footer={<Button type="link">预览</Button>}/>
+    <SelectTableList options={optionList} columns={columns} valueKey="id" footer={<Button type="link">预览</Button>} />
+    <SelectTableList single options={optionList} columns={columns} valueKey="id"
+                     footer={<Button type="link">预览</Button>} />
+    <SelectTableList allowSelectedAll options={optionList} columns={columns} valueKey="id"
+                     footer={<Button type="link">预览</Button>} />
+    <SelectTableList options={optionList} columns={columns} isPopup={false} valueKey="id"
+                     footer={<Button type="link">预览</Button>} />
+    <SelectTableList allowSelectedAll options={optionList} columns={columns} isPopup={false} valueKey="id"
+                     footer={<Button type="link">预览</Button>} />
+    <SelectTableList single options={optionList} columns={columns} isPopup={false} valueKey="id"
+                     footer={<Button type="link">预览</Button>} />
+    <SelectTableList single options={[]} columns={columns} isPopup={false} valueKey="id"
+                     footer={<Button type="link">预览</Button>} />
   </Space>;
 };
 

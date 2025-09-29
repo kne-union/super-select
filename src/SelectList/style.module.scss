@@ -6,6 +6,11 @@
   }
 }
 
+.empty {
+  padding: 20px;
+  box-sizing: border-box;
+}
+
 .default-list {
   &.is-selected-all {
     background: var(--bg-color-grey-3);

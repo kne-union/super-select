@@ -1,6 +1,6 @@
 import React, { useState, Fragment, useRef, forwardRef } from 'react';
 import SelectInput from '../SelectInput';
-import { Flex, Row, Col, Button, Checkbox, Tag, Popover } from 'antd';
+import { Flex, Row, Col, Button, Checkbox, Tag, Popover, Empty } from 'antd';
 import { FetchScrollLoader } from '@kne/scroll-loader';
 import SearchInput from '@kne/search-input';
 import { computedIsSelectAll } from '../SelectedAll';
@@ -86,7 +86,12 @@ const SelectTableList = createWithIntlProvider(
           );
           return (
             <Row wrap={false} ref={bodyRef}>
-              <Col span={single ? 24 : 16}>
+              <Col
+                className={classnames({
+                  [style['single-body']]: single
+                })}
+                span={single ? 24 : 16}
+              >
                 <div>{filterRender(Object.assign({}, targetProps))}</div>
                 <Row wrap={false} className={classnames(style['header'], 'select-table-list-header')}>
                   {!single && (
@@ -153,6 +158,9 @@ const SelectTableList = createWithIntlProvider(
                   {fetchProps => {
                     const { list } = fetchProps;
                     const contextProps = Object.assign({}, fetchProps, targetProps, { isSelectedAll });
+                    if (!(list && list.length > 0)) {
+                      return props.empty || <Empty className={classnames(style['empty'], style['body'], 'select-table-list-body')} />;
+                    }
                     return list.map(item => {
                       const isChecked = value.some(target => target[valueKey] === item[valueKey]);
                       return (
@@ -206,7 +214,7 @@ const SelectTableList = createWithIntlProvider(
                     });
                   }}
                 </FetchScrollLoader>
-                {single && footerEl}
+                {(single && footerEl) || <div className={classnames(style['footer'], 'select-table-footer')} />}
               </Col>
               {!single && (
                 <Col
