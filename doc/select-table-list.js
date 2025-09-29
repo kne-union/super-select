@@ -21,11 +21,15 @@ const BaseExample = () => {
     <SelectTableList single options={optionList} columns={columns} valueKey="id"
                      footer={<Button type="link">预览</Button>} />
     <SelectTableList allowSelectedAll options={optionList} columns={columns} valueKey="id"
-                     footer={<Button type="link">预览</Button>} />
+                     footer={<Button type="link">预览</Button>} getSearchCallback={({ searchText }, item) => {
+      return !searchText || item.label.indexOf(searchText) > -1;
+    }}/>
     <SelectTableList options={optionList} columns={columns} isPopup={false} valueKey="id"
                      footer={<Button type="link">预览</Button>} />
     <SelectTableList allowSelectedAll options={optionList} columns={columns} isPopup={false} valueKey="id"
-                     footer={<Button type="link">预览</Button>} />
+                     footer={<Button type="link">预览</Button>} getSearchCallback={({ searchText }, item) => {
+      return !searchText || item.label.indexOf(searchText) > -1;
+    }}/>
     <SelectTableList single options={optionList} columns={columns} isPopup={false} valueKey="id"
                      footer={<Button type="link">预览</Button>} />
     <SelectTableList single options={[]} columns={columns} isPopup={false} valueKey="id"
