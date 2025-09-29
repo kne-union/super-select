@@ -35,7 +35,7 @@ const SelectTableList = createWithIntlProvider(
           }
           return (
             <SearchInput
-              className={classnames(style['select-search'], 'select-list-search', {
+              className={classnames(style['select-search'], 'select-table-search', {
                 'is-popup': isPopup
               })}
               placeholder={searchPlaceholder}
@@ -65,9 +65,8 @@ const SelectTableList = createWithIntlProvider(
     return (
       <SelectInput {...props} ref={ref}>
         {targetProps => {
-          const { props, value, setValue, onSelect, onRemove, onOpenChange } = targetProps;
-          const { footer, filterRender, columns, options, getSearchCallback, getTagSearchCallback, api, selectedAllValue, isPopup, single, maxLength, getSearchProps, searchPlaceholder, allowSelectedAll, labelKey, valueKey, searchProps } =
-            props;
+          const { props, value, setValue, onSelect, onRemove, onOpenChange, searchProps, getSearchProps } = targetProps;
+          const { footer, filterRender, columns, options, getSearchCallback, getTagSearchCallback, api, selectedAllValue, isPopup, single, maxLength, searchPlaceholder, allowSelectedAll, labelKey, valueKey } = props;
           const isSelectedAll = computedIsSelectAll(value, selectedAllValue, valueKey);
 
           const footerEl = footer && (
