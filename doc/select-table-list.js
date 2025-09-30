@@ -36,11 +36,11 @@ const BaseExample = () => {
                      footer={<Button type="link">预览</Button>} />
     <div>
       <Divider />
-      <SelectTableList options={optionList} columns={columns} isPopup={false} valueKey="id"
-                       getSearchCallback={({ searchText }, item) => {
-                         return !searchText || item.label.indexOf(searchText) > -1;
-                       }}
-                       footer={<Button type="link">预览</Button>} renderContent={(target) => target} />
+      <SelectTableList allowSelectedAll options={optionList} columns={columns} isPopup={false} valueKey="id" onChange={(value) => {
+        console.log(value);
+      }} getSearchCallback={({ searchText }, item) => {
+        return !searchText || item.label.indexOf(searchText) > -1;
+      }} footer={<Button type="link">预览</Button>} renderContent={(target) => target} />
     </div>
   </Space>;
 };
