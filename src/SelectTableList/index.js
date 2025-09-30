@@ -148,11 +148,12 @@ const SelectTableList = createWithIntlProvider(
                           >
                             {fetchProps => {
                               const { list } = fetchProps;
+                              const contextProps = Object.assign({}, fetchProps, targetProps, { isSelectedAll });
                               if (!(list && list.length > 0)) {
                                 return props.empty || <Empty className={classnames(style['empty'])} />;
                               }
 
-                              return renderBody(list);
+                              return renderBody(list, contextProps);
                             }}
                           </FetchScrollLoader>
                         </>
