@@ -1,5 +1,5 @@
 const { SelectTableList } = _SuperSelect;
-const { Space, Button } = antd;
+const { Space, Button, Divider } = antd;
 
 const optionList = Array.from({ length: 20 }).map((item, key) => {
   return {
@@ -23,17 +23,25 @@ const BaseExample = () => {
     <SelectTableList allowSelectedAll options={optionList} columns={columns} valueKey="id"
                      footer={<Button type="link">预览</Button>} getSearchCallback={({ searchText }, item) => {
       return !searchText || item.label.indexOf(searchText) > -1;
-    }}/>
+    }} />
     <SelectTableList options={optionList} columns={columns} isPopup={false} valueKey="id"
                      footer={<Button type="link">预览</Button>} />
     <SelectTableList allowSelectedAll options={optionList} columns={columns} isPopup={false} valueKey="id"
                      footer={<Button type="link">预览</Button>} getSearchCallback={({ searchText }, item) => {
       return !searchText || item.label.indexOf(searchText) > -1;
-    }}/>
+    }} />
     <SelectTableList single options={optionList} columns={columns} isPopup={false} valueKey="id"
                      footer={<Button type="link">预览</Button>} />
     <SelectTableList single options={[]} columns={columns} isPopup={false} valueKey="id"
                      footer={<Button type="link">预览</Button>} />
+    <div>
+      <Divider />
+      <SelectTableList options={optionList} columns={columns} isPopup={false} valueKey="id"
+                       getSearchCallback={({ searchText }, item) => {
+                         return !searchText || item.label.indexOf(searchText) > -1;
+                       }}
+                       footer={<Button type="link">预览</Button>} renderContent={(target) => target} />
+    </div>
   </Space>;
 };
 
