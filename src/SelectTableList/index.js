@@ -200,7 +200,6 @@ const SelectTableList = createWithIntlProvider(
                       {value
                         .filter(item => getTagSearchCallback(tagSearchText, item, targetProps))
                         .map(item => {
-                          console.log('00000', item, columns);
                           return (
                             <Tag
                               className={style['tag']}
