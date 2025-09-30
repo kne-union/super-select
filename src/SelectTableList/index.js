@@ -65,8 +65,8 @@ const SelectTableList = createWithIntlProvider(
     return (
       <SelectInput {...props} ref={ref}>
         {targetProps => {
-          const { props, value, setValue, onSelect, onRemove, onOpenChange, searchProps, getSearchProps } = targetProps;
-          const { footer, filterRender, columns, options, getSearchCallback, getTagSearchCallback, api, selectedAllValue, isPopup, single, maxLength, searchPlaceholder, allowSelectedAll, labelKey, valueKey } = props;
+          const { props, value, setValue, onSelect, onRemove, onOpenChange, searchProps } = targetProps;
+          const { footer, filterRender, columns, options, getSearchProps, getSearchCallback, getTagSearchCallback, api, selectedAllValue, isPopup, single, maxLength, searchPlaceholder, allowSelectedAll, labelKey, valueKey } = props;
           const isSelectedAll = computedIsSelectAll(value, selectedAllValue, valueKey);
 
           const footerEl = footer && (

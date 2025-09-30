@@ -310,6 +310,10 @@ const SelectInput = createWithIntlProvider({
       return contextProps;
     });
 
+    if (props.renderContent && typeof props.renderContent === 'function') {
+      return props.renderContent(children(contextProps));
+    }
+
     return (
       <Provider value={contextProps}>
         {isPopup ? (
