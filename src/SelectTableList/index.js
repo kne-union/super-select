@@ -11,6 +11,8 @@ import { createWithIntlProvider, useIntl } from '@kne/react-intl';
 import style from './style.module.scss';
 import 'simplebar-react/dist/simplebar.min.css';
 import { CheckOutlined } from '@ant-design/icons';
+import { TableView } from '@kne/info-page';
+import '@kne/info-page/dist/index.css';
 
 import zhCn from '../locale/zh-CN';
 
@@ -92,127 +94,72 @@ const SelectTableList = createWithIntlProvider(
                 span={single ? 24 : 16}
               >
                 <div>{filterRender(Object.assign({}, targetProps))}</div>
-                <Row wrap={false} className={classnames(style['header'], 'select-table-list-header')}>
-                  {!single && (
-                    <Col className={classnames(style['col'], 'select-table-list-col')}>
-                      {allowSelectedAll ? (
-                        <Checkbox
-                          checked={isSelectedAll}
-                          onChange={e => {
-                            const checked = e.target.checked;
-                            if (!checked) {
-                              setValue([]);
-                            } else {
-                              setValue([selectedAllValue]);
-                            }
-                          }}
-                        />
-                      ) : (
-                        <Checkbox style={{ visibility: 'hidden' }} />
-                      )}
-                    </Col>
-                  )}
-                  <Col flex={1}>
-                    <Row wrap={false}>
-                      {columns.map(column => {
-                        const { name, title, span } = column;
-                        return (
-                          <Col key={name} span={span} className={classnames(style['col'], 'select-table-list-col')}>
-                            {title}
-                          </Col>
-                        );
-                      })}
-                    </Row>
-                  </Col>
-                </Row>
-                <FetchScrollLoader
-                  {...props}
-                  className={classnames(style['list'], 'select-table-list-scroll-list', {
-                    'is-popup': isPopup
-                  })}
-                  searchProps={searchProps}
-                  getSearchProps={getSearchProps}
-                  api={Object.assign(
-                    {},
-                    options
-                      ? {
-                          data: { options, searchProps },
-                          loader: ({ data }) => {
-                            const { options, searchProps } = data;
-                            if (typeof getSearchCallback === 'function') {
-                              const newOptions = options.filter(item => getSearchCallback(searchProps, item, targetProps));
-                              return {
-                                pageData: newOptions
-                              };
-                            }
-                            return {
-                              pageData: options
-                            };
-                          }
+                <div className={classnames(style['table'], 'select-table')}>
+                  <TableView
+                    columns={columns}
+                    rowKey={valueKey}
+                    rowSelection={{
+                      allowSelectedAll,
+                      isSelectedAll,
+                      onIsSelectAllChange: isSelectedAll => {
+                        setValue(isSelectedAll ? [selectedAllValue] : []);
+                      },
+                      type: single ? 'radio' : 'checkbox',
+                      selectedRowKeys: (value || []).map(item => item[valueKey]),
+                      onChange: (selectedRowKeys, selectedRows) => {
+                        setValue(selectedRows);
+                        if (isPopup && single) {
+                          onOpenChange(false);
                         }
-                      : api
-                  )}
-                  ref={fetchListRef}
-                >
-                  {fetchProps => {
-                    const { list } = fetchProps;
-                    const contextProps = Object.assign({}, fetchProps, targetProps, { isSelectedAll });
-                    if (!(list && list.length > 0)) {
-                      return props.empty || <Empty className={classnames(style['empty'], style['body'], 'select-table-list-body')} />;
-                    }
-                    return list.map(item => {
-                      const isChecked = value.some(target => target[valueKey] === item[valueKey]);
+                      }
+                    }}
+                    render={({ header, renderBody }) => {
                       return (
-                        <Row
-                          wrap={false}
-                          key={item[valueKey]}
-                          className={classnames(style['body'], 'select-table-list-body', [
-                            {
-                              [style['is-selected-all']]: isSelectedAll,
-                              [style['is-selected']]: isChecked,
-                              [style['is-disabled']]: item.disabled
-                            }
-                          ])}
-                          onClick={() => {
-                            if (item.disabled) {
-                              return;
-                            }
-                            if (isSelectedAll) {
-                              return;
-                            }
-                            if (single) {
-                              setValue([item]);
-                            } else {
-                              onSelect(item);
-                            }
-                            if (isPopup && single) {
-                              onOpenChange(false);
-                            }
-                          }}
-                        >
-                          {!single && (
-                            <Col className={classnames(style['col'], 'select-table-list-col')}>
-                              <Checkbox disabled={item.disabled || isSelectedAll} checked={isSelectedAll || isChecked} />
-                            </Col>
-                          )}
-                          <Col flex={1}>
-                            <Row wrap={false}>
-                              {columns.map(column => {
-                                const { name, span, getValueOf } = column;
-                                return (
-                                  <Col key={name} span={span} className={classnames(style['col'], 'select-table-list-col')}>
-                                    {typeof getValueOf === 'function' ? getValueOf(item, contextProps) : get(item, name)}
-                                  </Col>
-                                );
-                              })}
-                            </Row>
-                          </Col>
-                          {single && <Col className={classnames(style['col'], style['single-checked'], 'select-table-list-col')}>{isChecked && <CheckOutlined />}</Col>}
-                        </Row>
+                        <>
+                          {header}
+                          <FetchScrollLoader
+                            {...props}
+                            className={classnames(style['list'], 'select-table-list-scroll-list', {
+                              'is-popup': isPopup
+                            })}
+                            searchProps={searchProps}
+                            getSearchProps={getSearchProps}
+                            api={Object.assign(
+                              {},
+                              options
+                                ? {
+                                    data: { options, searchProps },
+                                    loader: ({ data }) => {
+                                      const { options, searchProps } = data;
+                                      if (typeof getSearchCallback === 'function') {
+                                        const newOptions = options.filter(item => getSearchCallback(searchProps, item, targetProps));
+                                        return {
+                                          pageData: newOptions
+                                        };
+                                      }
+                                      return {
+                                        pageData: options
+                                      };
+                                    }
+                                  }
+                                : api
+                            )}
+                            ref={fetchListRef}
+                          >
+                            {fetchProps => {
+                              const { list } = fetchProps;
+                              if (!(list && list.length > 0)) {
+                                return props.empty || <Empty className={classnames(style['empty'])} />;
+                              }
+
+                              return renderBody(list);
+                            }}
+                          </FetchScrollLoader>
+                        </>
                       );
-                    });
-                  }}
-                </FetchScrollLoader>
+                    }}
+                  />
+                </div>
                 {(single && footerEl) || <div className={classnames(style['footer'], 'select-table-footer')} />}
               </Col>
               {!single && (
@@ -244,7 +191,7 @@ const SelectTableList = createWithIntlProvider(
                           setValue([]);
                         }}
                       >
-                        移除全部
+                        {formatMessage({ id: 'removeAll' })}
                       </Button>
                     </Col>
                   </Row>
