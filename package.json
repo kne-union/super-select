@@ -1,6 +1,6 @@
 {
   "name": "@kne/super-select",
-  "version": "0.1.28",
+  "version": "0.1.29",
   "description": "用于复杂信息选择.",
   "syntax": {
     "esmodules": true
@@ -90,7 +90,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
     "@kne/global-context": "^1.1.1",
-    "@kne/info-page": "^0.1.26",
+    "@kne/info-page": "^0.1.27",
     "@kne/is-empty": "^1.0.1",
     "@kne/react-fetch": "^1.5.5",
     "@kne/react-intl": "^0.1.9",
