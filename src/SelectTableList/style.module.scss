@@ -16,6 +16,7 @@
   border: 1px solid #f0f0f0;
   border-radius: var(--radius-default, 2px);
   overflow: hidden;
+
   :global {
     .info-page-table-row:last-child {
       .info-page-table-col {
@@ -80,33 +81,11 @@
 }
 
 .descriptions {
-  border-bottom: 1px solid var(--font-color-grey-4);
-  border-right: 1px solid var(--font-color-grey-4);
-  line-height: 20px;
-
-  &:not(:last-child) {
-    border-bottom: none;
+  :global {
+    .table-view-label {
+      white-space: nowrap;
+    }
   }
-}
-
-.descriptions-col-label,
-.descriptions-col-content {
-  font-size: var(--font-size-default);
-  padding: 8px 16px;
-  border-top: 1px solid var(--font-color-grey-4);
-  border-left: 1px solid var(--font-color-grey-4);
-  line-height: 20px;
-  word-break: break-all;
-}
-
-.descriptions-col-label {
-  background: var(--bg-color-grey-1);
-  color: var(--font-color-grey);
-}
-
-.descriptions-col-content {
-  word-break: break-all;
-  white-space: pre-line;
 }
 
 .footer {

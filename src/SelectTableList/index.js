@@ -10,8 +10,7 @@ import SimpleBar from 'simplebar-react';
 import { createWithIntlProvider, useIntl } from '@kne/react-intl';
 import style from './style.module.scss';
 import 'simplebar-react/dist/simplebar.min.css';
-import { CheckOutlined } from '@ant-design/icons';
-import { TableView } from '@kne/info-page';
+import { TableView, computeColumnsValue, CentralContent } from '@kne/info-page';
 import '@kne/info-page/dist/index.css';
 
 import zhCn from '../locale/zh-CN';
@@ -201,6 +200,7 @@ const SelectTableList = createWithIntlProvider(
                       {value
                         .filter(item => getTagSearchCallback(tagSearchText, item, targetProps))
                         .map(item => {
+                          console.log('00000', item, columns);
                           return (
                             <Tag
                               className={style['tag']}
@@ -215,20 +215,21 @@ const SelectTableList = createWithIntlProvider(
                               <Popover
                                 getPopupContainer={() => bodyRef.current}
                                 content={
-                                  <Row className={style['descriptions']}>
-                                    {columns.map(({ name, title, getValueOf }) => {
-                                      return (
-                                        <Fragment key={name}>
-                                          <Col span={8} className={style['descriptions-col-label']}>
-                                            {title}
-                                          </Col>
-                                          <Col className={style['descriptions-col-content']} span={16}>
-                                            {typeof getValueOf === 'function' ? getValueOf(item, targetProps) : get(item, name)}
-                                          </Col>
-                                        </Fragment>
-                                      );
+                                  <CentralContent
+                                    className={style['descriptions']}
+                                    columns={columns
+                                      .filter(item => {
+                                        if (Object.hasOwn(item, 'previewHidden')) {
+                                          return !item.previewHidden;
+                                        }
+                                        return item.name !== 'options';
+                                      })
+                                      .map(item => Object.assign({}, item, { span: 12 }))}
+                                    dataSource={Object.assign({}, item)}
+                                    context={Object.assign({}, targetProps, {
+                                      fetchApi: fetchListRef.current
                                     })}
-                                  </Row>
+                                  />
                                 }
                               >
                                 <span className={style['tag-inner']}>{item[labelKey]}</span>
