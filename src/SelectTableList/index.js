@@ -191,7 +191,7 @@ const SelectTableList = createWithIntlProvider(
                           setValue([]);
                         }}
                       >
-                        移除全部
+                        {formatMessage({ id: 'removeAll' })}
                       </Button>
                     </Col>
                   </Row>
