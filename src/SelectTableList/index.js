@@ -75,7 +75,7 @@ const SelectTableList = createWithIntlProvider(
               {typeof footer === 'function'
                 ? footer({
                     reload: () => {
-                      fetchListRef.current && fetchListRef.current.reload();
+                      fetchListRef.current?.fetchApi && fetchListRef.current?.fetchApi.reload();
                     },
                     close: () => {
                       onOpenChange(false);
@@ -105,8 +105,19 @@ const SelectTableList = createWithIntlProvider(
                       },
                       type: single ? 'radio' : 'checkbox',
                       selectedRowKeys: (value || []).map(item => item[valueKey]),
-                      onChange: (selectedRowKeys, selectedRows) => {
-                        setValue(selectedRows);
+                      onChange: (selectedRowKeys, selectedKey, { checked }) => {
+                        setValue(value => {
+                          if (checked) {
+                            const newValue = value.slice(0);
+                            const selectedItem = fetchListRef.current?.list.find(item => item[valueKey] === selectedKey);
+                            if (selectedItem) {
+                              newValue.push(selectedItem);
+                            }
+                            return newValue;
+                          } else {
+                            return value.filter(item => item[valueKey] !== selectedKey);
+                          }
+                        });
                         if (isPopup && single) {
                           onOpenChange(false);
                         }
@@ -143,9 +154,9 @@ const SelectTableList = createWithIntlProvider(
                                   }
                                 : api
                             )}
-                            ref={fetchListRef}
                           >
                             {fetchProps => {
+                              fetchListRef.current = fetchProps;
                               const { list } = fetchProps;
                               const contextProps = Object.assign({}, fetchProps, targetProps, { isSelectedAll });
                               if (!(list && list.length > 0)) {
@@ -226,7 +237,8 @@ const SelectTableList = createWithIntlProvider(
                                       .map(item => Object.assign({}, item, { span: 12 }))}
                                     dataSource={Object.assign({}, item)}
                                     context={Object.assign({}, targetProps, {
-                                      fetchApi: fetchListRef.current
+                                      fetchApi: fetchListRef.current?.fetchApi,
+                                      list: fetchListRef.current?.list
                                     })}
                                   />
                                 }
