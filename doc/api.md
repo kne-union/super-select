@@ -12,6 +12,7 @@
 | max               | 最多可选数量            | number                        | -                   |
 | disabled          | 是否禁用              | boolean                       | false               |
 | readOnly          | 是否只读              | boolean                       | false               |
+| size              | 选择框尺寸             | 'small' \| 'default' \| 'large' | 'default'           |
 | className         | 自定义类名             | string                        | -                   |
 | style             | 自定义样式             | object                        | -                   |
 | children          | 自定义渲染内容           | function(props)               | -                   |

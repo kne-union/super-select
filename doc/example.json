@@ -2,8 +2,8 @@
   "isFull": false,
   "list": [
     {
-      "title": "select-input",
-      "description": "用于显示一个选择框，可以下拉展开选项或者以modal展示选项",
+      "title": "SelectInput 基础组件",
+      "description": "基础选择输入组件，展示尺寸、多选、弹窗模式、前后缀等核心功能",
       "code": "./select-input.js",
       "scope": [
         {
@@ -21,8 +21,8 @@
       ]
     },
     {
-      "title": "select-list",
-      "description": "列表选择",
+      "title": "SuperSelect 列表选择",
+      "description": "通用列表选择组件，支持单选/多选、搜索、全选、数量限制、弹窗模式等功能",
       "code": "./base.js",
       "scope": [
         {
@@ -40,8 +40,8 @@
       ]
     },
     {
-      "title": "select--table-list",
-      "description": "表格列表选择，适合更加复杂的数据选择",
+      "title": "SelectTableList 表格选择",
+      "description": "表格形式的选择组件，适合复杂数据的展示和选择，支持自定义列、搜索、单选/多选等",
       "code": "./select-table-list.js",
       "scope": [
         {
@@ -59,8 +59,8 @@
       ]
     },
     {
-      "title": "select-tree",
-      "description": "树选择",
+      "title": "SelectTree 树形选择",
+      "description": "树形结构的选择组件，适用于组织架构、地区、分类等层级数据的选择",
       "code": "./select-tree.js",
       "scope": [
         {
@@ -78,8 +78,8 @@
       ]
     },
     {
-      "title": "ref",
-      "description": "展示ref的使用",
+      "title": "Ref 使用方法",
+      "description": "展示如何通过 ref 控制选择器的打开/关闭、获取/设置值、程序化选择等操作",
       "code": "./ref.js",
       "scope": [
         {

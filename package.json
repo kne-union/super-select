@@ -1,7 +1,7 @@
 {
   "name": "@kne/super-select",
-  "version": "0.1.32",
-  "description": "用于复杂信息选择.",
+  "version": "0.1.33",
+  "description": "React 复杂信息选择组件库，提供列表、表格、树形等多种选择模式，支持单选/多选、搜索、全选等功能",
   "syntax": {
     "esmodules": true
   },
@@ -46,7 +46,19 @@
     "type": "git",
     "url": "git+https://github.com/kne-union/super-select.git"
   },
-  "keywords": [],
+  "keywords": [
+    "react",
+    "select",
+    "picker",
+    "multiselect",
+    "tree-select",
+    "table-select",
+    "antd",
+    "form",
+    "dropdown",
+    "searchable",
+    "i18n"
+  ],
   "author": "linzp",
   "license": "ISC",
   "bugs": {
