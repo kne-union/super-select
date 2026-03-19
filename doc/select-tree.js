@@ -1,219 +1,357 @@
 const { SelectTree } = _SuperSelect;
-const { Space, Button } = antd;
+const { Space, Button, Flex, Divider, Tag, Switch } = antd;
+const { useState } = React;
 
-const options = [
+// 组织架构数据
+const organizationTree = [
   {
-    id: '216822533465310208',
-    parentId: '216822162877580288',
-    name: '点点滴滴',
-    description: '点点滴滴',
-    index: 0,
-    createdAt: '2025-08-21T07:35:20.346Z',
-    updatedAt: '2025-08-21T07:35:20.346Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216827588281107456',
-    parentId: '216822162877580288',
-    name: '都是发的身份',
-    description: '水电费是的水电费水电费',
-    index: 0,
-    createdAt: '2025-08-21T07:55:25.508Z',
-    updatedAt: '2025-08-21T07:55:25.508Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216820469385397248',
+    id: 'root',
     parentId: null,
-    name: '水电费水电费是11111',
-    description: '水电费水电费是的撒地方水电费水电费水电费水电费水电费水电费水电费水电费水电费水电费水电费水电费水电费的身份',
-    index: 0,
-    createdAt: '2025-08-21T07:27:08.230Z',
-    updatedAt: '2025-08-21T08:16:50.232Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    name: '集团总部',
+    code: 'HQ',
+    employeeCount: 500
   },
   {
-    id: '216838887668974592',
-    parentId: '216822162877580288',
-    name: '水电费水电费',
-    description: '电饭锅梵蒂冈电饭锅',
-    index: 0,
-    createdAt: '2025-08-21T08:40:19.491Z',
-    updatedAt: '2025-08-21T08:40:19.491Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'tech',
+    parentId: 'root',
+    name: '技术中心',
+    code: 'TECH',
+    employeeCount: 200
   },
   {
-    id: '216838908569191424',
-    parentId: '216822162877580288',
-    name: '电饭锅电饭锅',
-    description: '电饭锅电饭锅电饭锅电饭锅电饭锅',
-    index: 0,
-    createdAt: '2025-08-21T08:40:24.475Z',
-    updatedAt: '2025-08-21T08:40:24.475Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'tech-fe',
+    parentId: 'tech',
+    name: '前端开发组',
+    code: 'FE',
+    employeeCount: 50
   },
   {
-    id: '216838930408932352',
-    parentId: '216822162877580288',
-    name: '规范化风格化',
-    description: '风格化风格化风格化风格化风格化',
-    index: 0,
-    createdAt: '2025-08-21T08:40:29.682Z',
-    updatedAt: '2025-08-21T08:40:29.682Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'tech-be',
+    parentId: 'tech',
+    name: '后端开发组',
+    code: 'BE',
+    employeeCount: 80
   },
   {
-    id: '216843395140682752',
-    parentId: null,
-    name: '水电费的身份',
-    description: '水电费是的的身份',
-    index: 0,
-    createdAt: '2025-08-21T08:58:14.156Z',
-    updatedAt: '2025-08-21T08:58:14.156Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'tech-qa',
+    parentId: 'tech',
+    name: '质量保障组',
+    code: 'QA',
+    employeeCount: 30
   },
   {
-    id: '216844313588401152',
-    parentId: '216843395140682752',
-    name: '水电费水电费',
-    description: '身份是的水电费水电费',
-    index: 0,
-    createdAt: '2025-08-21T09:01:53.132Z',
-    updatedAt: '2025-08-21T09:01:53.132Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'tech-devops',
+    parentId: 'tech',
+    name: '运维组',
+    code: 'DEVOPS',
+    employeeCount: 20
   },
   {
-    id: '216844336053093376',
-    parentId: '216843395140682752',
-    name: '水电费水电费',
-    description: '水电费水电费水电费水电费水电费',
-    index: 0,
-    createdAt: '2025-08-21T09:01:58.488Z',
-    updatedAt: '2025-08-21T09:01:58.488Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'product',
+    parentId: 'root',
+    name: '产品中心',
+    code: 'PRODUCT',
+    employeeCount: 100
   },
   {
-    id: '216844365669073920',
-    parentId: '216844313588401152',
-    name: '水电费水电费',
-    description: '水电费水电费水电费水电费发大水',
-    index: 0,
-    createdAt: '2025-08-21T09:02:05.548Z',
-    updatedAt: '2025-08-21T09:02:05.548Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'product-design',
+    parentId: 'product',
+    name: '产品设计组',
+    code: 'DESIGN',
+    employeeCount: 40
   },
   {
-    id: '216844381611623424',
-    parentId: '216844336053093376',
-    name: '的身份水电费是的',
-    description: null,
-    index: 0,
-    createdAt: '2025-08-21T09:02:09.349Z',
-    updatedAt: '2025-08-21T09:02:09.349Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'product-pm',
+    parentId: 'product',
+    name: '项目管理组',
+    code: 'PM',
+    employeeCount: 30
   },
   {
-    id: '216844403434587136',
-    parentId: '216843395140682752',
-    name: '水电费水电费水电费是的',
-    description: null,
-    index: 0,
-    createdAt: '2025-08-21T09:02:14.553Z',
-    updatedAt: '2025-08-21T09:02:14.553Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'operation',
+    parentId: 'root',
+    name: '运营中心',
+    code: 'OP',
+    employeeCount: 80
   },
   {
-    id: '216822162877580288',
-    parentId: '216820469385397248',
-    name: '水电费是的',
-    description: '水电费水电费的身份水电费11111',
-    index: 0,
-    createdAt: '2025-08-21T07:33:51.990Z',
-    updatedAt: '2025-08-21T09:09:38.933Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'operation-marketing',
+    parentId: 'operation',
+    name: '市场营销组',
+    code: 'MARKETING',
+    employeeCount: 50
   },
   {
-    id: '216847218563351552',
-    parentId: null,
-    name: '水电费是的',
-    description: '的身份是的的身份水电费',
-    index: 0,
-    createdAt: '2025-08-21T09:13:25.732Z',
-    updatedAt: '2025-08-21T09:13:25.732Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'operation-cs',
+    parentId: 'operation',
+    name: '客户服务组',
+    code: 'CS',
+    employeeCount: 30
   },
   {
-    id: '216854106755564544',
-    parentId: '216847218563351552',
-    name: '让是非得失的',
-    description: '电饭锅地方地方电饭锅电饭锅',
-    index: 0,
-    createdAt: '2025-08-21T09:40:48.005Z',
-    updatedAt: '2025-08-21T09:40:48.005Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'hr',
+    parentId: 'root',
+    name: '人力资源部',
+    code: 'HR',
+    employeeCount: 40
   },
   {
-    id: '216854194546541568',
-    parentId: '216847218563351552',
-    name: '电饭锅电饭锅电饭锅',
-    description: '电饭锅电饭锅地方电饭锅电饭锅',
-    index: 0,
-    createdAt: '2025-08-21T09:41:08.936Z',
-    updatedAt: '2025-08-21T09:41:08.936Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216856947163399168',
-    parentId: null,
-    name: '发水电费是的',
-    description: '发的电饭锅地方个电饭锅电饭锅电饭锅地方',
-    index: 0,
-    createdAt: '2025-08-21T09:52:05.211Z',
-    updatedAt: '2025-08-21T09:52:05.211Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    id: 'finance',
+    parentId: 'root',
+    name: '财务部',
+    code: 'FINANCE',
+    employeeCount: 30
   }
 ];
 
-const BaseExample = () => {
+// 地区数据
+const regionTree = [
+  {
+    id: 'china',
+    parentId: null,
+    name: '中国',
+    code: 'CN'
+  },
+  {
+    id: 'beijing',
+    parentId: 'china',
+    name: '北京市',
+    code: 'BJ'
+  },
+  {
+    id: 'shanghai',
+    parentId: 'china',
+    name: '上海市',
+    code: 'SH'
+  },
+  {
+    id: 'guangdong',
+    parentId: 'china',
+    name: '广东省',
+    code: 'GD'
+  },
+  {
+    id: 'guangzhou',
+    parentId: 'guangdong',
+    name: '广州市',
+    code: 'GZ'
+  },
+  {
+    id: 'shenzhen',
+    parentId: 'guangdong',
+    name: '深圳市',
+    code: 'SZ'
+  },
+  {
+    id: 'zhejiang',
+    parentId: 'china',
+    name: '浙江省',
+    code: 'ZJ'
+  },
+  {
+    id: 'hangzhou',
+    parentId: 'zhejiang',
+    name: '杭州市',
+    code: 'HZ'
+  },
+  {
+    id: 'jiangsu',
+    parentId: 'china',
+    name: '江苏省',
+    code: 'JS'
+  },
+  {
+    id: 'nanjing',
+    parentId: 'jiangsu',
+    name: '南京市',
+    code: 'NJ'
+  },
+  {
+    id: 'usa',
+    parentId: null,
+    name: '美国',
+    code: 'US'
+  },
+  {
+    id: 'newyork',
+    parentId: 'usa',
+    name: '纽约州',
+    code: 'NY'
+  },
+  {
+    id: 'california',
+    parentId: 'usa',
+    name: '加利福尼亚州',
+    code: 'CA'
+  }
+];
+
+// 分类数据
+const categoryTree = [
+  {
+    id: 'electronics',
+    parentId: null,
+    name: '电子产品'
+  },
+  {
+    id: 'phone',
+    parentId: 'electronics',
+    name: '手机'
+  },
+  {
+    id: 'computer',
+    parentId: 'electronics',
+    name: '电脑'
+  },
+  {
+    id: 'laptop',
+    parentId: 'computer',
+    name: '笔记本'
+  },
+  {
+    id: 'desktop',
+    parentId: 'computer',
+    name: '台式机'
+  },
+  {
+    id: 'clothing',
+    parentId: null,
+    name: '服装'
+  },
+  {
+    id: 'mens',
+    parentId: 'clothing',
+    name: '男装'
+  },
+  {
+    id: 'womens',
+    parentId: 'clothing',
+    name: '女装'
+  }
+];
+
+// 基础树选择
+const BasicTreeExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
   return (
-    <Space wrap>
-      <SelectTree options={options} valueKey="id" labelKey="name" />
-
-      <SelectTree single options={options} valueKey="id" labelKey="name" />
-
+    <Flex vertical gap={8}>
+      <span>组织架构多选：</span>
       <SelectTree
-        name="tree"
-        label="树选择"
-        options={[
-          {
-            value: '1',
-            label: '父节点'
-          },
-          {
-            value: '2',
-            label: '子节点',
-            parentId: '1'
-          }
-        ]}
+        options={organizationTree}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择部门"
+        style={{ width: 320 }}
       />
-    </Space>
+      {value.length > 0 && (
+        <Flex wrap gap={4}>
+          {value.map(item => (
+            <Tag key={item.id} color="blue">{item.name}</Tag>
+          ))}
+        </Flex>
+      )}
+    </Flex>
+  );
+};
+
+// 单选树
+const SingleTreeExample = ({ isPopup }) => {
+  const [value, setValue] = useState(null);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>地区单选：</span>
+      <SelectTree
+        single
+        options={regionTree}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择地区"
+        style={{ width: 320 }}
+      />
+      {value && <Tag color="green">已选：{value.name} ({value.code})</Tag>}
+    </Flex>
+  );
+};
+
+// 带搜索的树选择
+const SearchableTreeExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>带搜索功能：</span>
+      <SelectTree
+        options={organizationTree}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="搜索部门名称或编码"
+        style={{ width: 320 }}
+      />
+    </Flex>
+  );
+};
+
+// 分类选择
+const CategoryTreeExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>商品分类选择：</span>
+      <SelectTree
+        options={categoryTree}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择分类"
+        style={{ width: 320 }}
+      />
+      {value.length > 0 && (
+        <div>已选分类：{value.map(item => item.name).join(' > ')}</div>
+      )}
+    </Flex>
+  );
+};
+
+const BaseExample = () => {
+  const [isPopup, setIsPopup] = useState(true);
+
+  return (
+    <Flex vertical gap={24}>
+      <Flex align="center" gap={12}>
+        <span>展示模式：</span>
+        <Switch
+          checked={isPopup}
+          onChange={setIsPopup}
+          checkedChildren="下拉"
+          unCheckedChildren="弹窗"
+        />
+        <span style={{ color: '#666', fontSize: 12 }}>
+          {isPopup ? '点击输入框展开下拉菜单' : '点击输入框打开弹窗'}
+        </span>
+      </Flex>
+      <Divider />
+      <BasicTreeExample isPopup={isPopup} />
+      <Divider />
+      <SingleTreeExample isPopup={isPopup} />
+      <Divider />
+      <SearchableTreeExample isPopup={isPopup} />
+      <Divider />
+      <CategoryTreeExample isPopup={isPopup} />
+    </Flex>
   );
 };
 

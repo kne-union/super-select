@@ -4,7 +4,7 @@
 
 ### 描述
 
-用于复杂信息选择.
+React 复杂信息选择组件库，提供列表、表格、树形等多种选择模式，支持单选/多选、搜索、全选等功能
 
 
 ### 安装
@@ -79,135 +79,160 @@ npm i --save @kne/super-select
 
 #### 示例代码
 
-- select-input
-- 用于显示一个选择框，可以下拉展开选项或者以modal展示选项
+- SelectInput 基础组件
+- 基础选择输入组件，展示尺寸、多选、弹窗模式、前后缀等核心功能
 - _SuperSelect(@kne/current-lib_super-select)[import * as _SuperSelect from "@kne/super-select"],antd(antd),(@kne/current-lib_super-select/dist/index.css)
 
 ```jsx
 const { SelectInput } = _SuperSelect;
-const { Space, Flex } = antd;
+const { Space, Flex, Divider, Button, Tag, Switch } = antd;
+const { useState } = React;
 
-const BaseExample = () => {
-  return <Flex vertical gap={8}>
-    <Space>
-      <SelectInput />
-      <SelectInput defaultValue={[{ value: 0, label: '第一项' }, { value: 1, label: '第二项' }]} />
-      <SelectInput defaultValue={[{ value: 'all', label: '全选' }]} />
-      <SelectInput className="max-width-150" defaultValue={Array.from({ length: 10 }).map((value, index) => {
-        return { value: index, label: `第${index}项` };
-      })} />
-      <SelectInput defaultValue={[{ value: 0, label: '第一项' }, { value: 1, label: '第二项' }]} disabled />
-    </Space>
-    <Space>
-      <SelectInput isPopup={false}/>
-    </Space>
-  </Flex>;
+// 基础示例：展示基本使用和尺寸
+const BasicExample = ({ isPopup }) => {
+  return (
+    <Flex vertical gap={12}>
+      <Flex gap={8} align="center">
+        <span>基础使用：</span>
+        <SelectInput isPopup={isPopup} placeholder="请选择" style={{ width: 200 }} />
+        <SelectInput isPopup={isPopup} placeholder="禁用状态" disabled style={{ width: 200 }} />
+      </Flex>
+      <Flex gap={8} align="center">
+        <span>尺寸：</span>
+        <SelectInput isPopup={isPopup} size="small" placeholder="小尺寸" style={{ width: 120 }} />
+        <SelectInput isPopup={isPopup} size="default" placeholder="默认尺寸" style={{ width: 140 }} />
+        <SelectInput isPopup={isPopup} size="large" placeholder="大尺寸" style={{ width: 160 }} />
+      </Flex>
+    </Flex>
+  );
 };
 
-render(<BaseExample />);
+// 多选示例：展示多选和标签显示
+const MultiSelectExample = ({ isPopup }) => {
+  const [value, setValue] = useState([
+    { value: 'react', label: 'React' },
+    { value: 'vue', label: 'Vue' }
+  ]);
 
-```
+  return (
+    <Flex vertical gap={12}>
+      <Flex gap={8} align="center">
+        <span>多选模式：</span>
+        <SelectInput
+          value={value}
+          onChange={setValue}
+          isPopup={isPopup}
+          placeholder="请选择技术栈"
+          style={{ width: 300 }}
+        />
+      </Flex>
+      <Flex gap={8} align="center">
+        <span>带数量限制：</span>
+        <SelectInput
+          defaultValue={[
+            { value: 1, label: '选项一' },
+            { value: 2, label: '选项二' }
+          ]}
+          isPopup={isPopup}
+          maxLength={3}
+          placeholder="最多选择3项"
+          style={{ width: 300 }}
+        />
+      </Flex>
+    </Flex>
+  );
+};
 
-- select-list
-- 列表选择
-- _SuperSelect(@kne/current-lib_super-select)[import * as _SuperSelect from "@kne/super-select"],antd(antd),(@kne/current-lib_super-select/dist/index.css)
+// 自定义前后缀示例
+const PrefixSuffixExample = ({ isPopup }) => {
+  const [value, setValue] = useState([
+    { value: 'tech', label: '技术研发部' }
+  ]);
 
-```jsx
-const { default: SuperSelect } = _SuperSelect;
-const { Space, Button } = antd;
-
-const optionList = Array.from({ length: 20 }).map((item, key) => {
-  return {
-    label: `第${key + 1}项`,
-    value: key + 1,
-    disabled: key === 1
-  };
-});
+  return (
+    <Flex vertical gap={12}>
+      <Flex gap={12} align="center">
+        <SelectInput
+          value={value}
+          onChange={setValue}
+          isPopup={isPopup}
+          prefix={
+            <Tag color="blue" style={{ margin: 0, borderRadius: 4 }}>
+              部门
+            </Tag>
+          }
+          placeholder="请选择部门"
+          style={{ width: 240 }}
+        />
+        <SelectInput
+          defaultValue={[{ value: 'project', label: '项目A' }]}
+          isPopup={isPopup}
+          suffix={
+            <Button type="primary" size="small" style={{ fontSize: 12 }}>
+              详情
+            </Button>
+          }
+          placeholder="请选择项目"
+          style={{ width: 240 }}
+        />
+      </Flex>
+      <Flex gap={12} align="center">
+        <SelectInput
+          defaultValue={[{ value: 'user1', label: '张三' }]}
+          isPopup={isPopup}
+          prefix={
+            <span style={{ 
+              color: '#1677ff', 
+              fontWeight: 500,
+              fontSize: 13
+            }}>
+              负责人：
+            </span>
+          }
+          placeholder="请选择负责人"
+          style={{ width: 220 }}
+        />
+        <SelectInput
+          size="large"
+          isPopup={isPopup}
+          defaultValue={[{ value: 'pending', label: '待处理' }]}
+          suffix={
+            <Tag color="orange" style={{ margin: 0 }}>
+              3条待办
+            </Tag>
+          }
+          placeholder="请选择状态"
+          style={{ width: 260 }}
+        />
+      </Flex>
+    </Flex>
+  );
+};
 
 const BaseExample = () => {
+  const [isPopup, setIsPopup] = useState(true);
+
   return (
-    <Space wrap>
-      <SuperSelect options={optionList} suffix={<Button type="text">预览</Button>} prefix={<Button type="text">查看</Button>} />
-      <SuperSelect
-        single
-        options={[
-          ...optionList,
-          {
-            value: 'other',
-            label: '超长label项超长label项超长label项超长label项超长label项超长label项超长label项超长label项'
-          }
-        ]}
-      />
-      <SuperSelect
-        allowSelectedAll
-        options={optionList}
-        maxLength={10}
-        getSearchCallback={({ searchText }, item) => {
-          return !searchText || item.label.indexOf(searchText) > -1;
-        }}
-      />
-      <SuperSelect
-        allowSelectedAll
-        options={optionList}
-        isPopup={false}
-        getSearchCallback={({ searchText }, item) => {
-          return !searchText || item.label.indexOf(searchText) > -1;
-        }}
-      />
-      <SuperSelect
-        api={{
-          data: {},
-          loader: ({ data }) => {
-            const searchText = data.searchProps && data.searchProps.searchText;
-            if (!searchText) {
-              return {
-                pageData: optionList,
-                totalCount: optionList.length
-              };
-            }
-            const newOptionList = optionList.filter(item => !searchText || item.label.indexOf(searchText) > -1);
-            return {
-              pageData: newOptionList,
-              totalCount: newOptionList.length
-            };
-          }
-        }}
-        isPopup={false}
-        getSearchProps={({ searchText }) => {
-          return { searchText };
-        }}
-      />
-
-      <SuperSelect
-        defaultOpen
-        options={optionList}
-        inputRender={({ value }) => {
-          return <Button type="link">编辑</Button>;
-        }}
-      />
-
-      <SuperSelect
-        options={optionList}
-        footer={({ close, reload }) => {
-          return (
-            <Button type="link" onClick={reload}>
-              添加
-            </Button>
-          );
-        }}
-      />
-
-      <SuperSelect
-        options={[]}
-        footer={({ close, reload }) => {
-          return (
-            <Button type="link" onClick={reload}>
-              添加
-            </Button>
-          );
-        }}
-      />
-    </Space>
+    <Flex vertical gap={24}>
+      <Flex align="center" gap={12}>
+        <span>展示模式：</span>
+        <Switch
+          checked={isPopup}
+          onChange={setIsPopup}
+          checkedChildren="下拉"
+          unCheckedChildren="弹窗"
+        />
+        <span style={{ color: '#666', fontSize: 12 }}>
+          {isPopup ? '点击输入框展开下拉菜单' : '点击输入框打开弹窗'}
+        </span>
+      </Flex>
+      <Divider />
+      <BasicExample isPopup={isPopup} />
+      <Divider />
+      <MultiSelectExample isPopup={isPopup} />
+      <Divider />
+      <PrefixSuffixExample isPopup={isPopup} />
+    </Flex>
   );
 };
 
@@ -215,306 +240,542 @@ render(<BaseExample />);
 
 ```
 
-- select--table-list
-- 表格列表选择，适合更加复杂的数据选择
+- SuperSelect 列表选择
+- 通用列表选择组件，支持单选/多选、搜索、全选、数量限制、弹窗模式等功能
+- _SuperSelect(@kne/current-lib_super-select)[import * as _SuperSelect from "@kne/super-select"],antd(antd),(@kne/current-lib_super-select/dist/index.css)
+
+```jsx
+const { default: SuperSelect } = _SuperSelect;
+const { Space, Button, Flex, Divider, Tag, Switch } = antd;
+const { useState } = React;
+
+// 模拟部门数据
+const departmentOptions = [
+  { value: 'tech', label: '技术研发部', disabled: false },
+  { value: 'product', label: '产品设计部', disabled: false },
+  { value: 'operation', label: '运营管理部', disabled: false },
+  { value: 'hr', label: '人力资源部', disabled: false },
+  { value: 'finance', label: '财务部', disabled: true },
+  { value: 'marketing', label: '市场营销部', disabled: false }
+];
+
+// 模拟用户数据
+const userOptions = Array.from({ length: 30 }).map((_, index) => ({
+  value: `user_${index + 1}`,
+  label: `用户${index + 1}`,
+  email: `user${index + 1}@company.com`,
+  department: departmentOptions[index % departmentOptions.length].label,
+  disabled: index === 5
+}));
+
+// 基础列表选择
+const BasicListExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>多选列表：</span>
+      <SuperSelect
+        options={departmentOptions}
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择部门"
+        style={{ width: 280 }}
+      />
+      {value.length > 0 && (
+        <div>已选：{value.map(item => item.label).join('、')}</div>
+      )}
+    </Flex>
+  );
+};
+
+// 单选列表
+const SingleSelectExample = ({ isPopup }) => {
+  const [value, setValue] = useState(null);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>单选列表：</span>
+      <SuperSelect
+        single
+        options={userOptions.slice(0, 10)}
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择负责人"
+        style={{ width: 280 }}
+      />
+      {value && <div>已选：{value.label}</div>}
+    </Flex>
+  );
+};
+
+// 带搜索的选择
+const SearchableExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>带搜索功能：</span>
+      <SuperSelect
+        options={userOptions}
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="搜索并选择用户"
+        getSearchCallback={({ searchText }, item) => {
+          if (!searchText) return true;
+          const keyword = searchText.toLowerCase();
+          return (
+            item.label.toLowerCase().includes(keyword) ||
+            item.email.toLowerCase().includes(keyword)
+          );
+        }}
+        style={{ width: 320 }}
+      />
+    </Flex>
+  );
+};
+
+// 全选功能
+const SelectAllExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>支持全选：</span>
+      <SuperSelect
+        allowSelectedAll
+        options={departmentOptions.filter(item => !item.disabled)}
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择部门（支持全选）"
+        style={{ width: 280 }}
+      />
+    </Flex>
+  );
+};
+
+// 带数量限制
+const MaxLimitExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>最多选择3项：</span>
+      <SuperSelect
+        options={userOptions.slice(0, 10)}
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        maxLength={3}
+        placeholder="请选择（最多3项）"
+        style={{ width: 320 }}
+      />
+      <Tag color={value.length >= 3 ? 'red' : 'blue'}>
+        已选择 {value.length}/3 项
+      </Tag>
+    </Flex>
+  );
+};
+
+// 自定义渲染
+const CustomRenderExample = () => {
+  return (
+    <Flex vertical gap={8}>
+      <span>自定义输入框渲染：</span>
+      <SuperSelect
+        options={departmentOptions}
+        inputRender={(props, context) => {
+          const { value } = context;
+          return (
+            <Button type="primary" {...props}>
+              {value.length > 0 ? `已选择 ${value.length} 项` : '点击选择部门'}
+            </Button>
+          );
+        }}
+      />
+    </Flex>
+  );
+};
+
+const BaseExample = () => {
+  const [isPopup, setIsPopup] = useState(true);
+
+  return (
+    <Flex vertical gap={24}>
+      <Flex align="center" gap={12}>
+        <span>展示模式：</span>
+        <Switch
+          checked={isPopup}
+          onChange={setIsPopup}
+          checkedChildren="下拉"
+          unCheckedChildren="弹窗"
+        />
+        <span style={{ color: '#666', fontSize: 12 }}>
+          {isPopup ? '点击输入框展开下拉菜单' : '点击输入框打开弹窗'}
+        </span>
+      </Flex>
+      <Divider />
+      <BasicListExample isPopup={isPopup} />
+      <Divider />
+      <SingleSelectExample isPopup={isPopup} />
+      <Divider />
+      <SearchableExample isPopup={isPopup} />
+      <Divider />
+      <SelectAllExample isPopup={isPopup} />
+      <Divider />
+      <MaxLimitExample isPopup={isPopup} />
+      <Divider />
+      <CustomRenderExample />
+    </Flex>
+  );
+};
+
+render(<BaseExample />);
+
+```
+
+- SelectTableList 表格选择
+- 表格形式的选择组件，适合复杂数据的展示和选择，支持自定义列、搜索、单选/多选等
 - _SuperSelect(@kne/current-lib_super-select)[import * as _SuperSelect from "@kne/super-select"],antd(antd),(@kne/current-lib_super-select/dist/index.css)
 
 ```jsx
 const { SelectTableList } = _SuperSelect;
-const { Space, Button, Divider } = antd;
+const { Space, Button, Flex, Divider, Tag, Avatar, Switch } = antd;
+const { useState } = React;
 
-const optionList = Array.from({ length: 20 }).map((item, key) => {
-  return {
-    id: key + 1, label: `名称${key + 1}`, count: key + 1, description: `描述${key + 1}`, disabled: key === 1
-  };
-});
+// 模拟员工数据
+const employeeOptions = Array.from({ length: 25 }).map((_, index) => ({
+  id: `emp_${index + 1}`,
+  name: `员工${index + 1}`,
+  email: `employee${index + 1}@company.com`,
+  department: ['技术研发部', '产品设计部', '运营部', '市场部'][index % 4],
+  position: ['工程师', '设计师', '经理', '专员'][index % 4],
+  status: index === 3 ? 'inactive' : 'active',
+  joinDate: `2023-${String((index % 12) + 1).padStart(2, '0')}-15`
+}));
 
-const columns = [{
-  name: 'label', title: '名称', span: 8
-}, {
-  name: 'count', title: '数量', span: 4
-}, {
-  name: 'description', title: '描述', span: 8
-}, {
-  name: 'options', title: '操作', span: 4, getValueOf: (item, { column, context }) => {
-    return <Button type="link" danger disabled={!!item.disabled} className="btn-no-padding" onClick={(e) => {
-      e.stopPropagation();
-      const { data, setData } = context.fetchApi;
-      if (context.value) {
-        //如果已选数据中还有该项，需要同时删除
-        const index = context.value.findIndex((target) => target.id === item.id);
-        if (index > -1) {
-          const newValue = context.value.slice(0);
-          newValue.splice(index, 1);
-          context.setValue(newValue);
-        }
-      }
-      const index = data.pageData.findIndex((target) => target.id === item.id);
-      const newPageData = data.pageData.slice(0);
-      newPageData.splice(index, 1);
-      setData(Object.assign({}, data, {
-        pageData: newPageData
-      }));
-    }}>删除</Button>;
-  }
-}];
-
-const BaseExample = () => {
-  return <Space wrap>
-    <SelectTableList options={optionList} columns={columns} valueKey="id" footer={<Button type="link">预览</Button>} />
-    <SelectTableList single options={optionList} columns={columns} valueKey="id"
-                     footer={<Button type="link">预览</Button>} />
-    <SelectTableList allowSelectedAll options={optionList} columns={columns} valueKey="id"
-                     footer={<Button type="link">预览</Button>} getSearchCallback={({ searchText }, item) => {
-      return !searchText || item.label.indexOf(searchText) > -1;
-    }} />
-    <SelectTableList options={optionList} columns={columns} isPopup={false} valueKey="id"
-                     footer={<Button type="link">预览</Button>} />
-    <SelectTableList allowSelectedAll options={optionList} columns={columns} isPopup={false} valueKey="id"
-                     footer={<Button type="link">预览</Button>} getSearchCallback={({ searchText }, item) => {
-      return !searchText || item.label.indexOf(searchText) > -1;
-    }} />
-    <SelectTableList single options={optionList} columns={columns} isPopup={false} valueKey="id"
-                     footer={<Button type="link">预览</Button>} />
-    <SelectTableList single options={[]} columns={columns} isPopup={false} valueKey="id"
-                     footer={<Button type="link">预览</Button>} />
-    <div>
-      <Divider />
-      <SelectTableList allowSelectedAll options={optionList} columns={columns} isPopup={false} valueKey="id"
-                       onChange={(value) => {
-                         console.log(value);
-                       }} getSearchCallback={({ searchText }, item) => {
-        return !searchText || item.label.indexOf(searchText) > -1;
-      }} footer={<Button type="link">预览</Button>} renderContent={(target) => target} />
-    </div>
-  </Space>;
-};
-
-render(<BaseExample />);
-
-```
-
-- select-tree
-- 树选择
-- _SuperSelect(@kne/current-lib_super-select)[import * as _SuperSelect from "@kne/super-select"],antd(antd),(@kne/current-lib_super-select/dist/index.css)
-
-```jsx
-const { SelectTree } = _SuperSelect;
-const { Space, Button } = antd;
-
-const options = [
+// 员工列表列配置
+const employeeColumns = [
   {
-    id: '216822533465310208',
-    parentId: '216822162877580288',
-    name: '点点滴滴',
-    description: '点点滴滴',
-    index: 0,
-    createdAt: '2025-08-21T07:35:20.346Z',
-    updatedAt: '2025-08-21T07:35:20.346Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    name: 'name',
+    title: '姓名',
+    span: 6,
+    getValueOf: (item) => (
+      <Flex align="center" gap={8}>
+        <Avatar size="small" style={{ backgroundColor: '#1677ff' }}>
+          {item.name.slice(-2)}
+        </Avatar>
+        <span>{item.name}</span>
+      </Flex>
+    )
   },
   {
-    id: '216827588281107456',
-    parentId: '216822162877580288',
-    name: '都是发的身份',
-    description: '水电费是的水电费水电费',
-    index: 0,
-    createdAt: '2025-08-21T07:55:25.508Z',
-    updatedAt: '2025-08-21T07:55:25.508Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    name: 'department',
+    title: '部门',
+    span: 6
   },
   {
-    id: '216820469385397248',
-    parentId: null,
-    name: '水电费水电费是11111',
-    description: '水电费水电费是的撒地方水电费水电费水电费水电费水电费水电费水电费水电费水电费水电费水电费水电费水电费的身份',
-    index: 0,
-    createdAt: '2025-08-21T07:27:08.230Z',
-    updatedAt: '2025-08-21T08:16:50.232Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    name: 'position',
+    title: '职位',
+    span: 4
   },
   {
-    id: '216838887668974592',
-    parentId: '216822162877580288',
-    name: '水电费水电费',
-    description: '电饭锅梵蒂冈电饭锅',
-    index: 0,
-    createdAt: '2025-08-21T08:40:19.491Z',
-    updatedAt: '2025-08-21T08:40:19.491Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    name: 'email',
+    title: '邮箱',
+    span: 6,
+    getValueOf: (item) => (
+      <span style={{ color: '#666', fontSize: 12 }}>{item.email}</span>
+    )
   },
   {
-    id: '216838908569191424',
-    parentId: '216822162877580288',
-    name: '电饭锅电饭锅',
-    description: '电饭锅电饭锅电饭锅电饭锅电饭锅',
-    index: 0,
-    createdAt: '2025-08-21T08:40:24.475Z',
-    updatedAt: '2025-08-21T08:40:24.475Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216838930408932352',
-    parentId: '216822162877580288',
-    name: '规范化风格化',
-    description: '风格化风格化风格化风格化风格化',
-    index: 0,
-    createdAt: '2025-08-21T08:40:29.682Z',
-    updatedAt: '2025-08-21T08:40:29.682Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216843395140682752',
-    parentId: null,
-    name: '水电费的身份',
-    description: '水电费是的的身份',
-    index: 0,
-    createdAt: '2025-08-21T08:58:14.156Z',
-    updatedAt: '2025-08-21T08:58:14.156Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216844313588401152',
-    parentId: '216843395140682752',
-    name: '水电费水电费',
-    description: '身份是的水电费水电费',
-    index: 0,
-    createdAt: '2025-08-21T09:01:53.132Z',
-    updatedAt: '2025-08-21T09:01:53.132Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216844336053093376',
-    parentId: '216843395140682752',
-    name: '水电费水电费',
-    description: '水电费水电费水电费水电费水电费',
-    index: 0,
-    createdAt: '2025-08-21T09:01:58.488Z',
-    updatedAt: '2025-08-21T09:01:58.488Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216844365669073920',
-    parentId: '216844313588401152',
-    name: '水电费水电费',
-    description: '水电费水电费水电费水电费发大水',
-    index: 0,
-    createdAt: '2025-08-21T09:02:05.548Z',
-    updatedAt: '2025-08-21T09:02:05.548Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216844381611623424',
-    parentId: '216844336053093376',
-    name: '的身份水电费是的',
-    description: null,
-    index: 0,
-    createdAt: '2025-08-21T09:02:09.349Z',
-    updatedAt: '2025-08-21T09:02:09.349Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216844403434587136',
-    parentId: '216843395140682752',
-    name: '水电费水电费水电费是的',
-    description: null,
-    index: 0,
-    createdAt: '2025-08-21T09:02:14.553Z',
-    updatedAt: '2025-08-21T09:02:14.553Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216822162877580288',
-    parentId: '216820469385397248',
-    name: '水电费是的',
-    description: '水电费水电费的身份水电费11111',
-    index: 0,
-    createdAt: '2025-08-21T07:33:51.990Z',
-    updatedAt: '2025-08-21T09:09:38.933Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216847218563351552',
-    parentId: null,
-    name: '水电费是的',
-    description: '的身份是的的身份水电费',
-    index: 0,
-    createdAt: '2025-08-21T09:13:25.732Z',
-    updatedAt: '2025-08-21T09:13:25.732Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216854106755564544',
-    parentId: '216847218563351552',
-    name: '让是非得失的',
-    description: '电饭锅地方地方电饭锅电饭锅',
-    index: 0,
-    createdAt: '2025-08-21T09:40:48.005Z',
-    updatedAt: '2025-08-21T09:40:48.005Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216854194546541568',
-    parentId: '216847218563351552',
-    name: '电饭锅电饭锅电饭锅',
-    description: '电饭锅电饭锅地方电饭锅电饭锅',
-    index: 0,
-    createdAt: '2025-08-21T09:41:08.936Z',
-    updatedAt: '2025-08-21T09:41:08.936Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
-  },
-  {
-    id: '216856947163399168',
-    parentId: null,
-    name: '发水电费是的',
-    description: '发的电饭锅地方个电饭锅电饭锅电饭锅地方',
-    index: 0,
-    createdAt: '2025-08-21T09:52:05.211Z',
-    updatedAt: '2025-08-21T09:52:05.211Z',
-    deletedAt: null,
-    tenantId: '216429049541559296'
+    name: 'options',
+    title: '操作',
+    span: 2,
+    getValueOf: (item, { context }) => {
+      return (
+        <Button
+          type="link"
+          size="small"
+          danger
+          disabled={item.status === 'inactive'}
+          onClick={(e) => {
+            e.stopPropagation();
+            console.log('删除员工:', item.name);
+          }}
+        >
+          移除
+        </Button>
+      );
+    }
   }
 ];
 
-const BaseExample = () => {
+// 产品数据
+const productOptions = Array.from({ length: 20 }).map((_, index) => ({
+  id: `prod_${index + 1}`,
+  productName: `产品${index + 1}`,
+  category: ['电子产品', '服装', '食品', '家居'][index % 4],
+  price: Math.floor(Math.random() * 1000) + 100,
+  stock: Math.floor(Math.random() * 500),
+  status: index === 5 ? '下架' : '在售'
+}));
+
+const productColumns = [
+  {
+    name: 'productName',
+    title: '产品名称',
+    span: 6
+  },
+  {
+    name: 'category',
+    title: '分类',
+    span: 4,
+    getValueOf: (item) => (
+      <Tag color="blue">{item.category}</Tag>
+    )
+  },
+  {
+    name: 'price',
+    title: '价格',
+    span: 4,
+    getValueOf: (item) => `¥${item.price}`
+  },
+  {
+    name: 'stock',
+    title: '库存',
+    span: 4,
+    getValueOf: (item) => (
+      <span style={{ color: item.stock < 50 ? 'red' : 'green' }}>
+        {item.stock}
+      </span>
+    )
+  },
+  {
+    name: 'status',
+    title: '状态',
+    span: 4,
+    getValueOf: (item) => (
+      <Tag color={item.status === '在售' ? 'success' : 'default'}>
+        {item.status}
+      </Tag>
+    )
+  }
+];
+
+// 基础表格选择
+const BasicTableExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
   return (
-    <Space wrap>
-      <SelectTree options={options} valueKey="id" labelKey="name" />
-
-      <SelectTree single options={options} valueKey="id" labelKey="name" />
-
-      <SelectTree
-        name="tree"
-        label="树选择"
-        options={[
-          {
-            value: '1',
-            label: '父节点'
-          },
-          {
-            value: '2',
-            label: '子节点',
-            parentId: '1'
-          }
-        ]}
+    <Flex vertical gap={8}>
+      <span>多选表格：</span>
+      <SelectTableList
+        options={employeeOptions}
+        columns={employeeColumns}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择员工"
+        style={{ width: 600 }}
       />
-    </Space>
+      {value.length > 0 && (
+        <div>已选 {value.length} 人：{value.map(item => item.name).join('、')}</div>
+      )}
+    </Flex>
+  );
+};
+
+// 单选表格
+const SingleTableExample = ({ isPopup }) => {
+  const [value, setValue] = useState(null);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>单选表格：</span>
+      <SelectTableList
+        single
+        options={productOptions}
+        columns={productColumns}
+        valueKey="id"
+        labelKey="productName"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择产品"
+        style={{ width: 600 }}
+      />
+      {value && <div>已选：{value.productName}</div>}
+    </Flex>
+  );
+};
+
+// 带搜索的表格选择
+const SearchableTableExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>带搜索功能：</span>
+      <SelectTableList
+        options={employeeOptions}
+        columns={employeeColumns}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="搜索姓名、邮箱或部门"
+        getSearchCallback={({ searchText }, item) => {
+          if (!searchText) return true;
+          const keyword = searchText.toLowerCase();
+          return (
+            item.name.toLowerCase().includes(keyword) ||
+            item.email.toLowerCase().includes(keyword) ||
+            item.department.toLowerCase().includes(keyword)
+          );
+        }}
+        style={{ width: 600 }}
+      />
+    </Flex>
+  );
+};
+
+// 全选功能
+const SelectAllTableExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>支持全选：</span>
+      <SelectTableList
+        allowSelectedAll
+        options={productOptions.filter(item => item.status === '在售')}
+        columns={productColumns}
+        valueKey="id"
+        labelKey="productName"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择在售产品"
+        style={{ width: 600 }}
+      />
+    </Flex>
+  );
+};
+
+// 自定义底部
+const CustomFooterExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>自定义底部操作：</span>
+      <SelectTableList
+        options={employeeOptions}
+        columns={employeeColumns}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择员工"
+        footer={({ close, reload }) => (
+          <Flex justify="space-between" align="center">
+            <Button type="link" onClick={reload}>
+              刷新数据
+            </Button>
+            <Button type="primary" onClick={close}>
+              确认选择
+            </Button>
+          </Flex>
+        )}
+        style={{ width: 600 }}
+      />
+    </Flex>
+  );
+};
+
+// 直接展示在页面上（无触发器）
+const DirectRenderExample = () => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>直接展示在页面（嵌入模式）：</span>
+      <SelectTableList
+        options={employeeOptions}
+        columns={employeeColumns}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        placeholder="请选择员工"
+        getSearchCallback={({ searchText }, item) => {
+          if (!searchText) return true;
+          const keyword = searchText.toLowerCase();
+          return (
+            item.name.toLowerCase().includes(keyword) ||
+            item.email.toLowerCase().includes(keyword) ||
+            item.department.toLowerCase().includes(keyword)
+          );
+        }}
+        style={{ width: '100%' }}
+        renderContent={(content) => (
+          <div style={{ 
+            border: '1px solid #d9d9d9', 
+            borderRadius: 6, 
+            padding: 16,
+            backgroundColor: '#fafafa'
+          }}>
+            {content}
+          </div>
+        )}
+      />
+      {value.length > 0 && (
+        <div style={{ padding: '8px 12px', backgroundColor: '#e6f4ff', borderRadius: 4 }}>
+          已选择 {value.length} 人：{value.map(item => item.name).join('、')}
+        </div>
+      )}
+    </Flex>
+  );
+};
+
+const BaseExample = () => {
+  const [isPopup, setIsPopup] = useState(true);
+
+  return (
+    <Flex vertical gap={24}>
+      <Flex align="center" gap={12}>
+        <span>展示模式：</span>
+        <Switch
+          checked={isPopup}
+          onChange={setIsPopup}
+          checkedChildren="下拉"
+          unCheckedChildren="弹窗"
+        />
+        <span style={{ color: '#666', fontSize: 12 }}>
+          {isPopup ? '点击输入框展开下拉菜单' : '点击输入框打开弹窗'}
+        </span>
+      </Flex>
+      <Divider />
+      <BasicTableExample isPopup={isPopup} />
+      <Divider />
+      <SingleTableExample isPopup={isPopup} />
+      <Divider />
+      <SearchableTableExample isPopup={isPopup} />
+      <Divider />
+      <SelectAllTableExample isPopup={isPopup} />
+      <Divider />
+      <CustomFooterExample isPopup={isPopup} />
+      <Divider />
+      <DirectRenderExample />
+    </Flex>
   );
 };
 
@@ -522,29 +783,545 @@ render(<BaseExample />);
 
 ```
 
-- ref
-- 展示ref的使用
+- SelectTree 树形选择
+- 树形结构的选择组件，适用于组织架构、地区、分类等层级数据的选择
+- _SuperSelect(@kne/current-lib_super-select)[import * as _SuperSelect from "@kne/super-select"],antd(antd),(@kne/current-lib_super-select/dist/index.css)
+
+```jsx
+const { SelectTree } = _SuperSelect;
+const { Space, Button, Flex, Divider, Tag, Switch } = antd;
+const { useState } = React;
+
+// 组织架构数据
+const organizationTree = [
+  {
+    id: 'root',
+    parentId: null,
+    name: '集团总部',
+    code: 'HQ',
+    employeeCount: 500
+  },
+  {
+    id: 'tech',
+    parentId: 'root',
+    name: '技术中心',
+    code: 'TECH',
+    employeeCount: 200
+  },
+  {
+    id: 'tech-fe',
+    parentId: 'tech',
+    name: '前端开发组',
+    code: 'FE',
+    employeeCount: 50
+  },
+  {
+    id: 'tech-be',
+    parentId: 'tech',
+    name: '后端开发组',
+    code: 'BE',
+    employeeCount: 80
+  },
+  {
+    id: 'tech-qa',
+    parentId: 'tech',
+    name: '质量保障组',
+    code: 'QA',
+    employeeCount: 30
+  },
+  {
+    id: 'tech-devops',
+    parentId: 'tech',
+    name: '运维组',
+    code: 'DEVOPS',
+    employeeCount: 20
+  },
+  {
+    id: 'product',
+    parentId: 'root',
+    name: '产品中心',
+    code: 'PRODUCT',
+    employeeCount: 100
+  },
+  {
+    id: 'product-design',
+    parentId: 'product',
+    name: '产品设计组',
+    code: 'DESIGN',
+    employeeCount: 40
+  },
+  {
+    id: 'product-pm',
+    parentId: 'product',
+    name: '项目管理组',
+    code: 'PM',
+    employeeCount: 30
+  },
+  {
+    id: 'operation',
+    parentId: 'root',
+    name: '运营中心',
+    code: 'OP',
+    employeeCount: 80
+  },
+  {
+    id: 'operation-marketing',
+    parentId: 'operation',
+    name: '市场营销组',
+    code: 'MARKETING',
+    employeeCount: 50
+  },
+  {
+    id: 'operation-cs',
+    parentId: 'operation',
+    name: '客户服务组',
+    code: 'CS',
+    employeeCount: 30
+  },
+  {
+    id: 'hr',
+    parentId: 'root',
+    name: '人力资源部',
+    code: 'HR',
+    employeeCount: 40
+  },
+  {
+    id: 'finance',
+    parentId: 'root',
+    name: '财务部',
+    code: 'FINANCE',
+    employeeCount: 30
+  }
+];
+
+// 地区数据
+const regionTree = [
+  {
+    id: 'china',
+    parentId: null,
+    name: '中国',
+    code: 'CN'
+  },
+  {
+    id: 'beijing',
+    parentId: 'china',
+    name: '北京市',
+    code: 'BJ'
+  },
+  {
+    id: 'shanghai',
+    parentId: 'china',
+    name: '上海市',
+    code: 'SH'
+  },
+  {
+    id: 'guangdong',
+    parentId: 'china',
+    name: '广东省',
+    code: 'GD'
+  },
+  {
+    id: 'guangzhou',
+    parentId: 'guangdong',
+    name: '广州市',
+    code: 'GZ'
+  },
+  {
+    id: 'shenzhen',
+    parentId: 'guangdong',
+    name: '深圳市',
+    code: 'SZ'
+  },
+  {
+    id: 'zhejiang',
+    parentId: 'china',
+    name: '浙江省',
+    code: 'ZJ'
+  },
+  {
+    id: 'hangzhou',
+    parentId: 'zhejiang',
+    name: '杭州市',
+    code: 'HZ'
+  },
+  {
+    id: 'jiangsu',
+    parentId: 'china',
+    name: '江苏省',
+    code: 'JS'
+  },
+  {
+    id: 'nanjing',
+    parentId: 'jiangsu',
+    name: '南京市',
+    code: 'NJ'
+  },
+  {
+    id: 'usa',
+    parentId: null,
+    name: '美国',
+    code: 'US'
+  },
+  {
+    id: 'newyork',
+    parentId: 'usa',
+    name: '纽约州',
+    code: 'NY'
+  },
+  {
+    id: 'california',
+    parentId: 'usa',
+    name: '加利福尼亚州',
+    code: 'CA'
+  }
+];
+
+// 分类数据
+const categoryTree = [
+  {
+    id: 'electronics',
+    parentId: null,
+    name: '电子产品'
+  },
+  {
+    id: 'phone',
+    parentId: 'electronics',
+    name: '手机'
+  },
+  {
+    id: 'computer',
+    parentId: 'electronics',
+    name: '电脑'
+  },
+  {
+    id: 'laptop',
+    parentId: 'computer',
+    name: '笔记本'
+  },
+  {
+    id: 'desktop',
+    parentId: 'computer',
+    name: '台式机'
+  },
+  {
+    id: 'clothing',
+    parentId: null,
+    name: '服装'
+  },
+  {
+    id: 'mens',
+    parentId: 'clothing',
+    name: '男装'
+  },
+  {
+    id: 'womens',
+    parentId: 'clothing',
+    name: '女装'
+  }
+];
+
+// 基础树选择
+const BasicTreeExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>组织架构多选：</span>
+      <SelectTree
+        options={organizationTree}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择部门"
+        style={{ width: 320 }}
+      />
+      {value.length > 0 && (
+        <Flex wrap gap={4}>
+          {value.map(item => (
+            <Tag key={item.id} color="blue">{item.name}</Tag>
+          ))}
+        </Flex>
+      )}
+    </Flex>
+  );
+};
+
+// 单选树
+const SingleTreeExample = ({ isPopup }) => {
+  const [value, setValue] = useState(null);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>地区单选：</span>
+      <SelectTree
+        single
+        options={regionTree}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择地区"
+        style={{ width: 320 }}
+      />
+      {value && <Tag color="green">已选：{value.name} ({value.code})</Tag>}
+    </Flex>
+  );
+};
+
+// 带搜索的树选择
+const SearchableTreeExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>带搜索功能：</span>
+      <SelectTree
+        options={organizationTree}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="搜索部门名称或编码"
+        style={{ width: 320 }}
+      />
+    </Flex>
+  );
+};
+
+// 分类选择
+const CategoryTreeExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>商品分类选择：</span>
+      <SelectTree
+        options={categoryTree}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择分类"
+        style={{ width: 320 }}
+      />
+      {value.length > 0 && (
+        <div>已选分类：{value.map(item => item.name).join(' > ')}</div>
+      )}
+    </Flex>
+  );
+};
+
+const BaseExample = () => {
+  const [isPopup, setIsPopup] = useState(true);
+
+  return (
+    <Flex vertical gap={24}>
+      <Flex align="center" gap={12}>
+        <span>展示模式：</span>
+        <Switch
+          checked={isPopup}
+          onChange={setIsPopup}
+          checkedChildren="下拉"
+          unCheckedChildren="弹窗"
+        />
+        <span style={{ color: '#666', fontSize: 12 }}>
+          {isPopup ? '点击输入框展开下拉菜单' : '点击输入框打开弹窗'}
+        </span>
+      </Flex>
+      <Divider />
+      <BasicTreeExample isPopup={isPopup} />
+      <Divider />
+      <SingleTreeExample isPopup={isPopup} />
+      <Divider />
+      <SearchableTreeExample isPopup={isPopup} />
+      <Divider />
+      <CategoryTreeExample isPopup={isPopup} />
+    </Flex>
+  );
+};
+
+render(<BaseExample />);
+
+```
+
+- Ref 使用方法
+- 展示如何通过 ref 控制选择器的打开/关闭、获取/设置值、程序化选择等操作
 - _SuperSelect(@kne/current-lib_super-select)[import * as _SuperSelect from "@kne/super-select"],antd(antd),(@kne/current-lib_super-select/dist/index.css)
 
 ```jsx
 const { default: SuperSelect } = _SuperSelect;
-const { Space, Button } = antd;
-const { useRef } = React;
+const { Space, Button, Flex, Divider, message } = antd;
+const { useRef, useState } = React;
 
-const optionList = Array.from({ length: 20 }).map((item, key) => {
-  return {
-    label: `第${key + 1}项`, value: key + 1, disabled: key === 1
+// 基础 ref 操作示例
+const BasicRefExample = () => {
+  const selectRef = useRef();
+  const [value, setValue] = useState([]);
+
+  const departmentOptions = [
+    { value: 'tech', label: '技术研发部' },
+    { value: 'product', label: '产品设计部' },
+    { value: 'operation', label: '运营管理部' },
+    { value: 'hr', label: '人力资源部' }
+  ];
+
+  return (
+    <Flex vertical gap={12}>
+      <span>通过 ref 控制选择器：</span>
+      <Flex gap={8}>
+        <SuperSelect
+          ref={selectRef}
+          options={departmentOptions}
+          value={value}
+          onChange={setValue}
+          placeholder="请选择部门"
+          style={{ width: 240 }}
+        />
+        <Button type="primary" onClick={() => selectRef.current?.onOpenChange(true)}>
+          打开
+        </Button>
+        <Button onClick={() => selectRef.current?.onOpenChange(false)}>
+          关闭
+        </Button>
+      </Flex>
+    </Flex>
+  );
+};
+
+// 完整 ref 属性展示
+const FullRefExample = () => {
+  const selectRef = useRef();
+  const [value, setValue] = useState([]);
+  const [log, setLog] = useState([]);
+
+  const addLog = (msg) => {
+    setLog(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
   };
-});
+
+  const userOptions = Array.from({ length: 15 }).map((_, i) => ({
+    value: `user_${i + 1}`,
+    label: `用户${i + 1}`
+  }));
+
+  const handleGetValue = () => {
+    const currentValue = selectRef.current?.value || [];
+    addLog(`当前值: ${JSON.stringify(currentValue.map(v => v.label))}`);
+    message.info(`已选 ${currentValue.length} 项`);
+  };
+
+  const handleClear = () => {
+    selectRef.current?.setValue([]);
+    addLog('已清空选择');
+  };
+
+  const handleSelectFirst = () => {
+    const firstOption = userOptions[0];
+    if (firstOption) {
+      selectRef.current?.onSelect(firstOption);
+      addLog(`已选择: ${firstOption.label}`);
+    }
+  };
+
+  return (
+    <Flex vertical gap={12}>
+      <span>ref 完整功能展示：</span>
+      <Flex gap={8} wrap>
+        <SuperSelect
+          ref={selectRef}
+          options={userOptions}
+          value={value}
+          onChange={setValue}
+          placeholder="请选择用户"
+          style={{ width: 240 }}
+        />
+      </Flex>
+      <Flex gap={8} wrap>
+        <Button type="primary" onClick={() => selectRef.current?.onOpenChange(true)}>
+          打开下拉
+        </Button>
+        <Button onClick={() => selectRef.current?.onOpenChange(false)}>
+          关闭下拉
+        </Button>
+        <Button onClick={handleGetValue}>
+          获取当前值
+        </Button>
+        <Button onClick={handleClear}>
+          清空选择
+        </Button>
+        <Button onClick={handleSelectFirst}>
+          选择第一项
+        </Button>
+      </Flex>
+      <div style={{
+        background: '#f5f5f5',
+        padding: 12,
+        borderRadius: 4,
+        maxHeight: 120,
+        overflow: 'auto',
+        fontSize: 12
+      }}>
+        <div style={{ marginBottom: 4, fontWeight: 'bold' }}>操作日志：</div>
+        {log.length === 0 ? (
+          <div style={{ color: '#999' }}>暂无操作</div>
+        ) : (
+          log.map((item, index) => <div key={index}>{item}</div>)
+        )}
+      </div>
+    </Flex>
+  );
+};
+
+// ref 常见场景
+const CommonScenariosExample = () => {
+  const selectRef = useRef();
+
+  const options = [
+    { value: 1, label: '选项一' },
+    { value: 2, label: '选项二' },
+    { value: 3, label: '选项三' }
+  ];
+
+  return (
+    <Flex vertical gap={12}>
+      <span>常见使用场景：</span>
+      <Flex gap={8} align="center">
+        <SuperSelect
+          ref={selectRef}
+          options={options}
+          placeholder="请选择"
+          style={{ width: 200 }}
+        />
+        <Button
+          type="primary"
+          onClick={() => {
+            selectRef.current?.onOpenChange(true);
+          }}
+        >
+          外部触发打开
+        </Button>
+      </Flex>
+      <div style={{ color: '#666', fontSize: 12 }}>
+        提示：ref 可用于表单联动、外部控制弹窗、程序化操作等场景
+      </div>
+    </Flex>
+  );
+};
 
 const BaseExample = () => {
-  const ref = useRef();
-  return <Space wrap>
-    <SuperSelect options={optionList} ref={ref} />
-    <Button onClick={() => {
-      ref.current.onOpenChange(true);
-    }}>打开弹窗</Button>
-  </Space>;
+  return (
+    <Flex vertical gap={24}>
+      <BasicRefExample />
+      <Divider />
+      <FullRefExample />
+      <Divider />
+      <CommonScenariosExample />
+    </Flex>
+  );
 };
 
 render(<BaseExample />);
@@ -568,6 +1345,7 @@ render(<BaseExample />);
 | max               | 最多可选数量            | number                        | -                   |
 | disabled          | 是否禁用              | boolean                       | false               |
 | readOnly          | 是否只读              | boolean                       | false               |
+| size              | 选择框尺寸             | 'small' \| 'default' \| 'large' | 'default'           |
 | className         | 自定义类名             | string                        | -                   |
 | style             | 自定义样式             | object                        | -                   |
 | children          | 自定义渲染内容           | function(props)               | -                   |

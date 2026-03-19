@@ -108,12 +108,16 @@ const SelectTableList = createWithIntlProvider(
                       onChange: (selectedRowKeys, selectedKey, { checked }) => {
                         setValue(value => {
                           if (checked) {
-                            const newValue = value.slice(0);
                             const selectedItem = fetchListRef.current?.list.find(item => item[valueKey] === selectedKey);
                             if (selectedItem) {
+                              if (single) {
+                                return [selectedItem];
+                              }
+                              const newValue = value.slice(0);
                               newValue.push(selectedItem);
+                              return newValue;
                             }
-                            return newValue;
+                            return value;
                           } else {
                             return value.filter(item => item[valueKey] !== selectedKey);
                           }

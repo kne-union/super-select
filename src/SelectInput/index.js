@@ -81,6 +81,7 @@ const SelectInput = createWithIntlProvider({
         prefix: null,
         suffix: null,
         extra: null,
+        size: 'default',
         renderModal: contextProps => {
           const { props, open, onComplete, onOpenChange } = contextProps;
           const { placeholder, children } = props;
@@ -110,7 +111,7 @@ const SelectInput = createWithIntlProvider({
       [props.labelKey]: props.selectedAllValue.label
     };
 
-    const { children, prefix, suffix, className, maxLength, overlayClassName, single, labelWrap, isPopup, allowClear, disabled, placeholder, selectedAllValue, overlayWidth, placement, renderModal, labelKey, valueKey } = props;
+    const { children, prefix, suffix, className, maxLength, overlayClassName, single, labelWrap, isPopup, allowClear, disabled, placeholder, selectedAllValue, overlayWidth, placement, renderModal, labelKey, valueKey, size } = props;
 
     const transformValue = value => {
       if (single) {
@@ -225,7 +226,9 @@ const SelectInput = createWithIntlProvider({
           ref={inputRef}
           className={classnames(className, style['select-input'], 'select-input', {
             [style['wrap']]: labelWrap,
-            [style['disabled']]: disabled
+            [style['disabled']]: disabled,
+            [style['small']]: size === 'small',
+            [style['large']]: size === 'large'
           })}
           justify="space-between"
           onMouseOver={() => {

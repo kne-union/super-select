@@ -1,13 +1,15 @@
 .select-input {
-  --line-height: 30px;
+  --line-height: 32px;
+  --font-size: 14px;
+  --padding-x: 11px;
   background-color: #fff;
-  font-size: var(--font-size-default);
+  font-size: var(--font-size);
   border: 1px solid var(--font-color-grey-3);
-  border-radius: var(--radius-default, 2px);
+  border-radius: var(--radius-default, 6px);
   cursor: pointer;
   min-width: 150px;
   position: relative;
-  padding: 0 11px;
+  padding: 0 var(--padding-x);
   align-items: flex-start;
 
   :global {
@@ -44,10 +46,14 @@
 
   &.large {
     --line-height: 40px;
+    --font-size: 16px;
+    --padding-x: 11px;
   }
 
   &.small {
     --line-height: 24px;
+    --font-size: 14px;
+    --padding-x: 7px;
   }
 }
 
@@ -99,9 +105,15 @@
 }
 
 .select-input-prefix {
-  transform: translateX(-11px);
+  display: flex;
+  align-items: center;
+  height: var(--line-height);
+  margin-right: 8px;
 }
 
 .select-input-suffix {
-  transform: translateX(11px);
+  display: flex;
+  align-items: center;
+  height: var(--line-height);
+  margin-left: 8px;
 }
