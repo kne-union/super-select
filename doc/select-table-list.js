@@ -285,8 +285,7 @@ const DirectRenderExample = () => {
           <div style={{ 
             border: '1px solid #d9d9d9', 
             borderRadius: 6, 
-            padding: 16,
-            backgroundColor: '#fafafa'
+            padding: 16
           }}>
             {content}
           </div>
