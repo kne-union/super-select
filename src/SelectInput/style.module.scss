@@ -66,6 +66,58 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   flex: 1;
+  position: relative;
+
+  :global(.ant-tag) {
+    margin: 2px 4px 2px 0;
+  }
+}
+
+.single-label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.tag-item {
+  max-width: var(--max-tag-width, 150px);
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+
+  :global(.ant-tag-close-icon) {
+    flex-shrink: 0;
+  }
+}
+
+.tag-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  min-width: 0;
+  flex: 1;
+}
+
+.overflow-tag {
+  background: var(--bg-color-grey-3);
+  color: var(--font-color-grey-1);
+  cursor: default;
+  flex-shrink: 0;
+}
+
+.measure-layer {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  white-space: nowrap;
 
   :global(.ant-tag) {
     margin: 2px 4px 2px 0;

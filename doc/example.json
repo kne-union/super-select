@@ -21,6 +21,25 @@
       ]
     },
     {
+      "title": "SelectInput 边界情况测试",
+      "description": "测试超多选项（100项）、超长Label文本、大量已选项展示等边界场景",
+      "code": "./select-input-edge-case.js",
+      "scope": [
+        {
+          "name": "_SuperSelect",
+          "packageName": "@kne/current-lib_super-select",
+          "importStatement": "import * as _SuperSelect from \"@kne/super-select\""
+        },
+        {
+          "name": "antd",
+          "packageName": "antd"
+        },
+        {
+          "packageName": "@kne/current-lib_super-select/dist/index.css"
+        }
+      ]
+    },
+    {
       "title": "SuperSelect 列表选择",
       "description": "通用列表选择组件，支持单选/多选、搜索、全选、数量限制、弹窗模式等功能",
       "code": "./base.js",
@@ -81,6 +100,25 @@
       "title": "Ref 使用方法",
       "description": "展示如何通过 ref 控制选择器的打开/关闭、获取/设置值、程序化选择等操作",
       "code": "./ref.js",
+      "scope": [
+        {
+          "name": "_SuperSelect",
+          "packageName": "@kne/current-lib_super-select",
+          "importStatement": "import * as _SuperSelect from \"@kne/super-select\""
+        },
+        {
+          "name": "antd",
+          "packageName": "antd"
+        },
+        {
+          "packageName": "@kne/current-lib_super-select/dist/index.css"
+        }
+      ]
+    },
+    {
+      "title": "SelectCascader 级联选择",
+      "description": "级联选择组件，支持多列菜单展示、父子关联选择、末级选择限制、搜索过滤等功能",
+      "code": "./cascader-field.js",
       "scope": [
         {
           "name": "_SuperSelect",

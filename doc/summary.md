@@ -1,48 +1,50 @@
-@kne/super-select 是一个功能强大的 React 组件库，专门用于处理复杂的信息选择场景。它提供了一系列灵活且可组合的组件，使得在 React 应用中实现复杂的选择功能变得简单直观。
+一个功能强大的 React 组件库，专门用于处理复杂的信息选择场景。提供了一系列灵活且可组合的组件，使得在 React
+应用中实现复杂的选择功能变得简单直观。
 
-### 主要功能
+#### 主要功能
 
 - 支持多种选择模式（单选、多选）
+- 支持下拉框和弹窗两种展示模式
 - 提供灵活的列表和表格展示方式
 - 内置标签式选中项展示
 - 支持全选/反选功能
 - 内置国际化支持（中文和英文）
-- 自定义样式支持（基于CSS Modules）
+- 自定义样式支持（基于 CSS Modules）
+- 标签溢出处理：单选文本省略、多选标签自动折叠显示 +N
 
-### 组件概述
+#### 组件列表
 
-#### SelectInput
-基础选择输入组件，提供核心的选择功能和状态管理。可以独立使用，也可以作为其他选择组件的基础。
+| 组件名称            | 功能描述                        |
+|-----------------|-----------------------------|
+| SelectInput     | 基础选择输入组件，用于自定义构建其他选择组件的核心基础 |
+| SelectList      | 列表选择组件，适用于常规列表选择场景          |
+| SelectTableList | 表格形式选择组件，支持多列数据展示           |
+| SelectedAll     | 全选功能组件，提供一键选择/取消选择          |
+| SelectTree      | 树形选择组件，适用于层级数据              |
+| SelectedTagList | 已选项标签列表组件                   |
+| SelectCascader  | 级联选择组件，支持父子关联、搜索过滤          |
 
-#### SelectList
-基于 SelectInput 的列表选择组件，适用于常规的列表选择场景。提供了简洁的列表界面和直观的选择交互。
+#### 快速选择指南
 
-#### SelectTableList
-表格形式的选择组件，适用于需要展示多列数据的选择场景。支持自定义列配置和表格样式。
+| 需求       | 推荐组件                        |
+|----------|-----------------------------|
+| 自定义选择组件  | SelectInput                 |
+| 简单列表选择   | SelectList                  |
+| 需要展示多列数据 | SelectTableList             |
+| 层级数据选择   | SelectTree 或 SelectCascader |
+| 全选/反选功能  | SelectedAll                 |
+| 已选项标签展示  | SelectedTagList             |
 
-#### SelectedAll
-全选功能组件，提供一键选择/取消选择所有项的功能。可以与其他选择组件配合使用。
+#### 快速开始
 
-#### SelectTree
-树形选择组件，适用于层级数据的展示和选择。支持展开/折叠节点，并提供灵活的节点渲染方式。
+```jsx
+import { SelectInput, SelectList, SelectCascader } from '@kne/super-select';
 
-#### SelectedTagList
-已选项标签列表组件，以标签形式展示已选中的项目。支持单个标签删除和清空所有已选项。
+// 自定义选择组件
+<SelectInput placeholder="请选择" onChange={handleChange}>
+  {(props) => <CustomDropdown {...props} />}
+</SelectInput>
 
-### 使用场景
-
-- 复杂的数据筛选和选择
-- 多条件组合查询
-- 批量操作数据
-- 表格数据的多选处理
-- 带标签展示的数据选择
-- 需要全选/反选功能的列表操作
-
-### 技术特点
-
-- 基于 React 开发
-- 使用 CSS Modules 进行样式隔离
-- 支持 ES6+ 语法
-- 模块化设计，组件可独立使用
-- 支持主题定制
-- 完善的类型定义支持
+// 级联选择
+<SelectCascader options={cascadeData} onChange={handleChange} />
+```

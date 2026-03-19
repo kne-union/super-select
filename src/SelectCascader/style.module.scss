@@ -1,0 +1,376 @@
+.content {
+  .columns {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .content-item {
+    flex-shrink: 0;
+    flex-basis: var(--menu-item-width, 180px);
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    :global(.ant-menu) {
+      border: none;
+    }
+  }
+
+  .content-item:not(.last-level-area) {
+    border-right: solid 1px #f0f0f0;
+  }
+
+  &:not(.is-popup) {
+    .content-item .menu {
+      padding: 12px 0;
+    }
+
+    .last-level-area {
+      padding: 24px 0 0 12px;
+      box-sizing: border-box;
+    }
+
+    .scroll-plus-box,
+    .content-item {
+      min-height: 300px;
+      max-height: 400px;
+    }
+  }
+
+  &.is-popup {
+    .content-item,
+    .scroll-plus-box {
+      max-height: 400px;
+    }
+  }
+}
+
+.last-level-area {
+  min-width: 250px;
+  padding: 12px;
+  flex-basis: auto;
+  flex-grow: 1;
+  box-sizing: border-box;
+}
+
+.menu-label {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-label-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+
+  :global(.ant-space) {
+    width: 100%;
+    display: flex !important;
+    gap: 8px !important;
+  }
+
+  :global(.ant-space-item) {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  // 包含 menu-label 的 Space-item 需要填充剩余空间
+  :global(.ant-space-item):has(.menu-label) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &.checkbox-hidden {
+    :global(.ant-checkbox-wrapper) {
+      visibility: hidden;
+    }
+  }
+
+  // 单选模式下的 Checkbox 样式
+  &.single-mode {
+    :global {
+      .ant-checkbox-wrapper {
+        .ant-checkbox {
+          .ant-checkbox-inner {
+            // 基础样式：圆形边框
+            border-radius: 50%;
+            border: 1px solid #d9d9d9;
+            background: #fff;
+            transition: all 0.3s;
+
+            // 隐藏默认的勾选标记
+            &::after {
+              display: none;
+            }
+          }
+
+          // 未选中状态：hover 效果
+          &:hover .ant-checkbox-inner {
+            border-color: var(--primary-color);
+          }
+
+          // 选中状态：实心圆
+          &.ant-checkbox-checked {
+            .ant-checkbox-inner {
+              border-color: var(--primary-color);
+              background: var(--primary-color);
+
+              // 选中标记：白色圆点
+              &::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 6px;
+                height: 6px;
+                background: #fff;
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                opacity: 1;
+              }
+            }
+
+            &:hover .ant-checkbox-inner {
+              border-color: var(--primary-color);
+              background: var(--primary-color);
+            }
+          }
+
+          // 半选状态：带点的空心圆
+          &.ant-checkbox-indeterminate {
+            .ant-checkbox-inner {
+              border-color: var(--primary-color);
+              background: #fff;
+
+              // 半选标记：蓝色小圆点
+              &::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 6px;
+                height: 6px;
+                background: var(--primary-color);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                opacity: 1;
+              }
+            }
+
+            &:hover .ant-checkbox-inner {
+              border-color: var(--primary-color);
+            }
+          }
+
+          // 禁用状态
+          &.ant-checkbox-disabled {
+            .ant-checkbox-inner {
+              border-color: #d9d9d9;
+              background: #f5f5f5;
+            }
+
+            &.ant-checkbox-checked .ant-checkbox-inner::before {
+              background: rgba(0, 0, 0, 0.25);
+            }
+
+            &.ant-checkbox-indeterminate .ant-checkbox-inner::before {
+              background: rgba(0, 0, 0, 0.25);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// 通用的单选模式 Checkbox 样式（适用于 Space 等容器）
+.single-mode {
+  :global {
+    .ant-checkbox-wrapper {
+      .ant-checkbox {
+        .ant-checkbox-inner {
+          // 基础样式：圆形边框
+          border-radius: 50%;
+          border: 1px solid #d9d9d9;
+          background: #fff;
+          transition: all 0.3s;
+
+          // 隐藏默认的勾选标记
+          &::after {
+            display: none;
+          }
+        }
+
+        // 未选中状态：hover 效果
+        &:hover .ant-checkbox-inner {
+          border-color: var(--primary-color);
+        }
+
+        // 选中状态：实心圆
+        &.ant-checkbox-checked {
+          .ant-checkbox-inner {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+
+            // 选中标记：白色圆点
+            &::before {
+              content: '';
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              width: 6px;
+              height: 6px;
+              background: #fff;
+              border-radius: 50%;
+              transform: translate(-50%, -50%);
+              opacity: 1;
+            }
+          }
+
+          &:hover .ant-checkbox-inner {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+          }
+        }
+
+        // 半选状态：带点的空心圆
+        &.ant-checkbox-indeterminate {
+          .ant-checkbox-inner {
+            border-color: var(--primary-color);
+            background: #fff;
+
+            // 半选标记：蓝色小圆点
+            &::before {
+              content: '';
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              width: 6px;
+              height: 6px;
+              background: var(--primary-color);
+              border-radius: 50%;
+              transform: translate(-50%, -50%);
+              opacity: 1;
+            }
+          }
+
+          &:hover .ant-checkbox-inner {
+            border-color: var(--primary-color);
+          }
+        }
+
+        // 禁用状态
+        &.ant-checkbox-disabled {
+          .ant-checkbox-inner {
+            border-color: #d9d9d9;
+            background: #f5f5f5;
+          }
+
+          &.ant-checkbox-checked .ant-checkbox-inner::before {
+            background: rgba(0, 0, 0, 0.25);
+          }
+
+          &.ant-checkbox-indeterminate .ant-checkbox-inner::before {
+            background: rgba(0, 0, 0, 0.25);
+          }
+        }
+      }
+    }
+  }
+}
+
+.menu-item-icon {
+  margin-left: auto !important;
+}
+
+.menu-item-placeholder {
+  width: 14px;
+  flex-shrink: 0;
+}
+
+.loading {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+.search-input {
+  display: flex;
+
+  &:global(.is-popup) {
+    padding: 12px;
+  }
+}
+
+.scroll-plus-box {
+  max-height: 400px;
+  overflow: auto;
+}
+
+.list {
+  :global(.ant-list-item) {
+    padding: 8px 12px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+
+    &.is-selected {
+      background-color: #e6f4ff;
+    }
+  }
+}
+
+.custom-menu {
+  border: none;
+  background: #fff;
+  padding: 4px 0;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+
+  :global(.ant-list-item) {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: rgba(0, 0, 0, 0.88);
+    font-size: 14px;
+    line-height: 40px;
+    position: relative;
+    border: none;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.06);
+    }
+
+    &.selected {
+      background-color: var(--primary-color-1);
+      color: var(--primary-color);
+    }
+
+    &:active {
+      background-color: rgba(0, 0, 0, 0.15);
+    }
+  }
+}

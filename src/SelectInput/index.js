@@ -1,4 +1,4 @@
-import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useEffect, useState, forwardRef, useImperativeHandle, useRef, useLayoutEffect, useMemo } from 'react';
 import { Provider } from './context';
 import useResize from '@kne/use-resize';
 import useControlValue from '@kne/use-control-value';
@@ -12,6 +12,7 @@ import style from './style.module.scss';
 import zhCn from '../locale/zh-CN';
 import enUS from '../locale/en-US';
 import { createWithIntlProvider, useIntl } from '@kne/react-intl';
+import TagOverflowInner from './TagOverflowInner';
 
 const numberToPx = val => {
   return typeof val === 'number' ? `${val}px` : val;
@@ -141,13 +142,24 @@ const SelectInput = createWithIntlProvider({
       onChange: 'onOpenChange'
     });
     const [hover, setHover] = useState(false);
-    const [inputWidth, setInputWidth] = useState(0);
+    const [innerWidth, setInnerWidth] = useState(0);
+    const [containerWidth, setContainerWidth] = useState(0);
 
-    const inputRef = useResize(el => {
-      setInputWidth(el.clientWidth);
-    });
+    const containerWidthChange = el => {
+      if (!el) {
+        return;
+      }
+      const containerWidth = el.clientWidth;
+      setContainerWidth(containerWidth);
+      const innerEl = el.querySelector('.select-input-inner');
+      setInnerWidth(innerEl.clientWidth);
+    };
 
-    const popupOverlayWidth = numberToPx(Math.max(inputWidth, pxToNumber(overlayWidth)));
+    const popupOverlayWidth = useMemo(() => {
+      return numberToPx(Math.max(containerWidth, pxToNumber(overlayWidth)));
+    }, [containerWidth, overlayWidth]);
+
+    const containerRef = useResize(containerWidthChange);
 
     const { message } = App.useApp();
 
@@ -207,7 +219,7 @@ const SelectInput = createWithIntlProvider({
       searchProps,
       setSearchProps,
       hover,
-      inputWidth,
+      inputWidth: containerWidth,
       onAdd,
       onRemove,
       onSelect,
@@ -223,7 +235,7 @@ const SelectInput = createWithIntlProvider({
       return (
         <Flex
           {...props}
-          ref={inputRef}
+          ref={containerRef}
           className={classnames(className, style['select-input'], 'select-input', {
             [style['wrap']]: labelWrap,
             [style['disabled']]: disabled,
@@ -256,23 +268,11 @@ const SelectInput = createWithIntlProvider({
           <div className={classnames(style['select-input-inner'], 'select-input-inner')}>
             {value.length > 0 ? (
               single || value[0][valueKey] === selectedAllValue[valueKey] ? (
-                value[0][labelKey]
+                <span className={classnames(style['single-label'], 'select-input-single-label')} title={value[0][labelKey]}>
+                  {value[0][labelKey]}
+                </span>
               ) : (
-                value.map(item => {
-                  return (
-                    <Tag
-                      key={item[valueKey]}
-                      closable
-                      bordered={false}
-                      onClose={e => {
-                        e.preventDefault();
-                        onRemove(item);
-                      }}
-                    >
-                      {item[labelKey]}
-                    </Tag>
-                  );
-                })
+                <TagOverflowInner value={value} innerWidth={innerWidth} labelKey={labelKey} valueKey={valueKey} onRemove={onRemove} />
               )
             ) : (
               <span className={classnames(style['placeholder'], 'select-input-placeholder')}>{placeholder}</span>
