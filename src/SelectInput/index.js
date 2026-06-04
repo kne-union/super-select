@@ -85,9 +85,10 @@ const SelectInput = createWithIntlProvider({
         size: 'default',
         renderModal: contextProps => {
           const { props, open, onComplete, onOpenChange } = contextProps;
-          const { placeholder, children } = props;
+          const { placeholder, children, overlayClassName } = props;
           return (
             <Modal
+              className={overlayClassName}
               width={1000}
               open={open}
               title={placeholder}
@@ -112,7 +113,31 @@ const SelectInput = createWithIntlProvider({
       [props.labelKey]: props.selectedAllValue.label
     };
 
-    const { children, prefix, suffix, className, maxLength, overlayClassName, single, labelWrap, isPopup, allowClear, disabled, placeholder, selectedAllValue, overlayWidth, placement, renderModal, labelKey, valueKey, size } = props;
+    const {
+      children,
+      prefix,
+      suffix,
+      className,
+      maxLength,
+      overlayClassName,
+      overlayStyle,
+      align,
+      autoAdjustOverflow,
+      transitionName,
+      single,
+      labelWrap,
+      isPopup,
+      allowClear,
+      disabled,
+      placeholder,
+      selectedAllValue,
+      overlayWidth,
+      placement,
+      renderModal,
+      labelKey,
+      valueKey,
+      size
+    } = props;
 
     const transformValue = value => {
       if (single) {
@@ -326,6 +351,10 @@ const SelectInput = createWithIntlProvider({
             placement={placement}
             arrow={false}
             overlayClassName={classnames(style['overlay'], overlayClassName)}
+            overlayStyle={overlayStyle}
+            align={align}
+            autoAdjustOverflow={autoAdjustOverflow}
+            transitionName={transitionName}
             trigger="click"
             popupRender={() => (
               <div
