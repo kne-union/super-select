@@ -10,7 +10,9 @@ import SimpleBar from 'simplebar-react';
 import { createWithIntlProvider, useIntl } from '@kne/react-intl';
 import style from './style.module.scss';
 import 'simplebar-react/dist/simplebar.min.css';
-import { TableView, computeColumnsValue, CentralContent } from '@kne/info-page';
+import TableView from '@kne/table-view';
+import '@kne/table-view/dist/index.css';
+import { CentralContent } from '@kne/info-page';
 import '@kne/info-page/dist/index.css';
 
 import zhCn from '../locale/zh-CN';
@@ -127,50 +129,47 @@ const SelectTableList = createWithIntlProvider(
                         }
                       }
                     }}
-                    render={({ header, renderBody }) => {
+                    render={({ renderBody }) => {
                       return (
-                        <>
-                          {header}
-                          <FetchScrollLoader
-                            {...props}
-                            className={classnames(style['list'], 'select-table-list-scroll-list', {
-                              'is-popup': isPopup
-                            })}
-                            searchProps={searchProps}
-                            getSearchProps={getSearchProps}
-                            api={Object.assign(
-                              {},
-                              options
-                                ? {
-                                    data: { options, searchProps },
-                                    loader: ({ data }) => {
-                                      const { options, searchProps } = data;
-                                      if (typeof getSearchCallback === 'function') {
-                                        const newOptions = options.filter(item => getSearchCallback(searchProps, item, targetProps));
-                                        return {
-                                          pageData: newOptions
-                                        };
-                                      }
+                        <FetchScrollLoader
+                          {...props}
+                          className={classnames(style['list'], 'select-table-list-scroll-list', {
+                            'is-popup': isPopup
+                          })}
+                          searchProps={searchProps}
+                          getSearchProps={getSearchProps}
+                          api={Object.assign(
+                            {},
+                            options
+                              ? {
+                                  data: { options, searchProps },
+                                  loader: ({ data }) => {
+                                    const { options, searchProps } = data;
+                                    if (typeof getSearchCallback === 'function') {
+                                      const newOptions = options.filter(item => getSearchCallback(searchProps, item, targetProps));
                                       return {
-                                        pageData: options
+                                        pageData: newOptions
                                       };
                                     }
+                                    return {
+                                      pageData: options
+                                    };
                                   }
-                                : api
-                            )}
-                          >
-                            {fetchProps => {
-                              fetchListRef.current = fetchProps;
-                              const { list } = fetchProps;
-                              const contextProps = Object.assign({}, fetchProps, targetProps, { isSelectedAll });
-                              if (!(list && list.length > 0)) {
-                                return props.empty || <Empty className={classnames(style['empty'])} />;
-                              }
+                                }
+                              : api
+                          )}
+                        >
+                          {fetchProps => {
+                            fetchListRef.current = fetchProps;
+                            const { list } = fetchProps;
+                            const contextProps = Object.assign({}, fetchProps, targetProps, { isSelectedAll });
+                            if (!(list && list.length > 0)) {
+                              return props.empty || <Empty className={classnames(style['empty'])} />;
+                            }
 
-                              return renderBody(list, contextProps);
-                            }}
-                          </FetchScrollLoader>
-                        </>
+                            return renderBody(list, contextProps);
+                          }}
+                        </FetchScrollLoader>
                       );
                     }}
                   />
