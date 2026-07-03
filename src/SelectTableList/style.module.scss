@@ -1,8 +1,35 @@
+.table {
+  border: 1px solid #f0f0f0;
+  border-radius: var(--radius-default, 2px);
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  :global {
+    .info-page-table-body {
+      min-width: 100%;
+    }
+
+    .info-page-table-row:last-child {
+      .info-page-table-col {
+        border-bottom-color: transparent;
+      }
+    }
+  }
+}
+
 .list {
   max-height: 300px;
 
   &:not(.is-popup) {
     max-height: 400px;
+  }
+
+  :global {
+    .info-page-table-body [class*='kne-table-view_P-ebv'] {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
   }
 }
 
@@ -10,20 +37,6 @@
   margin: 0 auto;
   padding: 20px;
   box-sizing: border-box;
-}
-
-.table {
-  border: 1px solid #f0f0f0;
-  border-radius: var(--radius-default, 2px);
-  overflow: hidden;
-
-  :global {
-    .info-page-table-row:last-child {
-      .info-page-table-col {
-        border-bottom-color: transparent;
-      }
-    }
-  }
 }
 
 .right-options {
