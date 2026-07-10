@@ -121,6 +121,8 @@ const SelectInput = createWithIntlProvider({
       maxLength,
       overlayClassName,
       overlayStyle,
+      getPopupContainer,
+      zIndex,
       align,
       autoAdjustOverflow,
       transitionName,
@@ -138,6 +140,10 @@ const SelectInput = createWithIntlProvider({
       valueKey,
       size
     } = props;
+
+    const mergedOverlayStyle = useMemo(() => {
+      return Object.assign({}, overlayStyle, zIndex != null ? { zIndex } : null);
+    }, [overlayStyle, zIndex]);
 
     const transformValue = value => {
       if (single) {
@@ -350,8 +356,9 @@ const SelectInput = createWithIntlProvider({
             onOpenChange={setOpen}
             placement={placement}
             arrow={false}
+            getPopupContainer={getPopupContainer}
             overlayClassName={classnames(style['overlay'], overlayClassName)}
-            overlayStyle={overlayStyle}
+            overlayStyle={mergedOverlayStyle}
             align={align}
             autoAdjustOverflow={autoAdjustOverflow}
             transitionName={transitionName}
