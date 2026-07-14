@@ -1,5 +1,49 @@
+.body {
+  width: 100%;
+  min-width: 0;
+
+  &.is-mobile {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+}
+
+.table-panel-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.selected-panel-wrap {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  border-top: 1px solid var(--font-color-grey-4, #f0f0f0);
+}
+
+.table-panel {
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.filter-wrap {
+  flex-shrink: 0;
+}
+
 .table {
-  border: 1px solid #f0f0f0;
+  // 边框由 TableView 自身绘制，避免与外层叠成双框
+  border: none;
   border-radius: var(--radius-default, 2px);
   overflow-x: auto;
   overflow-y: hidden;
@@ -13,6 +57,11 @@
       .info-page-table-col {
         border-bottom-color: transparent;
       }
+    }
+
+    .info-page-table.is-mobile-card,
+    .info-page-table.is-mobile-render {
+      border: none;
     }
   }
 }
@@ -39,11 +88,24 @@
   box-sizing: border-box;
 }
 
+.right-options-col {
+  min-width: 0;
+}
+
 .right-options {
   padding: 8px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
 
   &:not(&:global(.is-popup)) {
     padding-top: 0;
+  }
+
+  &.is-mobile {
+    padding: 8px 12px 12px;
   }
 
   .no-padding-btn {
@@ -57,6 +119,12 @@
       background: var(--bg-color-grey-3);
     }
   }
+}
+
+.selected-tags-scroll {
+  max-height: 180px;
+  flex: 1;
+  min-height: 0;
 }
 
 .tag {
@@ -106,4 +174,92 @@
 
 .right-options .footer {
   margin-top: 12px;
+}
+
+.body.is-mobile {
+  .table-panel-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .table-panel {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .filter-wrap {
+    flex-shrink: 0;
+  }
+
+  .table {
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+    flex: 1 1 auto;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  // 嵌入模式：靠 max-height 实现「可见 + 可滚」；padding 在滚动容器内
+  .list {
+    min-height: 120px;
+    max-height: min(60vh, 480px);
+    padding: 8px 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    box-sizing: border-box;
+
+    &:not(.is-popup) {
+      max-height: min(60vh, 480px);
+    }
+  }
+
+  :global(.info-page-table.is-mobile-render),
+  :global(.info-page-table.is-mobile-card) {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    position: relative;
+    display: block;
+    overflow: hidden;
+  }
+
+  :global(.info-page-table-mobile-card-list) {
+    box-sizing: border-box;
+    gap: 12px;
+    padding: 0;
+  }
+
+  :global(.info-page-table-mobile-card) {
+    padding: 12px 16px !important;
+    box-sizing: border-box;
+  }
+
+  .select-search {
+    &:global(.is-popup) {
+      padding: 8px 12px;
+    }
+  }
+
+  .tag-inner {
+    max-width: 140px;
+  }
+
+  .selected-tags-scroll {
+    max-height: 96px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .right-options {
+    padding: 8px 12px 12px;
+  }
 }

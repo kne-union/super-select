@@ -6,7 +6,9 @@ const locale = {
   numberOf: '{number} items',
   maxLengthError: 'The maximum number cannot exceed {maxLength}',
   defaultChildren: 'Dropdown content, to be implemented by the caller',
-  removeAll: 'Remove All'
+  removeAll: 'Remove All',
+  cancel: 'Cancel',
+  confirm: 'OK'
 };
 
 export default locale;

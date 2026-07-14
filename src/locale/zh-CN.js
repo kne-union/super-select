@@ -6,7 +6,9 @@ const locale = {
   numberOf: '{number}个',
   maxLengthError: '最大数量不能超过{maxLength}',
   defaultChildren: '下拉内容，需要调用方实现',
-  removeAll: '移除全部'
+  removeAll: '移除全部',
+  cancel: '取消',
+  confirm: '确定'
 };
 
 export default locale;
