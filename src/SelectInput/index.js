@@ -9,7 +9,7 @@ import last from 'lodash/last';
 import { Flex, Dropdown, Modal, App } from 'antd';
 import { DownOutlined, CloseCircleFilled } from '@ant-design/icons';
 import { isNotEmpty } from '@kne/is-empty';
-import { useIsMobile, usePopupContainer, useResponsiveContext, useScrollElement } from '@kne/responsive-utils';
+import { MOBILE_POPUP_MODE, useMobilePopupMount, usePopupContainer, useScrollElement } from '@kne/responsive-utils';
 import style from './style.module.scss';
 import zhCn from '../locale/zh-CN';
 import enUS from '../locale/en-US';
@@ -22,16 +22,6 @@ const MOBILE_SHEET_MIN_HEIGHT = '30%';
 const MOBILE_MASK_Z_INDEX = 1000;
 const MOBILE_POPUP_Z_INDEX = 1050;
 const MASK_ANIMATION_DURATION = 180;
-// example-driver 手机预览外框（container 模式可能被外层 Global 的 viewport Provider 盖掉）
-const EXAMPLE_PHONE_SCROLL_SELECTOR = '.example-driver-device-scroll';
-const EXAMPLE_BOUNDARY_SELECTOR = '.kne-responsive-boundary';
-
-const findExamplePhoneMountNode = anchor => {
-  if (!anchor || typeof anchor.closest !== 'function') {
-    return null;
-  }
-  return anchor.closest(EXAMPLE_PHONE_SCROLL_SELECTOR) || anchor.closest(EXAMPLE_BOUNDARY_SELECTOR);
-};
 
 let parentScrollLockCount = 0;
 let parentScrollLocked = [];
@@ -244,10 +234,9 @@ const SelectInput = createWithIntlProvider({
         size: 'default',
         disableMobileSheet: false,
         renderModal: contextProps => {
-          const { props, open, onComplete, onOpenChange, isMobile, getPopupContainer, formatMessage, useBoundaryMount } = contextProps;
+          const { props, open, onComplete, onOpenChange, isMobile, getPopupContainer, formatMessage, fixedModeClass } = contextProps;
           const { placeholder, children, overlayClassName, disableMobileSheet } = props;
           if (isMobile && !disableMobileSheet) {
-            const fixedModeClass = useBoundaryMount ? style['is-boundary'] : style['is-viewport'];
             const mountNode = typeof getPopupContainer === 'function' ? getPopupContainer() : null;
             const closeWithoutCommit = () => onOpenChange(false);
             return (
@@ -328,16 +317,28 @@ const SelectInput = createWithIntlProvider({
       disableMobileSheet
     } = props;
 
-    const isMobileContext = useIsMobile();
-    const { mode } = useResponsiveContext();
     const getPopupContainerDefault = usePopupContainer();
     const getScrollElement = useScrollElement();
-    // example 手机框：外层 Global(viewport) 可能盖掉 container 的 useIsMobile，需 DOM 兜底
-    const [inExamplePhoneFrame, setInExamplePhoneFrame] = useState(false);
-    const isMobile = isMobileContext || inExamplePhoneFrame;
+    const wrapCustomGetPopupContainer = useMemo(() => {
+      if (typeof getPopupContainerProp === 'function') {
+        return triggerNode => getPopupContainerProp(triggerNode) || null;
+      }
+      if (getPopupContainerProp) {
+        return () => getPopupContainerProp;
+      }
+      return undefined;
+    }, [getPopupContainerProp]);
+    const {
+      isMobile,
+      fixedModeClass,
+      getPopupContainer: getSheetPopupContainer,
+      anchorRef
+    } = useMobilePopupMount({
+      cover: 'viewport',
+      getPopupContainer: wrapCustomGetPopupContainer
+    });
     const useMobileSheet = isMobile && !disableMobileSheet;
-    const useBoundaryMount = useMobileSheet && (mode === 'container' || inExamplePhoneFrame);
-    const fixedModeClass = useBoundaryMount ? style['is-boundary'] : style['is-viewport'];
+    const useBoundaryMount = !!(isMobile && fixedModeClass === MOBILE_POPUP_MODE.boundary);
 
     const mergedOverlayStyle = useMemo(() => {
       return Object.assign({}, overlayStyle, zIndex != null ? { zIndex } : null);
@@ -383,14 +384,20 @@ const SelectInput = createWithIntlProvider({
       setContainerWidth(containerWidth);
       const innerEl = el.querySelector('.select-input-inner');
       setInnerWidth(innerEl.clientWidth);
-      setInExamplePhoneFrame(!!findExamplePhoneMountNode(el));
     };
 
     const popupOverlayWidth = useMemo(() => {
       return numberToPx(Math.max(containerWidth, pxToNumber(overlayWidth)));
     }, [containerWidth, overlayWidth]);
 
-    const containerRef = useResize(containerWidthChange);
+    const resizeRef = useResize(containerWidthChange);
+    const setContainerRef = useCallback(
+      node => {
+        resizeRef.current = node;
+        anchorRef(node);
+      },
+      [anchorRef, resizeRef]
+    );
 
     const resolveGetPopupContainer = useCallback(
       triggerNode => {
@@ -399,29 +406,25 @@ const SelectInput = createWithIntlProvider({
           if (customContainer) {
             return customContainer;
           }
+        } else if (getPopupContainerProp) {
+          return getPopupContainerProp;
         }
-        const exampleMount = findExamplePhoneMountNode(triggerNode || containerRef.current);
-        if (exampleMount) {
-          return exampleMount;
-        }
-        if (useMobileSheet && !useBoundaryMount && typeof document !== 'undefined') {
-          return document.body;
+        if (useMobileSheet) {
+          return getSheetPopupContainer(triggerNode);
         }
         return getPopupContainerDefault(triggerNode);
       },
-      [getPopupContainerDefault, getPopupContainerProp, useBoundaryMount, useMobileSheet, containerRef]
+      [getPopupContainerDefault, getPopupContainerProp, getSheetPopupContainer, useMobileSheet]
     );
 
-    // 打开时再取挂载节点，避免落到 body 导致 absolute 半屏跑出手机预览框
+    // 打开时再取挂载节点，避免落到错误容器
     useLayoutEffect(() => {
-      const exampleMount = findExamplePhoneMountNode(containerRef.current);
-      setInExamplePhoneFrame(!!exampleMount);
       if (!useMobileSheet) {
         setPopupMountNode(null);
         return;
       }
-      setPopupMountNode(resolveGetPopupContainer(containerRef.current) || (typeof document !== 'undefined' ? document.body : null));
-    }, [useMobileSheet, resolveGetPopupContainer, open, containerRef]);
+      setPopupMountNode(resolveGetPopupContainer(resizeRef.current) || (typeof document !== 'undefined' ? document.body : null));
+    }, [useMobileSheet, resolveGetPopupContainer, open, resizeRef]);
 
     const getLockScrollTargets = useCallback(() => {
       const targets = [];
@@ -429,12 +432,12 @@ const SelectInput = createWithIntlProvider({
       if (scrollEl) {
         targets.push(scrollEl);
       }
-      const mountNode = popupMountNode || findExamplePhoneMountNode(containerRef.current);
+      const mountNode = popupMountNode;
       if (mountNode && mountNode !== document.body) {
         targets.push(mountNode);
       }
       return targets;
-    }, [getScrollElement, popupMountNode, containerRef]);
+    }, [getScrollElement, popupMountNode]);
 
     const sheetOpen = !disabled && open;
     useLockParentScroll(useMobileSheet && sheetOpen, getLockScrollTargets);
@@ -513,6 +516,7 @@ const SelectInput = createWithIntlProvider({
       children,
       isMobile,
       useBoundaryMount,
+      fixedModeClass,
       getPopupContainer: resolveGetPopupContainer,
       formatMessage
     };
@@ -524,7 +528,7 @@ const SelectInput = createWithIntlProvider({
       return (
         <Flex
           {...props}
-          ref={containerRef}
+          ref={setContainerRef}
           className={classnames(className, style['select-input'], 'select-input', {
             [style['wrap']]: labelWrap,
             [style['disabled']]: disabled,

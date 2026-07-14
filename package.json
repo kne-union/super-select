@@ -1,6 +1,6 @@
 {
   "name": "@kne/super-select",
-  "version": "0.1.40",
+  "version": "0.1.41",
   "description": "React 复杂信息选择组件库，提供列表、表格、树形等多种选择模式，支持单选/多选、搜索、全选等功能",
   "syntax": {
     "esmodules": true
@@ -103,13 +103,13 @@
     "@ant-design/icons": "^5.5.1",
     "@kne/global-context": "^1.1.1",
     "@kne/info-page": "^0.2.0",
-    "@kne/table-view": "^0.1.0",
     "@kne/is-empty": "^1.0.1",
     "@kne/react-fetch": "^1.5.5",
     "@kne/react-intl": "^0.1.9",
-    "@kne/responsive-utils": "^0.1.5",
+    "@kne/responsive-utils": "^0.1.13",
     "@kne/scroll-loader": "^0.1.7",
     "@kne/search-input": "^0.1.0",
+    "@kne/table-view": "^0.1.0",
     "@kne/use-control-value": "^0.1.8",
     "@kne/use-resize": "^0.1.1",
     "classnames": "^2.5.1",
