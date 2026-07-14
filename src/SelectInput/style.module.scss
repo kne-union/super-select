@@ -186,11 +186,11 @@
   background: rgba(0, 0, 0, 0.45);
   animation: mobile-sheet-mask-fade-in 180ms ease-out both;
 
-  &.is-viewport {
+  &:global(.kne-is-viewport) {
     position: fixed;
   }
 
-  &.is-boundary {
+  &:global(.kne-is-boundary) {
     position: absolute;
   }
 }
@@ -242,11 +242,11 @@
   overscroll-behavior: none;
   touch-action: pan-y;
 
-  &.is-viewport {
+  &:global(.kne-is-viewport) {
     position: fixed !important;
   }
 
-  &.is-boundary {
+  &:global(.kne-is-boundary) {
     position: absolute !important;
   }
 
