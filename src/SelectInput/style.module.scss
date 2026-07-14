@@ -224,7 +224,9 @@
   bottom: 0 !important;
   width: var(--kne-viewport-width, 100%) !important;
   max-width: var(--kne-viewport-width, 100%) !important;
-  // 内容撑起高度；上限 80%
+  // 内容撑高，上限 80%；用 flex 把剩余高度交给内部唯一滚动区
+  display: flex !important;
+  flex-direction: column !important;
   height: auto !important;
   max-height: 80% !important;
   min-width: unset !important;
@@ -283,13 +285,8 @@
 }
 
 .mobile-sheet-portal {
-  display: flex;
-  flex-direction: column;
-  height: auto;
-  max-height: inherit;
-  min-height: inherit;
+  // 与 popup 同节点：只补 background，勿覆盖 max-height
   background: #fff;
-  overflow: hidden;
 }
 
 .mobile-sheet-header {
@@ -343,7 +340,7 @@
   background: #fff;
   font-size: 16px;
 
-  // 内容根（Flex）占满 body；不要 height:100% / height:0，容易把列表压没
+  // 内容根占满 body；min-height:0 才能把高度约束传给内部滚动区
   > * {
     flex: 1 1 auto;
     min-height: 0;
@@ -392,8 +389,6 @@
       font-size: 16px;
     }
 
-    // 行高 / padding 由 SelectList 的 .is-mobile / mobile-container 负责，
-    // 这里不再用 !important 抢 padding，避免半屏内外样式互踩。
     .select-list-item {
       min-height: 44px;
       box-sizing: border-box;
@@ -402,20 +397,22 @@
     }
 
     .select-table-list-body {
-      flex: 1 1 auto;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      height: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
       font-size: 16px;
     }
 
-    // —— SelectTableList 半屏：父级定高 + 列表 absolute 铺满 ——
+    // Table 中间层只传高度，不滚动、不定死 min-height
     .select-table {
       position: relative !important;
       flex: 1 1 auto !important;
       min-height: 0 !important;
-      display: block !important;
+      display: flex !important;
+      flex-direction: column !important;
       overflow: hidden !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -424,26 +421,34 @@
 
     .select-table .info-page-table.is-mobile-render,
     .select-table .info-page-table.is-mobile-card {
-      position: absolute !important;
-      inset: 0 !important;
+      position: relative !important;
+      inset: auto !important;
+      flex: 1 1 auto !important;
       width: 100% !important;
+      min-height: 0 !important;
       height: auto !important;
       max-height: none !important;
-      display: block !important;
+      display: flex !important;
+      flex-direction: column !important;
       overflow: hidden !important;
       font-size: 16px;
     }
 
-    .select-table .select-table-list-scroll-list,
-    .select-table .load-container {
-      position: absolute !important;
-      inset: 0 !important;
+    // List / Tree / Table 唯一滚动区
+    // - min-height:0：半屏触顶后可被 flex 收缩
+    // - max-height：height:auto 链路偶发压不住时的滚动兜底（短内容仍按内容高度，不会被撑空）
+    .select-list-scroll-list,
+    .select-tree-scroll-list,
+    .select-table-list-scroll-list,
+    .select-table .load-container,
+    .load-container:not(.select-table-list-scroll-list) {
+      position: relative !important;
+      inset: auto !important;
+      flex: 1 1 auto !important;
       width: 100% !important;
-      height: auto !important;
-      max-height: none !important;
       min-height: 0 !important;
-      flex: none !important;
-      padding: 8px 12px !important;
+      height: auto !important;
+      max-height: min(60vh, 480px) !important;
       overflow-x: hidden !important;
       overflow-y: auto !important;
       overscroll-behavior: contain;
@@ -461,27 +466,9 @@
       }
     }
 
-    // —— List / Tree 半屏：flex 占满 + min-height 兜底 ——
-    .select-list-scroll-list,
-    .select-tree-scroll-list,
-    .load-container:not(.select-table-list-scroll-list) {
-      flex: 1 1 auto !important;
-      min-height: 160px !important;
-      max-height: none !important;
-      overflow-x: hidden !important;
-      overflow-y: auto !important;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      font-size: 16px;
-
-      &::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 0.35);
-        border-radius: 3px;
-      }
+    .select-table-list-scroll-list,
+    .select-table .load-container {
+      padding: 8px 12px !important;
     }
 
     .select-list-scroll-list[data-simplebar],
