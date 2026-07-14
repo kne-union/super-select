@@ -18,6 +18,7 @@ import TagOverflowInner from './TagOverflowInner';
 import 'simplebar-react/dist/simplebar.min.css';
 
 const MOBILE_SHEET_MAX_HEIGHT = '80%';
+const MOBILE_SHEET_MIN_HEIGHT = '30%';
 const MOBILE_MASK_Z_INDEX = 1000;
 const MOBILE_POPUP_Z_INDEX = 1050;
 const MASK_ANIMATION_DURATION = 180;
@@ -103,8 +104,8 @@ const ModalContent = ({ children: renderContent, ...others }) => {
       setValue(propsValue);
     }
   }, [open]);
-  // 保留 isPopup 以沿用弹层内搜索等 padding 样式；
-  // 拦截内容区 onOpenChange(false)，避免单选自动关闭（由取消/确认关）
+  // 半屏(isPopup=true)拦截内容区 onOpenChange(false)，避免单选自动关（由取消/确认关）；
+  // Modal 模式(isPopup=false)必须放行关闭，否则取消/右上角关不掉
   const contextProps = Object.assign({}, others, {
     value,
     setValue,
@@ -113,8 +114,8 @@ const ModalContent = ({ children: renderContent, ...others }) => {
     onSelect: item => others.onSelect(item, setValue),
     onRemove: item => others.onRemove(item, setValue),
     onOpenChange: nextOpen => {
-      if (nextOpen) {
-        others.onOpenChange && others.onOpenChange(true);
+      if (nextOpen || others.props?.isPopup === false) {
+        others.onOpenChange && others.onOpenChange(!!nextOpen);
       }
     }
   });
@@ -183,7 +184,7 @@ const MobileSheetPanel = ({ open, mountNode, fixedModeClass, overlayClassName, t
   return createPortal(
     <div
       className={classnames(style['mobile-sheet-popup'], style['mobile-sheet-portal'], fixedModeClass, overlayClassName)}
-      style={{ zIndex: MOBILE_POPUP_Z_INDEX, maxHeight: MOBILE_SHEET_MAX_HEIGHT }}
+      style={{ zIndex: MOBILE_POPUP_Z_INDEX, maxHeight: MOBILE_SHEET_MAX_HEIGHT, minHeight: MOBILE_SHEET_MIN_HEIGHT }}
       onTouchMove={e => {
         // 仅非列表区域阻止穿透；列表滚动容器内允许原生滚动
         const scrollable = e.target.closest('.simplebar-content-wrapper, .simplebar-content, .select-list-scroll-list, .select-table-list-scroll-list, .select-tree-scroll-list, .load-container, .info-page-table-mobile-card-list');
