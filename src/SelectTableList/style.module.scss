@@ -180,12 +180,17 @@
   .table-panel-wrap {
     flex: 1 1 auto;
     min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   .table-panel {
     flex: 1 1 auto;
     min-height: 0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .filter-wrap {
@@ -197,7 +202,7 @@
     border-radius: 0;
     overflow: hidden;
     flex: 1 1 auto;
-    min-height: 200px;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -206,9 +211,10 @@
     box-sizing: border-box;
   }
 
-  // 嵌入模式：靠 max-height 实现「可见 + 可滚」；padding 在滚动容器内
+  // 半屏内靠父级 max-height:80% + flex 收缩滚动；嵌入场景保留上限兜底
   .list {
-    min-height: 120px;
+    flex: 1 1 auto;
+    min-height: 0;
     max-height: min(60vh, 480px);
     padding: 8px 12px;
     overflow-x: hidden;
@@ -217,7 +223,7 @@
     overscroll-behavior: contain;
     box-sizing: border-box;
 
-    &:not(.is-popup) {
+    &:not(:global(.is-popup)) {
       max-height: min(60vh, 480px);
     }
   }
@@ -226,9 +232,10 @@
   :global(.info-page-table.is-mobile-card) {
     flex: 1 1 auto;
     min-height: 0;
-    height: 100%;
+    height: auto;
     position: relative;
-    display: block;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
   }
 
