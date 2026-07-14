@@ -1,3 +1,5 @@
+@use '~@kne/responsive-utils/scss' as resp;
+
 .list {
   max-height: 300px;
 
@@ -27,12 +29,17 @@
 }
 
 .default-list-item {
-  padding: 5px 12px !important;
+  padding: 7px 12px !important;
   border-bottom: none;
   cursor: pointer;
   transition: background 300ms;
   position: relative;
   border-bottom-color: transparent !important;
+
+  // 偶数行浅底纹
+  &:nth-child(even):not(.is-selected) {
+    background: rgba(0, 0, 0, 0.02);
+  }
 
   &:not(.is-selected):hover {
     background: var(--bg-color-grey-1);
@@ -113,4 +120,33 @@
 
 .footer {
   border-top: solid 1px var(--font-color-grey-4);
+}
+
+@include resp.mobile-container {
+  .list {
+    max-height: none;
+    flex: 1;
+    min-height: 200px;
+
+    &:not(.is-popup) {
+      max-height: none;
+    }
+  }
+
+  .default-list-item {
+    padding: 10px 12px !important;
+    min-height: 44px;
+  }
+
+  .select-search {
+    &:global(.is-popup) {
+      padding: 12px;
+    }
+  }
+
+  .selected-tag {
+    &:global(.is-popup) {
+      padding: 12px;
+    }
+  }
 }

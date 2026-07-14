@@ -1,3 +1,5 @@
+@use '~@kne/responsive-utils/scss' as resp;
+
 .select-input {
   --line-height: 32px;
   --font-size: 14px;
@@ -54,6 +56,10 @@
     --line-height: 24px;
     --font-size: 14px;
     --padding-x: 7px;
+  }
+
+  &.is-mobile {
+    --font-size: 16px;
   }
 }
 
@@ -140,6 +146,11 @@
   background: #ffffff;
 }
 
+.mobile-sheet-body.overlay-content {
+  min-width: 0;
+  width: 100%;
+}
+
 .overlay {
   box-shadow:
     0 6px 16px 0 rgba(0, 0, 0, 0.08),
@@ -168,4 +179,351 @@
   align-items: center;
   height: var(--line-height);
   margin-left: 8px;
+}
+
+.mobile-sheet-mask {
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  animation: mobile-sheet-mask-fade-in 180ms ease-out both;
+
+  &.is-viewport {
+    position: fixed;
+  }
+
+  &.is-boundary {
+    position: absolute;
+  }
+}
+
+.mobile-sheet-mask-leave {
+  animation: mobile-sheet-mask-fade-out 180ms ease-out both;
+}
+
+@keyframes mobile-sheet-mask-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mobile-sheet-mask-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.mobile-sheet-popup {
+  left: 0 !important;
+  right: 0 !important;
+  top: auto !important;
+  bottom: 0 !important;
+  width: var(--kne-viewport-width, 100%) !important;
+  max-width: var(--kne-viewport-width, 100%) !important;
+  height: 80% !important;
+  max-height: 80% !important;
+  min-width: unset !important;
+  border-radius: 12px 12px 0 0 !important;
+  overflow: hidden !important;
+  box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.12) !important;
+  background: #fff !important;
+  padding: 0 !important;
+  transform: none !important;
+  z-index: 1050 !important;
+  font-size: 16px !important;
+  overscroll-behavior: none;
+  touch-action: pan-y;
+
+  &.is-viewport {
+    position: fixed !important;
+  }
+
+  &.is-boundary {
+    position: absolute !important;
+  }
+
+  &:global(.ant-slide-up-enter),
+  &:global(.ant-slide-up-appear),
+  &:global(.ant-slide-up-enter-active),
+  &:global(.ant-slide-up-appear-active),
+  &:global(.ant-slide-up-leave),
+  &:global(.ant-slide-up-leave-active),
+  &:global(.ant-slide-up-enter-prepare),
+  &:global(.ant-slide-up-appear-prepare) {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  :global {
+    .over-content,
+    .ant-dropdown-menu,
+    .ant-dropdown-menu-item {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: unset !important;
+    }
+
+    .ant-dropdown-menu {
+      padding: 0 !important;
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+
+    .ant-dropdown-menu-item {
+      padding: 0 !important;
+      cursor: default !important;
+      background: transparent !important;
+    }
+  }
+}
+
+.mobile-sheet-portal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  overflow: hidden;
+}
+
+.mobile-sheet-header {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--font-color-grey-4, #f0f0f0);
+}
+
+.mobile-sheet-title {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+  color: var(--font-color, rgba(0, 0, 0, 0.88));
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mobile-sheet-action {
+  flex-shrink: 0;
+  max-width: 72px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--font-color, rgba(0, 0, 0, 0.88));
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 22px;
+  white-space: nowrap;
+}
+
+.mobile-sheet-confirm {
+  color: var(--primary-color);
+}
+
+.mobile-sheet-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  font-size: 16px;
+
+  // 内容根（Flex）占满 body；不要 height:100% / height:0，容易把列表压没
+  > * {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-size: 16px;
+  }
+
+  :global {
+    .select-list-search,
+    .select-table-search,
+    .select-tree-search {
+      flex-shrink: 0;
+      padding: 12px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    .select-list-selected-all,
+    .select-list-selected-tag,
+    .select-tree-selected-tag,
+    .select-list-footer,
+    .select-table-footer {
+      flex-shrink: 0;
+    }
+
+    .select-list-selected-all,
+    .select-list-selected-tag,
+    .select-tree-selected-tag,
+    .select-list-footer,
+    .select-table-footer,
+    .select-list-item,
+    .select-tree-item,
+    .ant-list-item,
+    .ant-input,
+    .ant-btn,
+    .ant-checkbox-wrapper,
+    .ant-radio-wrapper,
+    .ant-tag {
+      font-size: 16px;
+    }
+
+    // 只改 List 行，不要波及级联 CustomMenu 的 .ant-list-item（否则破坏垂直居中）
+    .select-list-item {
+      padding-top: 10px !important;
+      padding-bottom: 10px !important;
+      min-height: 44px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+    }
+
+    .select-table-list-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      font-size: 16px;
+    }
+
+    // —— SelectTableList 半屏：父级定高 + 列表 absolute 铺满 ——
+    .select-table {
+      position: relative !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      display: block !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      font-size: 16px;
+    }
+
+    .select-table .info-page-table.is-mobile-render,
+    .select-table .info-page-table.is-mobile-card {
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: auto !important;
+      max-height: none !important;
+      display: block !important;
+      overflow: hidden !important;
+      font-size: 16px;
+    }
+
+    .select-table .select-table-list-scroll-list,
+    .select-table .load-container {
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: auto !important;
+      max-height: none !important;
+      min-height: 0 !important;
+      flex: none !important;
+      padding: 8px 12px !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      font-size: 16px;
+      box-sizing: border-box;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.35);
+        border-radius: 3px;
+      }
+    }
+
+    // —— List / Tree 半屏：flex 占满 + min-height 兜底 ——
+    .select-list-scroll-list,
+    .select-tree-scroll-list,
+    .load-container:not(.select-table-list-scroll-list) {
+      flex: 1 1 auto !important;
+      min-height: 160px !important;
+      max-height: none !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      font-size: 16px;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.35);
+        border-radius: 3px;
+      }
+    }
+
+    .select-list-scroll-list[data-simplebar],
+    .select-tree-scroll-list[data-simplebar],
+    .load-container[data-simplebar]:not(.select-table-list-scroll-list) {
+      overflow: hidden !important;
+    }
+
+    .simplebar-content-wrapper {
+      overflow: auto !important;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .simplebar-track.simplebar-vertical {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      width: 6px !important;
+      right: 2px;
+      background: rgba(0, 0, 0, 0.04);
+      pointer-events: auto;
+    }
+
+    .simplebar-track.simplebar-vertical .simplebar-scrollbar {
+      opacity: 1 !important;
+      display: block !important;
+    }
+
+    .simplebar-track.simplebar-vertical .simplebar-scrollbar::before,
+    .simplebar-track.simplebar-vertical .simplebar-scrollbar.simplebar-visible::before {
+      opacity: 0.5 !important;
+      background: rgba(0, 0, 0, 0.4) !important;
+      transition: none !important;
+    }
+
+    .info-page-table-mobile-card {
+      padding: 12px 16px !important;
+      box-sizing: border-box;
+    }
+
+    .info-page-table-mobile-card-list {
+      gap: 12px;
+    }
+  }
+}
+
+@include resp.mobile-container {
+  .select-input:not(.small):not(.large) {
+    --font-size: 16px;
+  }
 }

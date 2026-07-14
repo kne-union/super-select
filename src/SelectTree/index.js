@@ -116,7 +116,7 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
   return (
     <SelectInput {...props} ref={ref}>
       {targetProps => {
-        const { props, value, onOpenChange } = targetProps;
+        const { props, value, onOpenChange, isMobile } = targetProps;
         const { footer, isPopup, valueKey, single, allowSelectedAll, showSelectedTag, api, options, renderTree, selectedAllValue } = props;
         const components = {
           selectedAll: (
@@ -142,13 +142,17 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
               ref={fetchListRef}
               render={({ data, ...fetchProps }) => {
                 const isSelectedAll = computedIsSelectAll(value, selectedAllValue, valueKey);
+                const treeContent = renderTree(Object.assign({}, fetchProps, targetProps, { isSelectedAll, data }));
+                const scrollClassName = classnames(style['list'], 'select-tree-scroll-list', {
+                  'is-popup': isPopup
+                });
+                // 移动端弹窗内不用 SimpleBar，改原生滚动
+                if (isMobile) {
+                  return <div className={scrollClassName}>{treeContent}</div>;
+                }
                 return (
-                  <SimpleBar
-                    className={classnames(style['list'], 'select-tree-scroll-list', {
-                      'is-popup': isPopup
-                    })}
-                  >
-                    {renderTree(Object.assign({}, fetchProps, targetProps, { isSelectedAll, data }))}
+                  <SimpleBar className={scrollClassName} autoHide={false}>
+                    {treeContent}
                   </SimpleBar>
                 );
               }}

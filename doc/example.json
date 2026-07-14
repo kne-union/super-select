@@ -60,7 +60,7 @@
     },
     {
       "title": "SelectTableList 表格选择",
-      "description": "表格形式的选择组件，适合复杂数据的展示和选择，支持自定义列、搜索、单选/多选等",
+      "description": "表格形式的选择组件，适合复杂数据的展示和选择，支持自定义列、搜索、单选/多选、renderMobile 自定义移动端卡片等",
       "code": "./select-table-list.js",
       "scope": [
         {

@@ -1,3 +1,5 @@
+@use '~@kne/responsive-utils/scss' as resp;
+
 .list {
   max-height: 300px;
   padding: 10px;
@@ -29,28 +31,42 @@
 
     .ant-tree-node-content-wrapper {
       flex: 1;
+      min-width: 0;
       padding: 0 4px;
+      // 保留 Item 自身 hover/选中圆角，取消 antd wrapper 默认底色
+      background: transparent !important;
+
+      &:hover {
+        background: transparent !important;
+      }
     }
 
+    // 整块（三角 + :before 背景）一起下移，对齐加了 padding 的 Item
     .ant-tree-switcher {
       margin-right: 0;
+      align-self: flex-start;
+      transform: translateY(6px);
     }
   }
 }
 
 .default-list-item {
-  padding: 0 !important;
+  padding: 6px 8px !important;
   border-bottom: none;
+  border-radius: var(--radius-default, 4px);
   cursor: pointer;
   transition: background 300ms;
   position: relative;
   border-bottom-color: transparent !important;
+  box-sizing: border-box;
 
   &:not(.is-selected):hover {
     background: var(--bg-color-grey-1);
   }
 
   &.is-selected {
+    background: var(--primary-color-1);
+
     :global(.select-tree-item-label),
     .single-checked {
       color: var(--primary-color);
@@ -123,4 +139,30 @@
 
 .footer {
   border-top: solid 1px var(--font-color-grey-4);
+}
+
+@include resp.mobile-container {
+  .list {
+    max-height: none;
+    flex: 1;
+    min-height: 200px;
+    padding: 8px 4px;
+
+    &:not(.is-popup) {
+      max-height: none;
+    }
+  }
+
+  .default-list-item {
+    padding: 10px 8px !important;
+    min-height: 40px;
+  }
+
+  .default-list {
+    :global {
+      .ant-tree-switcher {
+        transform: translateY(10px);
+      }
+    }
+  }
 }

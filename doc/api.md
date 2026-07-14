@@ -95,6 +95,21 @@
 | rowStyle        | 行自定义样式       | object                        | -     |
 | headerClassName | 表头自定义类名      | string                        | -     |
 | headerStyle     | 表头自定义样式      | object                        | -     |
+| renderMobile    | 移动端自定义卡片渲染；为 `false` 时关闭移动端卡片；为 function 时接管列表区渲染（仅移动端），参数含 `list` / `value` / `setValue` / `renderBody` 等 | boolean \| function | 默认卡片 List |
+
+```jsx
+<SelectTableList
+  columns={columns}
+  options={options}
+  renderMobile={({ list, value, setValue, isSelectedAll }) => (
+    <Flex vertical gap={12}>
+      {list.map(item => (
+        <CustomCard key={item.id} item={item} /* ... */ />
+      ))}
+    </Flex>
+  )}
+/>
+```
 
 ##### columns 配置项
 

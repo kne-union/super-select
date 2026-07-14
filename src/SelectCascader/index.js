@@ -50,10 +50,12 @@ const defaultDataFormat = data => {
 };
 
 // 级联选择内容组件
-const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowLastLevel, openLoadData, onLoadMore, parentIdKey, menuItemWidth, isPopup, searchPlaceholder, onSearch, valueKey, labelKey, onOpenChange, open }) => {
+const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowLastLevel, openLoadData, onLoadMore, parentIdKey, menuItemWidth, isPopup, searchPlaceholder, onSearch, valueKey, labelKey, onOpenChange, open, isMobile }) => {
   const { message } = App.useApp();
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(false);
+  // 移动端弹窗内不用 SimpleBar，改原生滚动
+  const ScrollBox = isMobile ? 'div' : SimpleBar;
 
   // 构建 mapping
   const mapping = useMemo(() => {
@@ -244,9 +246,9 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
   if (searchText && searchResults) {
     const currentIds = value.map(v => (typeof v === 'object' ? v[valueKey] : v));
     return (
-      <div className={classnames(style['content'], { [style['is-popup']]: isPopup })}>
+      <div className={classnames(style['content'], { [style['is-popup']]: isPopup, [style['is-mobile']]: isMobile })}>
         <SearchInput className={classnames(style['search-input'], { 'is-popup': isPopup })} placeholder={searchPlaceholder} value={searchText} onSearch={setSearchText} simple={isPopup} showSearchButton={!isPopup} />
-        <SimpleBar className={style['scroll-plus-box']}>
+        <ScrollBox className={style['scroll-plus-box']}>
           {searchResults.length === 0 ? (
             <Empty description="暂无数据" />
           ) : (
@@ -266,7 +268,7 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
               }}
             />
           )}
-        </SimpleBar>
+        </ScrollBox>
       </div>
     );
   }
@@ -278,38 +280,78 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
     <div
       className={classnames(style['content'], {
         [style['is-popup']]: isPopup,
-        [style['has-search']]: !!onSearch
+        [style['has-search']]: !!onSearch,
+        [style['is-mobile']]: isMobile
       })}
       style={{
         '--menu-item-width': numberToPx(menuItemWidth)
       }}
     >
       {onSearch && <SearchInput className={classnames(style['search-input'], { 'is-popup': isPopup })} placeholder={searchPlaceholder} value={searchText} onSearch={setSearchText} simple={isPopup} showSearchButton={!isPopup} />}
-      <SimpleBar className={style['scroller']} options={{ autoHide: false }}>
-        <div className={style['columns']}>
+      <ScrollBox className={style['scroller']} {...(isMobile ? {} : { options: { autoHide: false } })}>
+        <div className={classnames(style['columns'], { [style['is-mobile']]: isMobile })}>
           {selectedIds.map((selectedId, index) => {
             const selectNode = mapping.get(selectedId);
             const siblingNodes = treeUtils.getSiblingNode(selectedId);
             const isLastLevel = !isNotLastNode(selectNode?.id) && index > 0;
 
             return (
-              <SimpleBar
+              <ScrollBox
                 key={selectedId || index}
                 className={classnames(style['content-item'], {
                   [style['last-level-area']]: isLastLevel
                 })}
               >
                 {isLastLevel ? (
-                  <Space wrap style={{ padding: 12 }} className={classnames({ [style['single-mode']]: single })}>
-                    {siblingNodes.map(node => {
-                      const { checked, indeterminate } = treeUtils.computedCheckboxStatus(node.id, currentIds);
-                      return (
-                        <Checkbox key={node.id} checked={checked} indeterminate={indeterminate} onChange={e => onCheckedChange(e.target.checked, node.id)}>
-                          {node.label}
-                        </Checkbox>
-                      );
-                    })}
-                  </Space>
+                  isMobile ? (
+                    <CustomMenu
+                      className={style['menu']}
+                      selectedKeys={currentIds}
+                      onSelect={({ key }) => {
+                        const node = mapping.get(key);
+                        if (!node) return;
+                        const { checked } = treeUtils.computedCheckboxStatus(node.id, currentIds);
+                        onCheckedChange(!checked, node.id);
+                      }}
+                      items={siblingNodes.map(node => {
+                        const { checked, indeterminate } = treeUtils.computedCheckboxStatus(node.id, currentIds);
+                        return {
+                          key: node.id,
+                          label: (
+                            <Space
+                              className={classnames(style['menu-item'], {
+                                [style['single-mode']]: single
+                              })}
+                            >
+                              <Checkbox
+                                checked={checked}
+                                indeterminate={indeterminate}
+                                onClick={e => e.stopPropagation()}
+                                onChange={e => {
+                                  e.stopPropagation();
+                                  onCheckedChange(e.target.checked, node.id);
+                                }}
+                              />
+                              <div className={style['menu-label']}>
+                                <span className={style['menu-label-text']}>{node.label}</span>
+                              </div>
+                            </Space>
+                          )
+                        };
+                      })}
+                    />
+                  ) : (
+                    <Space wrap style={{ padding: 12 }} className={classnames({ [style['single-mode']]: single })}>
+                      {siblingNodes.map(node => {
+                        const { checked, indeterminate } = treeUtils.computedCheckboxStatus(node.id, currentIds);
+                        return (
+                          <Checkbox key={node.id} checked={checked} indeterminate={indeterminate} onChange={e => onCheckedChange(e.target.checked, node.id)}>
+                            {node.label}
+                          </Checkbox>
+                        );
+                      })}
+                    </Space>
+                  )
                 ) : (
                   <CustomMenu
                     className={style['menu']}
@@ -363,7 +405,7 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
                     })}
                   />
                 )}
-              </SimpleBar>
+              </ScrollBox>
             );
           })}
           {loading && (
@@ -372,7 +414,7 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
             </div>
           )}
         </div>
-      </SimpleBar>
+      </ScrollBox>
     </div>
   );
 };
@@ -556,6 +598,7 @@ const SelectCascader = ({
             labelKey={labelKey}
             onOpenChange={contextProps.onOpenChange}
             open={contextProps.open}
+            isMobile={contextProps.isMobile}
           />
         );
       }}

@@ -564,12 +564,12 @@ render(<BaseExample />);
 ```
 
 - SelectTableList 表格选择
-- 表格形式的选择组件，适合复杂数据的展示和选择，支持自定义列、搜索、单选/多选等
+- 表格形式的选择组件，适合复杂数据的展示和选择，支持自定义列、搜索、单选/多选、renderMobile 自定义移动端卡片等
 - _SuperSelect(@kne/current-lib_super-select)[import * as _SuperSelect from "@kne/super-select"],antd(antd),(@kne/current-lib_super-select/dist/index.css)
 
 ```jsx
 const { SelectTableList } = _SuperSelect;
-const { Space, Button, Flex, Divider, Tag, Avatar, Switch } = antd;
+const { Space, Button, Flex, Divider, Tag, Avatar, Switch, Checkbox } = antd;
 const { useState } = React;
 
 // 模拟员工数据
@@ -870,6 +870,142 @@ const DirectRenderExample = () => {
   );
 };
 
+const EmployeeMobileCard = ({ item, checked, disabled, onToggle }) => {
+  const statusColor = item.status === 'active' ? 'success' : 'default';
+  const statusText = item.status === 'active' ? '在职' : '停用';
+
+  return (
+    <div
+      onClick={() => {
+        if (!disabled) {
+          onToggle();
+        }
+      }}
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 12,
+        padding: '12px 16px',
+        background: checked ? 'var(--primary-color-1, #e6f4ff)' : '#fff',
+        border: &#96;1px solid ${checked ? 'var(--primary-color-2, #91caff)' : '#f0f0f0'}&#96;,
+        borderRadius: 12,
+        boxSizing: 'border-box',
+        cursor: disabled ? 'not-allowed' : 'pointer'
+      }}
+    >
+      <Checkbox
+        checked={checked}
+        disabled={disabled}
+        onClick={e => e.stopPropagation()}
+        onChange={onToggle}
+        style={{ marginTop: 2, flexShrink: 0 }}
+      />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        {/* 主信息：姓名 + 状态 */}
+        <Flex justify="space-between" align="center" gap={8} style={{ marginBottom: 6 }}>
+          <Flex align="center" gap={8} style={{ flex: 1, minWidth: 0 }}>
+            <Avatar size="small" style={{ backgroundColor: '#1677ff', flexShrink: 0 }}>
+              {item.name.slice(-2)}
+            </Avatar>
+            <span
+              style={{
+                fontSize: 16,
+                fontWeight: 600,
+                color: 'rgba(0,0,0,0.88)',
+                lineHeight: '22px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {item.name}
+            </span>
+          </Flex>
+          <Tag color={statusColor} style={{ margin: 0, flexShrink: 0 }}>
+            {statusText}
+          </Tag>
+        </Flex>
+        {/* 次要信息：部门 · 职位 */}
+        <div style={{ fontSize: 13, color: 'rgba(0,0,0,0.65)', lineHeight: '20px', marginBottom: 4 }}>
+          {item.department}
+          <span style={{ margin: '0 6px', color: 'rgba(0,0,0,0.25)' }}>·</span>
+          {item.position}
+        </div>
+        {/* 辅助信息：邮箱 / 入职日期 */}
+        <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.45)', lineHeight: '18px' }}>
+          {item.email}
+          <span style={{ margin: '0 6px', color: 'rgba(0,0,0,0.25)' }}>·</span>
+          入职 {item.joinDate}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 自定义移动端卡片：突出主 / 次 / 辅层次
+const CustomMobileCardExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>自定义移动端卡片（renderMobile）：</span>
+      <div style={{ color: '#666', fontSize: 12, lineHeight: 1.6 }}>
+        仅移动端生效。主信息为大号姓名，次要为部门/职位，辅助为邮箱与入职日期。桌面端仍为普通表格。
+      </div>
+      <SelectTableList
+        options={employeeOptions}
+        columns={employeeColumns}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择员工"
+        getSearchCallback={({ searchText }, item) => {
+          if (!searchText) return true;
+          const keyword = searchText.toLowerCase();
+          return (
+            item.name.toLowerCase().includes(keyword) ||
+            item.email.toLowerCase().includes(keyword) ||
+            item.department.toLowerCase().includes(keyword)
+          );
+        }}
+        style={{ width: 600 }}
+        renderMobile={({ list, value: selected, setValue: setSelected, props: selectProps, isSelectedAll }) => (
+          <Flex vertical gap={12} style={{ padding: '0 0 12px' }}>
+            {list.map(item => {
+              const isChecked = selected.some(target => target.id === item.id);
+              return (
+                <EmployeeMobileCard
+                  key={item.id}
+                  item={item}
+                  checked={(isSelectedAll && !item.disabled) || isChecked}
+                  disabled={isSelectedAll || item.disabled}
+                  onToggle={() => {
+                    if (item.disabled || isSelectedAll) {
+                      return;
+                    }
+                    if (selectProps.single) {
+                      setSelected([item]);
+                      return;
+                    }
+                    setSelected(prev =>
+                      isChecked ? prev.filter(target => target.id !== item.id) : [...prev, item]
+                    );
+                  }}
+                />
+              );
+            })}
+          </Flex>
+        )}
+      />
+      {value.length > 0 && (
+        <div>已选 {value.length} 人：{value.map(item => item.name).join('、')}</div>
+      )}
+    </Flex>
+  );
+};
+
 const BaseExample = () => {
   const [isPopup, setIsPopup] = useState(true);
 
@@ -897,6 +1033,8 @@ const BaseExample = () => {
       <SelectAllTableExample isPopup={isPopup} />
       <Divider />
       <CustomFooterExample isPopup={isPopup} />
+      <Divider />
+      <CustomMobileCardExample isPopup={isPopup} />
       <Divider />
       <DirectRenderExample />
     </Flex>
@@ -2141,6 +2279,21 @@ render(<BaseExample />);
 | rowStyle        | 行自定义样式       | object                        | -     |
 | headerClassName | 表头自定义类名      | string                        | -     |
 | headerStyle     | 表头自定义样式      | object                        | -     |
+| renderMobile    | 移动端自定义卡片渲染；为 `false` 时关闭移动端卡片；为 function 时接管列表区渲染（仅移动端），参数含 `list` / `value` / `setValue` / `renderBody` 等 | boolean \| function | 默认卡片 List |
+
+```jsx
+<SelectTableList
+  columns={columns}
+  options={options}
+  renderMobile={({ list, value, setValue, isSelectedAll }) => (
+    <Flex vertical gap={12}>
+      {list.map(item => (
+        <CustomCard key={item.id} item={item} /* ... */ />
+      ))}
+    </Flex>
+  )}
+/>
+```
 
 ##### columns 配置项
 

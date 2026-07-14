@@ -7,6 +7,7 @@ import SelectedAll, { computedIsSelectAll } from '../SelectedAll';
 import SelectedTagList from '../SelectedTagList';
 import { FetchScrollLoader } from '@kne/scroll-loader';
 import '@kne/scroll-loader/dist/index.css';
+import 'simplebar-react/dist/simplebar.min.css';
 import classnames from 'classnames';
 import style from './style.module.scss';
 
@@ -87,7 +88,7 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
   return (
     <SelectInput {...props} ref={ref}>
       {targetProps => {
-        const { props, value, searchProps, setSearchProps, onOpenChange } = targetProps;
+        const { props, value, searchProps, setSearchProps, onOpenChange, isMobile } = targetProps;
         const { footer, isPopup, getSearchProps, getSearchCallback, searchPlaceholder, valueKey, single, allowSelectedAll, showSelectedTag, api, options, renderList, selectedAllValue } = props;
         const components = {
           search: ((api && typeof getSearchProps === 'function') || (options && typeof getSearchCallback === 'function')) && (
@@ -119,6 +120,7 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
               className={classnames(style['list'], 'select-list-scroll-list', {
                 'is-popup': isPopup
               })}
+              useSimpleBar={!isMobile}
               searchProps={searchProps}
               getSearchProps={getSearchProps}
               api={Object.assign(

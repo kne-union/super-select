@@ -19,7 +19,8 @@ const CustomMenu = ({ className, selectedKeys, items, onSelect }) => {
         return (
           <List.Item
             className={classnames(style['custom-menu-item'], {
-              [style['selected']]: isSelected
+              [style['selected']]: isSelected,
+              selected: isSelected
             })}
             onClick={e => handleItemClick(item.key, e)}
           >
