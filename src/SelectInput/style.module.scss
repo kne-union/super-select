@@ -224,7 +224,8 @@
   bottom: 0 !important;
   width: var(--kne-viewport-width, 100%) !important;
   max-width: var(--kne-viewport-width, 100%) !important;
-  height: 80% !important;
+  // 内容撑起高度；上限 80%
+  height: auto !important;
   max-height: 80% !important;
   min-width: unset !important;
   border-radius: 12px 12px 0 0 !important;
@@ -284,7 +285,9 @@
 .mobile-sheet-portal {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: auto;
+  max-height: inherit;
+  min-height: inherit;
   background: #fff;
   overflow: hidden;
 }
@@ -361,6 +364,10 @@
     }
 
     .select-list-selected-all,
+    .select-tree-selected-all {
+      flex-shrink: 0;
+    }
+
     .select-list-selected-tag,
     .select-tree-selected-tag,
     .select-list-footer,
@@ -369,6 +376,7 @@
     }
 
     .select-list-selected-all,
+    .select-tree-selected-all,
     .select-list-selected-tag,
     .select-tree-selected-tag,
     .select-list-footer,
@@ -384,10 +392,9 @@
       font-size: 16px;
     }
 
-    // 只改 List 行，不要波及级联 CustomMenu 的 .ant-list-item（否则破坏垂直居中）
+    // 行高 / padding 由 SelectList 的 .is-mobile / mobile-container 负责，
+    // 这里不再用 !important 抢 padding，避免半屏内外样式互踩。
     .select-list-item {
-      padding-top: 10px !important;
-      padding-bottom: 10px !important;
       min-height: 44px;
       box-sizing: border-box;
       display: flex;

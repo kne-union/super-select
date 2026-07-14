@@ -119,13 +119,13 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
         const { props, value, onOpenChange, isMobile } = targetProps;
         const { footer, isPopup, valueKey, single, allowSelectedAll, showSelectedTag, api, options, renderTree, selectedAllValue } = props;
         const components = {
-          selectedAll: (
+          selectedAll: !single && allowSelectedAll && (
             <div
               className={classnames(style['selected-all'], 'select-tree-selected-all', {
                 'is-popup': isPopup
               })}
             >
-              {!single && allowSelectedAll && <SelectedAll />}
+              <SelectedAll />
             </div>
           ),
           treeList: (
@@ -186,7 +186,7 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
           return children(Object.assign({}, targetProps, { components }));
         }
         return (
-          <Flex vertical>
+          <Flex vertical className={classnames({ [style['is-mobile']]: isMobile })}>
             {components.search}
             {components.selectedAll}
             {components.treeList}

@@ -105,13 +105,13 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
               showSearchButton={!isPopup}
             />
           ),
-          selectedAll: (
+          selectedAll: !single && allowSelectedAll && (
             <div
               className={classnames(style['selected-all'], 'select-list-selected-all', {
                 'is-popup': isPopup
               })}
             >
-              {!single && allowSelectedAll && <SelectedAll />}
+              <SelectedAll />
             </div>
           ),
           fetchList: (
@@ -179,7 +179,7 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
           return children(Object.assign({}, targetProps, { components }));
         }
         return (
-          <Flex vertical>
+          <Flex vertical className={classnames({ [style['is-mobile']]: isMobile })}>
             {components.search}
             {components.selectedAll}
             {components.fetchList}

@@ -1,4 +1,7 @@
 .selected-all {
+  padding-top: 8px;
+  box-sizing: border-box;
+
   :global(.ant-checkbox) + span {
     padding-inline-end: 0;
   }

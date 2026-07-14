@@ -17,7 +17,7 @@ import { createWithIntlProvider, useIntl } from '@kne/react-intl';
 import TagOverflowInner from './TagOverflowInner';
 import 'simplebar-react/dist/simplebar.min.css';
 
-const MOBILE_SHEET_HEIGHT = '80%';
+const MOBILE_SHEET_MAX_HEIGHT = '80%';
 const MOBILE_MASK_Z_INDEX = 1000;
 const MOBILE_POPUP_Z_INDEX = 1050;
 const MASK_ANIMATION_DURATION = 180;
@@ -183,7 +183,7 @@ const MobileSheetPanel = ({ open, mountNode, fixedModeClass, overlayClassName, t
   return createPortal(
     <div
       className={classnames(style['mobile-sheet-popup'], style['mobile-sheet-portal'], fixedModeClass, overlayClassName)}
-      style={{ zIndex: MOBILE_POPUP_Z_INDEX, height: MOBILE_SHEET_HEIGHT }}
+      style={{ zIndex: MOBILE_POPUP_Z_INDEX, maxHeight: MOBILE_SHEET_MAX_HEIGHT }}
       onTouchMove={e => {
         // 仅非列表区域阻止穿透；列表滚动容器内允许原生滚动
         const scrollable = e.target.closest('.simplebar-content-wrapper, .simplebar-content, .select-list-scroll-list, .select-table-list-scroll-list, .select-tree-scroll-list, .load-container, .info-page-table-mobile-card-list');
