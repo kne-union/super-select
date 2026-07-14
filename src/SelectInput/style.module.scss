@@ -224,10 +224,11 @@
   bottom: 0 !important;
   width: var(--kne-viewport-width, 100%) !important;
   max-width: var(--kne-viewport-width, 100%) !important;
-  // 内容撑高，上限 80%；用 flex 把剩余高度交给内部唯一滚动区
+  // 内容撑高：下限 30%，上限 80%
   display: flex !important;
   flex-direction: column !important;
   height: auto !important;
+  min-height: 30% !important;
   max-height: 80% !important;
   min-width: unset !important;
   border-radius: 12px 12px 0 0 !important;
@@ -394,6 +395,27 @@
       box-sizing: border-box;
       display: flex;
       align-items: center;
+    }
+
+    // Cascader：把半屏（含 min-height:30%）可用高度交给 scroller 撑满
+    .select-cascader-content {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      height: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+    }
+
+    .select-cascader-scroller {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      height: 100% !important;
+      max-height: none !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
 
     .select-table-list-body {

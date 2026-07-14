@@ -27,7 +27,6 @@
     }
 
     .last-level-area {
-      padding: 24px 0 0 12px;
       box-sizing: border-box;
     }
 
@@ -330,6 +329,75 @@
   -webkit-overflow-scrolling: touch;
 }
 
+// 移动端半屏：content/scroller 撑满弹窗可用高度（含 min-height:30%）
+.content.is-mobile {
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .scroller {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scroll-plus-box {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+  }
+
+  .columns,
+  .columns.is-mobile {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    width: 100%;
+    min-height: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .content-item {
+    flex: 0 0 auto;
+    flex-basis: auto;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    max-height: none;
+    min-height: 0;
+    overflow: visible;
+    border-right: none;
+    border-bottom: 1px solid var(--font-color-grey-4, #f0f0f0);
+    box-sizing: border-box;
+  }
+
+  .content-item:not(.last-level-area) {
+    border-right: none;
+  }
+
+  .content-item:last-child,
+  .content-item.last-level-area {
+    border-bottom: none;
+  }
+
+  &:not(.is-popup),
+  &.is-popup {
+    .content-item,
+    .scroll-plus-box {
+      min-height: 0;
+      max-height: none;
+    }
+  }
+}
+
 .list {
   :global(.ant-list-item) {
     padding: 8px 12px;
@@ -422,9 +490,12 @@
       }
     }
 
-    // 移动端弹窗：多列改为竖直堆叠
+    // 移动端弹窗：多列改为竖直堆叠（与 .content.is-mobile 对齐，容器查询兜底）
     &.is-mobile {
       .scroller {
+        flex: 1 1 auto;
+        min-height: 0;
+        height: 100%;
         overflow-x: hidden;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
@@ -437,7 +508,7 @@
         flex-wrap: nowrap;
         width: 100%;
         height: auto;
-        min-height: 0;
+        min-height: 100%;
         overflow: visible;
       }
 

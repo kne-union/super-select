@@ -246,7 +246,7 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
   if (searchText && searchResults) {
     const currentIds = value.map(v => (typeof v === 'object' ? v[valueKey] : v));
     return (
-      <div className={classnames(style['content'], { [style['is-popup']]: isPopup, [style['is-mobile']]: isMobile })}>
+      <div className={classnames(style['content'], 'select-cascader-content', { [style['is-popup']]: isPopup, [style['is-mobile']]: isMobile })}>
         <SearchInput className={classnames(style['search-input'], { 'is-popup': isPopup })} placeholder={searchPlaceholder} value={searchText} onSearch={setSearchText} simple={isPopup} showSearchButton={!isPopup} />
         <ScrollBox className={style['scroll-plus-box']}>
           {searchResults.length === 0 ? (
@@ -278,7 +278,7 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
 
   return (
     <div
-      className={classnames(style['content'], {
+      className={classnames(style['content'], 'select-cascader-content', {
         [style['is-popup']]: isPopup,
         [style['has-search']]: !!onSearch,
         [style['is-mobile']]: isMobile
@@ -288,7 +288,7 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
       }}
     >
       {onSearch && <SearchInput className={classnames(style['search-input'], { 'is-popup': isPopup })} placeholder={searchPlaceholder} value={searchText} onSearch={setSearchText} simple={isPopup} showSearchButton={!isPopup} />}
-      <ScrollBox className={style['scroller']} {...(isMobile ? {} : { options: { autoHide: false } })}>
+      <ScrollBox className={classnames(style['scroller'], 'select-cascader-scroller')} {...(isMobile ? {} : { options: { autoHide: false } })}>
         <div className={classnames(style['columns'], { [style['is-mobile']]: isMobile })}>
           {selectedIds.map((selectedId, index) => {
             const selectNode = mapping.get(selectedId);
