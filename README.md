@@ -28,26 +28,27 @@ npm i --save @kne/super-select
 
 #### 组件列表
 
-| 组件名称            | 功能描述                        |
-|-----------------|-----------------------------|
-| SelectInput     | 基础选择输入组件，用于自定义构建其他选择组件的核心基础 |
-| SelectList      | 列表选择组件，适用于常规列表选择场景          |
-| SelectTableList | 表格形式选择组件，支持多列数据展示           |
-| SelectedAll     | 全选功能组件，提供一键选择/取消选择          |
-| SelectTree      | 树形选择组件，适用于层级数据              |
-| SelectedTagList | 已选项标签列表组件                   |
-| SelectCascader  | 级联选择组件，支持父子关联、搜索过滤          |
+| 组件名称        | 功能描述                                                |
+| --------------- | ------------------------------------------------------- |
+| SelectInput     | 基础选择输入组件，用于自定义构建其他选择组件的核心基础  |
+| SelectList      | 列表选择组件，适用于常规列表选择场景                    |
+| SelectTableList | 表格形式选择组件，支持多列数据与 tree/treeList 树形选择 |
+| SelectedAll     | 全选功能组件，提供一键选择/取消选择                     |
+| SelectTree      | 树形选择组件，适用于层级数据                            |
+| SelectedTagList | 已选项标签列表组件                                      |
+| SelectCascader  | 级联选择组件，支持父子关联、搜索过滤                    |
 
 #### 快速选择指南
 
-| 需求       | 推荐组件                        |
-|----------|-----------------------------|
-| 自定义选择组件  | SelectInput                 |
-| 简单列表选择   | SelectList                  |
-| 需要展示多列数据 | SelectTableList             |
-| 层级数据选择   | SelectTree 或 SelectCascader |
-| 全选/反选功能  | SelectedAll                 |
-| 已选项标签展示  | SelectedTagList             |
+| 需求             | 推荐组件                                  |
+| ---------------- | ----------------------------------------- |
+| 自定义选择组件   | SelectInput                               |
+| 简单列表选择     | SelectList                                |
+| 需要展示多列数据 | SelectTableList                           |
+| 表格内树形选择   | SelectTableList（dataType=tree/treeList） |
+| 层级数据选择     | SelectTree 或 SelectCascader              |
+| 全选/反选功能    | SelectedAll                               |
+| 已选项标签展示   | SelectedTagList                           |
 
 #### 快速开始
 
@@ -564,12 +565,12 @@ render(<BaseExample />);
 ```
 
 - SelectTableList 表格选择
-- 表格形式的选择组件，适合复杂数据的展示和选择，支持自定义列、搜索、单选/多选、renderMobile 自定义移动端卡片等
+- 表格形式的选择组件，适合复杂数据的展示和选择，支持自定义列、搜索、单选/多选、tree/treeList 树形、checkRelation、懒加载、renderMobile 自定义移动端卡片等
 - _SuperSelect(@kne/current-lib_super-select)[import * as _SuperSelect from "@kne/super-select"],antd(antd),(@kne/current-lib_super-select/dist/index.css)
 
 ```jsx
-const { SelectTableList } = _SuperSelect;
-const { Space, Button, Flex, Divider, Tag, Avatar, Switch, Checkbox } = antd;
+const { SelectTableList, mergeTreeChildren } = _SuperSelect;
+const { Space, Button, Flex, Divider, Tag, Avatar, Switch, Checkbox, Radio } = antd;
 const { useState } = React;
 
 // 模拟员工数据
@@ -589,7 +590,7 @@ const employeeColumns = [
     name: 'name',
     title: '姓名',
     span: 6,
-    getValueOf: (item) => (
+    getValueOf: item => (
       <Flex align="center" gap={8}>
         <Avatar size="small" style={{ backgroundColor: '#1677ff' }}>
           {item.name.slice(-2)}
@@ -612,9 +613,7 @@ const employeeColumns = [
     name: 'email',
     title: '邮箱',
     span: 6,
-    getValueOf: (item) => (
-      <span style={{ color: '#666', fontSize: 12 }}>{item.email}</span>
-    )
+    getValueOf: item => <span style={{ color: '#666', fontSize: 12 }}>{item.email}</span>
   },
   {
     name: 'options',
@@ -627,7 +626,7 @@ const employeeColumns = [
           size="small"
           danger
           disabled={item.status === 'inactive'}
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation();
             console.log('删除员工:', item.name);
           }}
@@ -659,35 +658,25 @@ const productColumns = [
     name: 'category',
     title: '分类',
     span: 4,
-    getValueOf: (item) => (
-      <Tag color="blue">{item.category}</Tag>
-    )
+    getValueOf: item => <Tag color="blue">{item.category}</Tag>
   },
   {
     name: 'price',
     title: '价格',
     span: 4,
-    getValueOf: (item) => &#96;¥${item.price}&#96;
+    getValueOf: item => &#96;¥${item.price}&#96;
   },
   {
     name: 'stock',
     title: '库存',
     span: 4,
-    getValueOf: (item) => (
-      <span style={{ color: item.stock < 50 ? 'red' : 'green' }}>
-        {item.stock}
-      </span>
-    )
+    getValueOf: item => <span style={{ color: item.stock < 50 ? 'red' : 'green' }}>{item.stock}</span>
   },
   {
     name: 'status',
     title: '状态',
     span: 4,
-    getValueOf: (item) => (
-      <Tag color={item.status === '在售' ? 'success' : 'default'}>
-        {item.status}
-      </Tag>
-    )
+    getValueOf: item => <Tag color={item.status === '在售' ? 'success' : 'default'}>{item.status}</Tag>
   }
 ];
 
@@ -698,19 +687,11 @@ const BasicTableExample = ({ isPopup }) => {
   return (
     <Flex vertical gap={8}>
       <span>多选表格：</span>
-      <SelectTableList
-        options={employeeOptions}
-        columns={employeeColumns}
-        valueKey="id"
-        labelKey="name"
-        value={value}
-        onChange={setValue}
-        isPopup={isPopup}
-        placeholder="请选择员工"
-        style={{ width: 600 }}
-      />
+      <SelectTableList options={employeeOptions} columns={employeeColumns} valueKey="id" labelKey="name" value={value} onChange={setValue} isPopup={isPopup} placeholder="请选择员工" style={{ width: 600 }} />
       {value.length > 0 && (
-        <div>已选 {value.length} 人：{value.map(item => item.name).join('、')}</div>
+        <div>
+          已选 {value.length} 人：{value.map(item => item.name).join('、')}
+        </div>
       )}
     </Flex>
   );
@@ -723,18 +704,7 @@ const SingleTableExample = ({ isPopup }) => {
   return (
     <Flex vertical gap={8}>
       <span>单选表格：</span>
-      <SelectTableList
-        single
-        options={productOptions}
-        columns={productColumns}
-        valueKey="id"
-        labelKey="productName"
-        value={value}
-        onChange={setValue}
-        isPopup={isPopup}
-        placeholder="请选择产品"
-        style={{ width: 600 }}
-      />
+      <SelectTableList single options={productOptions} columns={productColumns} valueKey="id" labelKey="productName" value={value} onChange={setValue} isPopup={isPopup} placeholder="请选择产品" style={{ width: 600 }} />
       {value && <div>已选：{value.productName}</div>}
     </Flex>
   );
@@ -759,11 +729,7 @@ const SearchableTableExample = ({ isPopup }) => {
         getSearchCallback={({ searchText }, item) => {
           if (!searchText) return true;
           const keyword = searchText.toLowerCase();
-          return (
-            item.name.toLowerCase().includes(keyword) ||
-            item.email.toLowerCase().includes(keyword) ||
-            item.department.toLowerCase().includes(keyword)
-          );
+          return item.name.toLowerCase().includes(keyword) || item.email.toLowerCase().includes(keyword) || item.department.toLowerCase().includes(keyword);
         }}
         style={{ width: 600 }}
       />
@@ -844,19 +810,17 @@ const DirectRenderExample = () => {
         getSearchCallback={({ searchText }, item) => {
           if (!searchText) return true;
           const keyword = searchText.toLowerCase();
-          return (
-            item.name.toLowerCase().includes(keyword) ||
-            item.email.toLowerCase().includes(keyword) ||
-            item.department.toLowerCase().includes(keyword)
-          );
+          return item.name.toLowerCase().includes(keyword) || item.email.toLowerCase().includes(keyword) || item.department.toLowerCase().includes(keyword);
         }}
         style={{ width: '100%' }}
-        renderContent={(content) => (
-          <div style={{ 
-            border: '1px solid #d9d9d9', 
-            borderRadius: 6, 
-            padding: 16
-          }}>
+        renderContent={content => (
+          <div
+            style={{
+              border: '1px solid #d9d9d9',
+              borderRadius: 6,
+              padding: 16
+            }}
+          >
             {content}
           </div>
         )}
@@ -893,13 +857,7 @@ const EmployeeMobileCard = ({ item, checked, disabled, onToggle }) => {
         cursor: disabled ? 'not-allowed' : 'pointer'
       }}
     >
-      <Checkbox
-        checked={checked}
-        disabled={disabled}
-        onClick={e => e.stopPropagation()}
-        onChange={onToggle}
-        style={{ marginTop: 2, flexShrink: 0 }}
-      />
+      <Checkbox checked={checked} disabled={disabled} onClick={e => e.stopPropagation()} onChange={onToggle} style={{ marginTop: 2, flexShrink: 0 }} />
       <div style={{ flex: 1, minWidth: 0 }}>
         {/* 主信息：姓名 + 状态 */}
         <Flex justify="space-between" align="center" gap={8} style={{ marginBottom: 6 }}>
@@ -949,9 +907,7 @@ const CustomMobileCardExample = ({ isPopup }) => {
   return (
     <Flex vertical gap={8}>
       <span>自定义移动端卡片（renderMobile）：</span>
-      <div style={{ color: '#666', fontSize: 12, lineHeight: 1.6 }}>
-        仅移动端生效。主信息为大号姓名，次要为部门/职位，辅助为邮箱与入职日期。桌面端仍为普通表格。
-      </div>
+      <div style={{ color: '#666', fontSize: 12, lineHeight: 1.6 }}>仅移动端生效。主信息为大号姓名，次要为部门/职位，辅助为邮箱与入职日期。桌面端仍为普通表格。</div>
       <SelectTableList
         options={employeeOptions}
         columns={employeeColumns}
@@ -964,11 +920,7 @@ const CustomMobileCardExample = ({ isPopup }) => {
         getSearchCallback={({ searchText }, item) => {
           if (!searchText) return true;
           const keyword = searchText.toLowerCase();
-          return (
-            item.name.toLowerCase().includes(keyword) ||
-            item.email.toLowerCase().includes(keyword) ||
-            item.department.toLowerCase().includes(keyword)
-          );
+          return item.name.toLowerCase().includes(keyword) || item.email.toLowerCase().includes(keyword) || item.department.toLowerCase().includes(keyword);
         }}
         style={{ width: 600 }}
         renderMobile={({ list, value: selected, setValue: setSelected, props: selectProps, isSelectedAll }) => (
@@ -989,9 +941,7 @@ const CustomMobileCardExample = ({ isPopup }) => {
                       setSelected([item]);
                       return;
                     }
-                    setSelected(prev =>
-                      isChecked ? prev.filter(target => target.id !== item.id) : [...prev, item]
-                    );
+                    setSelected(prev => (isChecked ? prev.filter(target => target.id !== item.id) : [...prev, item]));
                   }}
                 />
               );
@@ -1000,7 +950,240 @@ const CustomMobileCardExample = ({ isPopup }) => {
         )}
       />
       {value.length > 0 && (
-        <div>已选 {value.length} 人：{value.map(item => item.name).join('、')}</div>
+        <div>
+          已选 {value.length} 人：{value.map(item => item.name).join('、')}
+        </div>
+      )}
+    </Flex>
+  );
+};
+
+const orgTreeColumns = [
+  { name: 'name', title: '名称', span: 8 },
+  { name: 'code', title: '编码', span: 6 },
+  { name: 'owner', title: '负责人', span: 6 },
+  {
+    name: 'employeeCount',
+    title: '人数',
+    span: 4,
+    getValueOf: item => item.employeeCount ?? '-'
+  }
+];
+
+const orgTreeData = [
+  {
+    id: 'east',
+    name: '华东区',
+    code: 'EAST',
+    owner: '张三',
+    employeeCount: 120,
+    children: [
+      {
+        id: 'east-sh',
+        name: '上海',
+        code: 'SH',
+        owner: '李四',
+        employeeCount: 80,
+        children: [
+          { id: 'east-sh-pd', name: '浦东分部', code: 'SH-PD', owner: '王五', employeeCount: 40 },
+          { id: 'east-sh-xh', name: '徐汇分部', code: 'SH-XH', owner: '赵六', employeeCount: 40 }
+        ]
+      },
+      { id: 'east-hz', name: '杭州', code: 'HZ', owner: '钱七', employeeCount: 40 }
+    ]
+  },
+  {
+    id: 'north',
+    name: '华北区',
+    code: 'NORTH',
+    owner: '孙八',
+    employeeCount: 60,
+    children: [{ id: 'north-bj', name: '北京', code: 'BJ', owner: '周九', employeeCount: 60 }]
+  }
+];
+
+const orgTreeListData = [
+  { id: 'east', name: '华东区', code: 'EAST', owner: '张三', employeeCount: 120, parentId: null },
+  { id: 'east-sh', name: '上海', code: 'SH', owner: '李四', employeeCount: 80, parentId: 'east' },
+  { id: 'east-sh-pd', name: '浦东分部', code: 'SH-PD', owner: '王五', employeeCount: 40, parentId: 'east-sh' },
+  { id: 'east-sh-xh', name: '徐汇分部', code: 'SH-XH', owner: '赵六', employeeCount: 40, parentId: 'east-sh' },
+  { id: 'east-hz', name: '杭州', code: 'HZ', owner: '钱七', employeeCount: 40, parentId: 'east' },
+  { id: 'north', name: '华北区', code: 'NORTH', owner: '孙八', employeeCount: 60, parentId: '' },
+  { id: 'north-bj', name: '北京', code: 'BJ', owner: '周九', employeeCount: 60, parentId: 'north' }
+];
+
+const lazyRootData = [
+  { id: 'org-1', name: '集团总部', code: 'HQ', owner: '张三', parentId: null, hasChildren: true },
+  { id: 'org-2', name: '分公司', code: 'BR', owner: '李四', parentId: null, hasChildren: true }
+];
+
+const lazyChildrenMap = {
+  'org-1': [
+    { id: 'org-1-1', name: '研发中心', code: 'RD', owner: '王五', hasChildren: true },
+    { id: 'org-1-2', name: '市场部', code: 'MKT', owner: '赵六', hasChildren: false }
+  ],
+  'org-1-1': [
+    { id: 'org-1-1-1', name: '前端组', code: 'FE', owner: '钱七', hasChildren: false },
+    { id: 'org-1-1-2', name: '后端组', code: 'BE', owner: '孙八', hasChildren: false }
+  ],
+  'org-2': [{ id: 'org-2-1', name: '华南办', code: 'SC', owner: '周九', hasChildren: false }]
+};
+
+// dataType=tree：嵌套 children
+const TreeTableExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>树形表格（dataType=tree）：</span>
+      <div style={{ color: '#666', fontSize: 12, lineHeight: 1.6 }}>嵌套 children 数据；默认展开；多选时父子勾选关联为 parent（勾父级只保留父级值）。</div>
+      <SelectTableList
+        dataType="tree"
+        defaultExpandedKeys
+        options={orgTreeData}
+        columns={orgTreeColumns}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择组织节点"
+        getSearchCallback={({ searchText }, item) => {
+          if (!searchText) return true;
+          const keyword = searchText.toLowerCase();
+          return item.name.toLowerCase().includes(keyword) || item.code.toLowerCase().includes(keyword) || (item.owner || '').toLowerCase().includes(keyword);
+        }}
+        style={{ width: 600 }}
+      />
+      {value.length > 0 && (
+        <div>
+          已选 {value.length} 项：{value.map(item => item.name).join('、')}
+        </div>
+      )}
+    </Flex>
+  );
+};
+
+// dataType=treeList：扁平 parentId
+const TreeListTableExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>树形表格（dataType=treeList）：</span>
+      <div style={{ color: '#666', fontSize: 12, lineHeight: 1.6 }}>扁平列表按 parentId 组装为树；支持搜索时保留匹配节点的祖先路径。</div>
+      <SelectTableList
+        dataType="treeList"
+        defaultExpandedKeys
+        options={orgTreeListData}
+        columns={orgTreeColumns}
+        valueKey="id"
+        labelKey="name"
+        parentKey="parentId"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择组织节点"
+        getSearchCallback={({ searchText }, item) => {
+          if (!searchText) return true;
+          const keyword = searchText.toLowerCase();
+          return item.name.toLowerCase().includes(keyword) || item.code.toLowerCase().includes(keyword);
+        }}
+        style={{ width: 600 }}
+      />
+      {value.length > 0 && (
+        <div>
+          已选 {value.length} 项：{value.map(item => item.name).join('、')}
+        </div>
+      )}
+    </Flex>
+  );
+};
+
+// checkRelation：parent / all / independent
+const TreeCheckRelationExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+  const [checkRelation, setCheckRelation] = useState('parent');
+
+  return (
+    <Flex vertical gap={8}>
+      <span>树形勾选关联（checkRelation）：</span>
+      <Radio.Group
+        value={checkRelation}
+        optionType="button"
+        options={[
+          { label: 'parent', value: 'parent' },
+          { label: 'all', value: 'all' },
+          { label: 'independent', value: 'independent' }
+        ]}
+        onChange={e => {
+          setCheckRelation(e.target.value);
+          setValue([]);
+        }}
+      />
+      <div style={{ color: '#666', fontSize: 12, lineHeight: 1.6 }}>parent：勾父级只留父级值；all：值含父级与全部子孙；independent：父子互不影响。</div>
+      <SelectTableList
+        dataType="treeList"
+        defaultExpandedKeys
+        checkRelation={checkRelation}
+        options={orgTreeListData}
+        columns={orgTreeColumns}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择组织节点"
+        style={{ width: 600 }}
+      />
+      {value.length > 0 && <div>已选 key：{value.map(item => item.id).join(', ')}</div>}
+    </Flex>
+  );
+};
+
+// 懒加载：hasChildren + onLoadChildren + mergeTreeChildren
+const TreeLazyLoadExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+  const [lazyData, setLazyData] = useState(lazyRootData);
+
+  const handleLoadChildren = (item, { key }) =>
+    new Promise(resolve => {
+      setTimeout(() => {
+        const children = lazyChildrenMap[key] || [];
+        setLazyData(prev =>
+          mergeTreeChildren(prev, children, {
+            parentKeyValue: key,
+            dataType: 'treeList',
+            rowKey: 'id',
+            parentKey: 'parentId',
+            hasChildrenKey: 'hasChildren'
+          })
+        );
+        resolve();
+      }, 600);
+    });
+
+  return (
+    <Flex vertical gap={8}>
+      <span>树形懒加载：</span>
+      <div style={{ color: '#666', fontSize: 12, lineHeight: 1.6 }}>hasChildren=true 且本地无子节点时展开触发 onLoadChildren，用 mergeTreeChildren 合并子节点。</div>
+      <SelectTableList
+        dataType="treeList"
+        options={lazyData}
+        columns={orgTreeColumns}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择组织节点"
+        onLoadChildren={handleLoadChildren}
+        style={{ width: 600 }}
+      />
+      {value.length > 0 && (
+        <div>
+          已选 {value.length} 项：{value.map(item => item.name).join('、')}
+        </div>
       )}
     </Flex>
   );
@@ -1013,15 +1196,8 @@ const BaseExample = () => {
     <Flex vertical gap={24}>
       <Flex align="center" gap={12}>
         <span>展示模式：</span>
-        <Switch
-          checked={isPopup}
-          onChange={setIsPopup}
-          checkedChildren="下拉"
-          unCheckedChildren="弹窗"
-        />
-        <span style={{ color: '#666', fontSize: 12 }}>
-          {isPopup ? '点击输入框展开下拉菜单' : '点击输入框打开弹窗'}
-        </span>
+        <Switch checked={isPopup} onChange={setIsPopup} checkedChildren="下拉" unCheckedChildren="弹窗" />
+        <span style={{ color: '#666', fontSize: 12 }}>{isPopup ? '点击输入框展开下拉菜单' : '点击输入框打开弹窗'}</span>
       </Flex>
       <Divider />
       <BasicTableExample isPopup={isPopup} />
@@ -1035,6 +1211,14 @@ const BaseExample = () => {
       <CustomFooterExample isPopup={isPopup} />
       <Divider />
       <CustomMobileCardExample isPopup={isPopup} />
+      <Divider />
+      <TreeTableExample isPopup={isPopup} />
+      <Divider />
+      <TreeListTableExample isPopup={isPopup} />
+      <Divider />
+      <TreeCheckRelationExample isPopup={isPopup} />
+      <Divider />
+      <TreeLazyLoadExample isPopup={isPopup} />
       <Divider />
       <DirectRenderExample />
     </Flex>
@@ -2186,37 +2370,37 @@ render(<BaseExample />);
 
 基础选择输入组件，提供核心的选择功能和状态管理。
 
-| 属性名               | 说明                | 类型                            | 默认值                 |
-|-------------------|-------------------|-------------------------------|---------------------|
-| value             | 当前选中的值            | array \| object               | []                  |
-| defaultValue      | 默认选中的值            | array \| object               | []                  |
-| onChange          | 选中值变化时的回调函数       | function(value)               | -                   |
-| single            | 是否单选模式            | boolean                       | false               |
-| maxLength         | 最多可选数量（多选模式）      | number                        | -                   |
-| disabled          | 是否禁用              | boolean                       | false               |
-| size              | 选择框尺寸             | 'small' \| 'default' \| 'large' | 'default'           |
-| placeholder       | 输入框占位符            | string                        | '请选择'              |
-| labelKey          | 数据项显示文本字段         | string                        | 'label'             |
-| valueKey          | 数据项唯一标识字段         | string                        | 'value'             |
-| isPopup           | 是否下拉模式（false 为弹窗）| boolean                       | true                |
-| placement         | 下拉菜单位置            | string                        | 'bottomLeft'        |
-| overlayWidth      | 下拉菜单宽度            | number \| string              | 同输入框宽度              |
-| overlayClassName  | 下拉菜单自定义类名         | string                        | -                   |
-| labelWrap         | 标签是否换行显示          | boolean                       | false               |
-| allowClear        | 是否允许清空            | boolean                       | true                |
-| allowSelectedAll  | 是否显示全选按钮          | boolean                       | false               |
-| selectedAllValue  | 全选项的值配置           | object                        | { value: 'all', label: '全选' } |
-| prefix            | 输入框前缀             | ReactNode \| function         | -                   |
-| suffix            | 输入框后缀             | ReactNode \| function         | -                   |
-| className         | 自定义类名             | string                        | -                   |
-| style             | 自定义样式             | object                        | -                   |
-| children          | 自定义渲染内容           | function(props)               | -                   |
-| renderModal       | 自定义弹窗渲染（非 isPopup 模式）| function(contextProps)    | 默认 Modal 弹窗        |
-| renderContent     | 自定义内容渲染           | function(children)            | -                   |
-| inputRender       | 自定义输入框渲染          | function(props, contextProps) | -                   |
-| open              | 是否打开下拉菜单          | boolean                       | -                   |
-| defaultOpen       | 默认是否打开            | boolean                       | false               |
-| onOpenChange      | 下拉菜单状态变化回调        | function(open)                | -                   |
+| 属性名           | 说明                              | 类型                            | 默认值                          |
+| ---------------- | --------------------------------- | ------------------------------- | ------------------------------- |
+| value            | 当前选中的值                      | array \| object                 | []                              |
+| defaultValue     | 默认选中的值                      | array \| object                 | []                              |
+| onChange         | 选中值变化时的回调函数            | function(value)                 | -                               |
+| single           | 是否单选模式                      | boolean                         | false                           |
+| maxLength        | 最多可选数量（多选模式）          | number                          | -                               |
+| disabled         | 是否禁用                          | boolean                         | false                           |
+| size             | 选择框尺寸                        | 'small' \| 'default' \| 'large' | 'default'                       |
+| placeholder      | 输入框占位符                      | string                          | '请选择'                        |
+| labelKey         | 数据项显示文本字段                | string                          | 'label'                         |
+| valueKey         | 数据项唯一标识字段                | string                          | 'value'                         |
+| isPopup          | 是否下拉模式（false 为弹窗）      | boolean                         | true                            |
+| placement        | 下拉菜单位置                      | string                          | 'bottomLeft'                    |
+| overlayWidth     | 下拉菜单宽度                      | number \| string                | 同输入框宽度                    |
+| overlayClassName | 下拉菜单自定义类名                | string                          | -                               |
+| labelWrap        | 标签是否换行显示                  | boolean                         | false                           |
+| allowClear       | 是否允许清空                      | boolean                         | true                            |
+| allowSelectedAll | 是否显示全选按钮                  | boolean                         | false                           |
+| selectedAllValue | 全选项的值配置                    | object                          | { value: 'all', label: '全选' } |
+| prefix           | 输入框前缀                        | ReactNode \| function           | -                               |
+| suffix           | 输入框后缀                        | ReactNode \| function           | -                               |
+| className        | 自定义类名                        | string                          | -                               |
+| style            | 自定义样式                        | object                          | -                               |
+| children         | 自定义渲染内容                    | function(props)                 | -                               |
+| renderModal      | 自定义弹窗渲染（非 isPopup 模式） | function(contextProps)          | 默认 Modal 弹窗                 |
+| renderContent    | 自定义内容渲染                    | function(children)              | -                               |
+| inputRender      | 自定义输入框渲染                  | function(props, contextProps)   | -                               |
+| open             | 是否打开下拉菜单                  | boolean                         | -                               |
+| defaultOpen      | 默认是否打开                      | boolean                         | false                           |
+| onOpenChange     | 下拉菜单状态变化回调              | function(open)                  | -                               |
 
 ##### 标签溢出处理
 
@@ -2232,54 +2416,62 @@ render(<BaseExample />);
 
 基于 SelectInput 的列表选择组件，适用于常规的列表选择场景。
 
-| 属性名           | 说明           | 类型                            | 默认值   |
-|---------------|--------------|-------------------------------|-------|
-| value         | 当前选中的值       | array                         | []    |
-| onChange      | 选中值变化时的回调函数  | function(value, item, {type}) | -     |
-| dataSource    | 数据源          | array                         | []    |
-| idField       | 数据项唯一标识字段    | string                        | 'id'  |
-| multiple      | 是否支持多选       | boolean                       | false |
-| max           | 最多可选数量       | number                        | -     |
-| disabled      | 是否禁用         | boolean                       | false |
-| readOnly      | 是否只读         | boolean                       | false |
-| className     | 自定义类名        | string                        | -     |
-| style         | 自定义样式        | object                        | -     |
-| renderItem    | 自定义列表项渲染     | function(item, index)         | -     |
-| emptyContent  | 无数据时的显示内容    | ReactNode                     | -     |
-| locale        | 国际化配置        | object                        | 默认中文  |
-| onExceed      | 超出最大可选数量时的回调 | function(value, item)         | -     |
-| onSelect      | 选择时的回调       | function(value, item)         | -     |
-| onDeselect    | 取消选择时的回调     | function(value, item)         | -     |
-| itemClassName | 列表项自定义类名     | string                        | -     |
-| itemStyle     | 列表项自定义样式     | object                        | -     |
+| 属性名        | 说明                     | 类型                          | 默认值   |
+| ------------- | ------------------------ | ----------------------------- | -------- |
+| value         | 当前选中的值             | array                         | []       |
+| onChange      | 选中值变化时的回调函数   | function(value, item, {type}) | -        |
+| dataSource    | 数据源                   | array                         | []       |
+| idField       | 数据项唯一标识字段       | string                        | 'id'     |
+| multiple      | 是否支持多选             | boolean                       | false    |
+| max           | 最多可选数量             | number                        | -        |
+| disabled      | 是否禁用                 | boolean                       | false    |
+| readOnly      | 是否只读                 | boolean                       | false    |
+| className     | 自定义类名               | string                        | -        |
+| style         | 自定义样式               | object                        | -        |
+| renderItem    | 自定义列表项渲染         | function(item, index)         | -        |
+| emptyContent  | 无数据时的显示内容       | ReactNode                     | -        |
+| locale        | 国际化配置               | object                        | 默认中文 |
+| onExceed      | 超出最大可选数量时的回调 | function(value, item)         | -        |
+| onSelect      | 选择时的回调             | function(value, item)         | -        |
+| onDeselect    | 取消选择时的回调         | function(value, item)         | -        |
+| itemClassName | 列表项自定义类名         | string                        | -        |
+| itemStyle     | 列表项自定义样式         | object                        | -        |
 
 #### SelectTableList
 
-表格形式的选择组件，适用于需要展示多列数据的选择场景。
+表格形式的选择组件，适用于需要展示多列数据的选择场景。基于 `@kne/table-view`，支持普通列表与树形（`tree` / `treeList`）选择。
 
-| 属性名             | 说明           | 类型                            | 默认值   |
-|-----------------|--------------|-------------------------------|-------|
-| value           | 当前选中的值       | array                         | []    |
-| onChange        | 选中值变化时的回调函数  | function(value, item, {type}) | -     |
-| dataSource      | 数据源          | array                         | []    |
-| idField         | 数据项唯一标识字段    | string                        | 'id'  |
-| multiple        | 是否支持多选       | boolean                       | false |
-| max             | 最多可选数量       | number                        | -     |
-| disabled        | 是否禁用         | boolean                       | false |
-| readOnly        | 是否只读         | boolean                       | false |
-| className       | 自定义类名        | string                        | -     |
-| style           | 自定义样式        | object                        | -     |
-| columns         | 表格列配置        | array                         | []    |
-| emptyContent    | 无数据时的显示内容    | ReactNode                     | -     |
-| locale          | 国际化配置        | object                        | 默认中文  |
-| onExceed        | 超出最大可选数量时的回调 | function(value, item)         | -     |
-| onSelect        | 选择时的回调       | function(value, item)         | -     |
-| onDeselect      | 取消选择时的回调     | function(value, item)         | -     |
-| rowClassName    | 行自定义类名       | string                        | -     |
-| rowStyle        | 行自定义样式       | object                        | -     |
-| headerClassName | 表头自定义类名      | string                        | -     |
-| headerStyle     | 表头自定义样式      | object                        | -     |
-| renderMobile    | 移动端自定义卡片渲染；为 `false` 时关闭移动端卡片；为 function 时接管列表区渲染（仅移动端），参数含 `list` / `value` / `setValue` / `renderBody` 等 | boolean \| function | 默认卡片 List |
+| 属性名               | 说明                                                                                                                                                                                    | 类型                                 | 默认值          |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | --------------- |
+| value                | 当前选中的值                                                                                                                                                                            | array                                | []              |
+| onChange             | 选中值变化时的回调函数                                                                                                                                                                  | function(value)                      | -               |
+| options              | 本地数据源（与 `api` 二选一）                                                                                                                                                           | array                                | -               |
+| api                  | 远程分页加载配置                                                                                                                                                                        | object                               | -               |
+| columns              | 表格列配置                                                                                                                                                                              | array                                | []              |
+| valueKey             | 数据项唯一标识字段                                                                                                                                                                      | string                               | `'value'`       |
+| labelKey             | 数据项展示字段                                                                                                                                                                          | string                               | `'label'`       |
+| single               | 是否单选                                                                                                                                                                                | boolean                              | false           |
+| allowSelectedAll     | 是否显示全选                                                                                                                                                                            | boolean                              | false           |
+| className            | 自定义类名                                                                                                                                                                              | string                               | -               |
+| style                | 自定义样式                                                                                                                                                                              | object                               | -               |
+| renderMobile         | 移动端自定义卡片渲染；为 `false` 时关闭移动端卡片；为 function 时接管列表区渲染（仅移动端），参数含 `list` / `displayDataSource` / `value` / `setValue` / `renderBody` / 树形辅助方法等 | boolean \| function                  | 默认卡片 List   |
+| dataType             | 数据形态。`list` 扁平列表；`tree` 使用 `childrenKey` 嵌套；`treeList` 按 `parentKey` 组装为树                                                                                           | `'list'` \| `'tree'` \| `'treeList'` | `'list'`        |
+| parentKey            | `treeList` 父子关联字段                                                                                                                                                                 | string                               | `'parentId'`    |
+| childrenKey          | 子节点字段名                                                                                                                                                                            | string                               | `'children'`    |
+| hasChildrenKey       | 懒加载节点是否仍有子级的标记字段                                                                                                                                                        | string                               | `'hasChildren'` |
+| treeTitleKey         | 移动端树形面包屑文案字段；默认取 `labelKey`                                                                                                                                             | string \| function                   | `labelKey`      |
+| checkRelation        | 树形 checkbox 父子勾选关联：`parent` / `all` / `independent`                                                                                                                            | string                               | `'parent'`      |
+| onLoadChildren       | 懒加载回调 `(item, { key }) => void \| Promise`；需配合 `mergeTreeChildren` 合并子节点                                                                                                  | function                             | -               |
+| expandedKeys         | 受控展开：`true` 全开 / `false` 全关 / key 数组                                                                                                                                         | boolean \| array                     | -               |
+| defaultExpandedKeys  | 非受控初始展开                                                                                                                                                                          | boolean \| array                     | `false`         |
+| onExpandedKeysChange | 展开变化回调 `(keys) => void`                                                                                                                                                           | function                             | -               |
+| indentSize           | 树形每层缩进（px）                                                                                                                                                                      | number                               | `16`            |
+
+树形说明：
+
+- `tree` / `treeList` 能力透传自 `@kne/table-view`（展开收起、缩进、半选、移动端面包屑等）
+- 搜索（`getSearchCallback`）在 `tree` 下递归过滤并保留祖先；在 `treeList` 下匹配节点时自动带上祖先路径
+- 懒加载示例：`onLoadChildren` 内用包导出的 `mergeTreeChildren` 更新 `options`
 
 ```jsx
 <SelectTableList
@@ -2292,83 +2484,88 @@ render(<BaseExample />);
       ))}
     </Flex>
   )}
-/>
+/>;
+
+{
+  /* 树形 */
+}
+<SelectTableList dataType="treeList" defaultExpandedKeys checkRelation="parent" options={treeListOptions} columns={columns} valueKey="id" labelKey="name" />;
 ```
 
 ##### columns 配置项
 
-| 属性名       | 说明            | 类型                            | 默认值 |
-|-----------|---------------|-------------------------------|-----|
-| title     | 列标题           | ReactNode                     | -   |
-| dataIndex | 列数据在数据项中对应的路径 | string                        | -   |
-| key       | React key     | string                        | -   |
-| render    | 自定义渲染函数       | function(text, record, index) | -   |
-| width     | 列宽度           | string \| number              | -   |
-| className | 列自定义类名        | string                        | -   |
-| style     | 列自定义样式        | object                        | -   |
+| 属性名    | 说明                       | 类型                          | 默认值 |
+| --------- | -------------------------- | ----------------------------- | ------ |
+| title     | 列标题                     | ReactNode                     | -      |
+| dataIndex | 列数据在数据项中对应的路径 | string                        | -      |
+| key       | React key                  | string                        | -      |
+| render    | 自定义渲染函数             | function(text, record, index) | -      |
+| width     | 列宽度                     | string \| number              | -      |
+| className | 列自定义类名               | string                        | -      |
+| style     | 列自定义样式               | object                        | -      |
 
 #### SelectedAll
 
 全选功能组件，提供一键选择/取消选择所有项的功能。
 
-| 属性名        | 说明          | 类型                      | 默认值   |
-|------------|-------------|-------------------------|-------|
-| value      | 当前选中的值      | array                   | []    |
-| onChange   | 选中值变化时的回调函数 | function(value, {type}) | -     |
-| dataSource | 数据源         | array                   | []    |
-| idField    | 数据项唯一标识字段   | string                  | 'id'  |
-| disabled   | 是否禁用        | boolean                 | false |
-| readOnly   | 是否只读        | boolean                 | false |
-| className  | 自定义类名       | string                  | -     |
-| style      | 自定义样式       | object                  | -     |
-| children   | 自定义渲染内容     | function(props)         | -     |
-| locale     | 国际化配置       | object                  | 默认中文  |
+| 属性名     | 说明                   | 类型                    | 默认值   |
+| ---------- | ---------------------- | ----------------------- | -------- |
+| value      | 当前选中的值           | array                   | []       |
+| onChange   | 选中值变化时的回调函数 | function(value, {type}) | -        |
+| dataSource | 数据源                 | array                   | []       |
+| idField    | 数据项唯一标识字段     | string                  | 'id'     |
+| disabled   | 是否禁用               | boolean                 | false    |
+| readOnly   | 是否只读               | boolean                 | false    |
+| className  | 自定义类名             | string                  | -        |
+| style      | 自定义样式             | object                  | -        |
+| children   | 自定义渲染内容         | function(props)         | -        |
+| locale     | 国际化配置             | object                  | 默认中文 |
 
 #### SelectTree
 
 树形选择组件，适用于层级数据的展示和选择。
 
-| 属性名               | 说明                | 类型                            | 默认值                 |
-|-------------------|-------------------|-------------------------------|---------------------|
-| value             | 当前选中的值            | array                         | []                  |
-| onChange          | 选中值变化时的回调函数       | function(value, item, {type}) | -                   |
-| dataSource        | 数据源               | array                         | []                  |
-| idField           | 数据项唯一标识字段         | string                        | 'id'                |
-| multiple          | 是否支持多选            | boolean                       | false               |
-| max               | 最多可选数量            | number                        | -                   |
-| disabled          | 是否禁用              | boolean                       | false               |
-| readOnly          | 是否只读              | boolean                       | false               |
-| className         | 自定义类名             | string                        | -                   |
-| style             | 自定义样式             | object                        | -                   |
-| renderItem        | 自定义树节点渲染         | function(item, index)         | -                   |
-| emptyContent      | 无数据时的显示内容        | ReactNode                     | -                   |
-| locale            | 国际化配置             | object                        | 默认中文                |
-| onExceed          | 超出最大可选数量时的回调      | function(value, item)         | -                   |
-| onSelect          | 选择时的回调            | function(value, item)         | -                   |
-| onDeselect        | 取消选择时的回调          | function(value, item)         | -                   |
+| 属性名       | 说明                     | 类型                          | 默认值   |
+| ------------ | ------------------------ | ----------------------------- | -------- |
+| value        | 当前选中的值             | array                         | []       |
+| onChange     | 选中值变化时的回调函数   | function(value, item, {type}) | -        |
+| dataSource   | 数据源                   | array                         | []       |
+| idField      | 数据项唯一标识字段       | string                        | 'id'     |
+| multiple     | 是否支持多选             | boolean                       | false    |
+| max          | 最多可选数量             | number                        | -        |
+| disabled     | 是否禁用                 | boolean                       | false    |
+| readOnly     | 是否只读                 | boolean                       | false    |
+| className    | 自定义类名               | string                        | -        |
+| style        | 自定义样式               | object                        | -        |
+| renderItem   | 自定义树节点渲染         | function(item, index)         | -        |
+| emptyContent | 无数据时的显示内容       | ReactNode                     | -        |
+| locale       | 国际化配置               | object                        | 默认中文 |
+| onExceed     | 超出最大可选数量时的回调 | function(value, item)         | -        |
+| onSelect     | 选择时的回调             | function(value, item)         | -        |
+| onDeselect   | 取消选择时的回调         | function(value, item)         | -        |
 
 #### SelectedTagList
 
 已选项标签列表组件，以标签形式展示已选中的项目。
 
-| 属性名          | 说明          | 类型                            | 默认值   |
-|--------------|-------------|-------------------------------|-------|
-| value        | 当前选中的值      | array                         | []    |
-| onChange     | 选中值变化时的回调函数 | function(value, item, {type}) | -     |
-| dataSource   | 数据源         | array                         | []    |
-| idField      | 数据项唯一标识字段   | string                        | 'id'  |
-| disabled     | 是否禁用        | boolean                       | false |
-| readOnly     | 是否只读        | boolean                       | false |
-| className    | 自定义类名       | string                        | -     |
-| style        | 自定义样式       | object                        | -     |
-| renderItem   | 自定义标签渲染     | function(item, index)         | -     |
-| emptyContent | 无数据时的显示内容   | ReactNode                     | -     |
-| locale       | 国际化配置       | object                        | 默认中文  |
-| onRemove     | 移除标签时的回调    | function(value, item)         | -     |
-| onClear      | 清空所有标签时的回调  | function(value)               | -     |
-| showClear    | 是否显示清空按钮    | boolean                       | true  |
-| tagClassName | 标签自定义类名     | string                        | -     |
-| tagStyle     | 标签自定义样式     | object                        | -     |
+| 属性名       | 说明                   | 类型                          | 默认值   |
+| ------------ | ---------------------- | ----------------------------- | -------- |
+| value        | 当前选中的值           | array                         | []       |
+| onChange     | 选中值变化时的回调函数 | function(value, item, {type}) | -        |
+| dataSource   | 数据源                 | array                         | []       |
+| idField      | 数据项唯一标识字段     | string                        | 'id'     |
+| disabled     | 是否禁用               | boolean                       | false    |
+| readOnly     | 是否只读               | boolean                       | false    |
+| className    | 自定义类名             | string                        | -        |
+| style        | 自定义样式             | object                        | -        |
+| renderItem   | 自定义标签渲染         | function(item, index)         | -        |
+| emptyContent | 无数据时的显示内容     | ReactNode                     | -        |
+| locale       | 国际化配置             | object                        | 默认中文 |
+| onRemove     | 移除标签时的回调       | function(value, item)         | -        |
+| onClear      | 清空所有标签时的回调   | function(value)               | -        |
+| showClear    | 是否显示清空按钮       | boolean                       | true     |
+| tagClassName | 标签自定义类名         | string                        | -        |
+| tagStyle     | 标签自定义样式         | object                        | -        |
 
 #### 国际化配置
 
@@ -2391,50 +2588,51 @@ import { zhCN, enUS } from '@kne/super-select/locale';
 
 ##### 可配置的文案
 
-| 键名        | 说明        | 默认中文值          |
-|-----------|-----------|----------------|
-| empty     | 无数据时的提示文案 | 暂无数据           |
-| selectAll | 全选按钮文案    | 全选             |
-| clearAll  | 清空按钮文案    | 清空             |
-| selected  | 已选文案      | 已选             |
-| items     | 项文案       | 项              |
-| exceed    | 超出限制提示文案  | 最多只能选择 {max} 项 |
+| 键名      | 说明               | 默认中文值            |
+| --------- | ------------------ | --------------------- |
+| empty     | 无数据时的提示文案 | 暂无数据              |
+| selectAll | 全选按钮文案       | 全选                  |
+| clearAll  | 清空按钮文案       | 清空                  |
+| selected  | 已选文案           | 已选                  |
+| items     | 项文案             | 项                    |
+| exceed    | 超出限制提示文案   | 最多只能选择 {max} 项 |
 
 #### SelectCascader
 
 级联选择组件，适用于地区选择、组织架构、商品分类等层级数据的选择场景。支持多列菜单展示、父子关联选择、末级限制、搜索过滤等功能。
 
-| 属性名               | 说明                | 类型                            | 默认值                 |
-|-------------------|-------------------|-------------------------------|---------------------|
-| options          | 级联数据源            | array                         | []                  |
-| value            | 当前选中的值            | array \| object               | []                  |
-| onChange         | 选中值变化时的回调函数       | function(value)               | -                   |
-| defaultValue     | 默认选中的值            | array                         | []                  |
-| single           | 是否单选模式            | boolean                       | false               |
-| maxLength        | 最多可选数量            | number                        | Number.MAX_VALUE    |
-| onlyAllowLastLevel | 是否只允许选择末级节点     | boolean                       | false               |
-| openLoadData     | 是否开启懒加载           | boolean                       | false               |
-| onLoadMore       | 懒加载回调函数           | function({ [parentIdKey]: id }) | -                 |
-| parentIdKey      | 父节点ID字段名          | string                        | 'id'                |
-| menuItemWidth    | 每列菜单宽度            | number                        | 180                 |
-| isPopup          | 是否下拉模式（false 为弹窗）| boolean                       | true                |
-| searchPlaceholder| 搜索框占位符            | string                        | '搜索...'             |
-| onSearch         | 搜索回调函数            | function(searchText, { mapping }) | -              |
-| valueKey         | 数据项唯一标识字段         | string                        | 'id'                |
-| labelKey         | 数据项显示文本字段         | string                        | 'label'             |
-| placeholder      | 输入框占位符            | string                        | '请选择'              |
-| disabled         | 是否禁用              | boolean                       | false               |
-| size             | 选择框尺寸             | 'small' \| 'default' \| 'large' | 'default'           |
-| overlayWidth     | 下拉菜单宽度            | number                        | menuItemWidth * 2   |
+| 属性名             | 说明                         | 类型                              | 默认值            |
+| ------------------ | ---------------------------- | --------------------------------- | ----------------- |
+| options            | 级联数据源                   | array                             | []                |
+| value              | 当前选中的值                 | array \| object                   | []                |
+| onChange           | 选中值变化时的回调函数       | function(value)                   | -                 |
+| defaultValue       | 默认选中的值                 | array                             | []                |
+| single             | 是否单选模式                 | boolean                           | false             |
+| maxLength          | 最多可选数量                 | number                            | Number.MAX_VALUE  |
+| onlyAllowLastLevel | 是否只允许选择末级节点       | boolean                           | false             |
+| openLoadData       | 是否开启懒加载               | boolean                           | false             |
+| onLoadMore         | 懒加载回调函数               | function({ [parentIdKey]: id })   | -                 |
+| parentIdKey        | 父节点ID字段名               | string                            | 'id'              |
+| menuItemWidth      | 每列菜单宽度                 | number                            | 180               |
+| isPopup            | 是否下拉模式（false 为弹窗） | boolean                           | true              |
+| searchPlaceholder  | 搜索框占位符                 | string                            | '搜索...'         |
+| onSearch           | 搜索回调函数                 | function(searchText, { mapping }) | -                 |
+| valueKey           | 数据项唯一标识字段           | string                            | 'id'              |
+| labelKey           | 数据项显示文本字段           | string                            | 'label'           |
+| placeholder        | 输入框占位符                 | string                            | '请选择'          |
+| disabled           | 是否禁用                     | boolean                           | false             |
+| size               | 选择框尺寸                   | 'small' \| 'default' \| 'large'   | 'default'         |
+| overlayWidth       | 下拉菜单宽度                 | number                            | menuItemWidth * 2 |
 
 ##### options 数据结构
 
 ```javascript
 [
   {
-    id: 'node1',           // 唯一标识，字段名可通过 valueKey 配置
-    name: '节点名称',       // 显示文本，字段名可通过 labelKey 配置
-    children: [            // 子节点
+    id: 'node1', // 唯一标识，字段名可通过 valueKey 配置
+    name: '节点名称', // 显示文本，字段名可通过 labelKey 配置
+    children: [
+      // 子节点
       {
         id: 'node1-1',
         name: '子节点1',
@@ -2442,12 +2640,13 @@ import { zhCN, enUS } from '@kne/super-select/locale';
       }
     ]
   }
-]
+];
 ```
 
 ##### 父子关联选择
 
 组件默认支持父子关联选择：
+
 - 选中父节点时，自动选中所有子节点
 - 取消父节点时，自动取消所有子节点
 - 当所有子节点都被选中时，父节点自动选中
@@ -2460,9 +2659,7 @@ import { zhCN, enUS } from '@kne/super-select/locale';
 <SelectCascader
   options={data}
   onSearch={(searchText, { mapping }) => {
-    return Array.from(mapping.values()).filter(item => 
-      item.name.includes(searchText)
-    );
+    return Array.from(mapping.values()).filter(item => item.name.includes(searchText));
   }}
 />
 ```
