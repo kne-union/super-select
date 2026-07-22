@@ -42,13 +42,25 @@
 }
 
 .table {
-  // 边框由 TableView 自身绘制，避免与外层叠成双框
+  // 边框由 TableView 自身绘制，避免与外层叠成双框；选择面板内去掉圆角
   border: none;
-  border-radius: var(--radius-default, 2px);
+  border-radius: 0;
   overflow-x: auto;
   overflow-y: hidden;
 
   :global {
+    .info-page-table {
+      border-radius: 0;
+    }
+
+    .info-page-table-header > .info-page-table-col:first-child {
+      border-start-start-radius: 0;
+    }
+
+    .info-page-table-header > .info-page-table-col:last-child {
+      border-start-end-radius: 0;
+    }
+
     .info-page-table-body {
       min-width: 100%;
     }

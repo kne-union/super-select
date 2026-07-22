@@ -6,3 +6,4 @@ export { default as SelectTableList } from './SelectTableList';
 export { default as SelectTree } from './SelectTree';
 export { default as SelectCascader } from './SelectCascader';
 export { createTreeUtils } from './SelectCascader';
+export { mergeTreeChildren } from '@kne/table-view';
