@@ -143,7 +143,7 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
   };
 
   useEffect(() => {
-    if (!openLoadData || !onLoadMore) {
+    if (!open || !openLoadData || !onLoadMore) {
       return;
     }
 
@@ -165,7 +165,7 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
       .catch(() => {
         setLoading(false);
       });
-  }, [selectedIds, mapping, openLoadData, onLoadMore, parentIdKey]);
+  }, [open, selectedIds, mapping, openLoadData, onLoadMore, parentIdKey]);
 
   // 检查是否为非叶子节点
   const isNotLastNode = useCallback(
@@ -579,7 +579,7 @@ const SelectCascader = ({
           })
           .filter(Boolean);
 
-        return (
+        return contextProps.open ? (
           <CascaderInner
             options={options}
             value={currentDisplayValue}
@@ -600,7 +600,7 @@ const SelectCascader = ({
             open={contextProps.open}
             isMobile={contextProps.isMobile}
           />
-        );
+        ) : null;
       }}
     </SelectInput>
   );

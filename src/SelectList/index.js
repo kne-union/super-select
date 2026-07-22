@@ -88,7 +88,7 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
   return (
     <SelectInput {...props} ref={ref}>
       {targetProps => {
-        const { props, value, searchProps, setSearchProps, onOpenChange, isMobile } = targetProps;
+        const { props, value, searchProps, setSearchProps, onOpenChange, isMobile, open } = targetProps;
         const { footer, isPopup, getSearchProps, getSearchCallback, searchPlaceholder, valueKey, single, allowSelectedAll, showSelectedTag, api, options, renderList, selectedAllValue } = props;
         const components = {
           search: ((api && typeof getSearchProps === 'function') || (options && typeof getSearchCallback === 'function')) && (
@@ -114,7 +114,7 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
               <SelectedAll />
             </div>
           ),
-          fetchList: (
+          fetchList: open ? (
             <FetchScrollLoader
               {...props}
               className={classnames(style['list'], 'select-list-scroll-list', {
@@ -150,7 +150,7 @@ const SelectList = forwardRef(({ children, ...p }, ref) => {
                 return renderList(Object.assign({}, fetchProps, targetProps, { isSelectedAll }));
               }}
             </FetchScrollLoader>
-          ),
+          ) : null,
           selectedTag: showSelectedTag && (
             <div
               className={classnames(style['selected-tag'], 'select-list-selected-tag', {
