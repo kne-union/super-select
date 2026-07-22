@@ -126,7 +126,7 @@ const SelectTableList = createWithIntlProvider(
     return (
       <SelectInput {...props} ref={ref}>
         {targetProps => {
-          const { props, value, setValue, onRemove, onOpenChange, searchProps, isMobile } = targetProps;
+          const { props, value, setValue, onRemove, onOpenChange, searchProps, isMobile, open } = targetProps;
           const {
             footer,
             filterRender,
@@ -175,47 +175,48 @@ const SelectTableList = createWithIntlProvider(
             </div>
           );
 
-          const renderScrollList = renderContent => (
-            <FetchScrollLoader
-              {...props}
-              className={classnames(style['list'], 'select-table-list-scroll-list', {
-                'is-popup': isPopup
-              })}
-              useSimpleBar={!isMobile}
-              searchProps={searchProps}
-              getSearchProps={getSearchProps}
-              api={Object.assign(
-                {},
-                options
-                  ? {
-                      data: { options, searchProps },
-                      loader: ({ data }) => {
-                        const { options, searchProps } = data;
-                        return {
-                          pageData: filterTreeOptions(options, searchProps, getSearchCallback, targetProps, {
-                            dataType,
-                            valueKey,
-                            parentKey,
-                            childrenKey
-                          })
-                        };
+          const renderScrollList = renderContent =>
+            open ? (
+              <FetchScrollLoader
+                {...props}
+                className={classnames(style['list'], 'select-table-list-scroll-list', {
+                  'is-popup': isPopup
+                })}
+                useSimpleBar={!isMobile}
+                searchProps={searchProps}
+                getSearchProps={getSearchProps}
+                api={Object.assign(
+                  {},
+                  options
+                    ? {
+                        data: { options, searchProps },
+                        loader: ({ data }) => {
+                          const { options, searchProps } = data;
+                          return {
+                            pageData: filterTreeOptions(options, searchProps, getSearchCallback, targetProps, {
+                              dataType,
+                              valueKey,
+                              parentKey,
+                              childrenKey
+                            })
+                          };
+                        }
                       }
-                    }
-                  : api
-              )}
-            >
-              {fetchProps => {
-                fetchListRef.current = fetchProps;
-                const { list } = fetchProps;
-                const contextProps = Object.assign({}, fetchProps, targetProps, { isSelectedAll });
-                if (!(list && list.length > 0)) {
-                  return props.empty || <Empty className={classnames(style['empty'])} />;
-                }
+                    : api
+                )}
+              >
+                {fetchProps => {
+                  fetchListRef.current = fetchProps;
+                  const { list } = fetchProps;
+                  const contextProps = Object.assign({}, fetchProps, targetProps, { isSelectedAll });
+                  if (!(list && list.length > 0)) {
+                    return props.empty || <Empty className={classnames(style['empty'])} />;
+                  }
 
-                return renderContent(list, contextProps);
-              }}
-            </FetchScrollLoader>
-          );
+                  return renderContent(list, contextProps);
+                }}
+              </FetchScrollLoader>
+            ) : null;
 
           const tableSelection = {
             allowSelectedAll,

@@ -256,7 +256,7 @@ const SelectInput = createWithIntlProvider({
                     onOpenChange(false);
                   }}
                 >
-                  {children(contextProps)}
+                  {open ? children(contextProps) : null}
                 </MobileSheetPanel>
               </>
             );
@@ -266,6 +266,8 @@ const SelectInput = createWithIntlProvider({
               className={overlayClassName}
               width={1000}
               open={open}
+              destroyOnClose
+              destroyOnHidden
               title={placeholder}
               onCancel={() => {
                 onOpenChange(false);
@@ -275,7 +277,7 @@ const SelectInput = createWithIntlProvider({
                 onOpenChange(false);
               }}
             >
-              {children(contextProps)}
+              {open ? children(contextProps) : null}
             </Modal>
           );
         }
@@ -500,6 +502,13 @@ const SelectInput = createWithIntlProvider({
       [setOpen]
     );
 
+    // 关闭时清空搜索，保证下次展开重新请求且从初始搜索态开始
+    useEffect(() => {
+      if (!open) {
+        setSearchProps({});
+      }
+    }, [open]);
+
     const contextProps = {
       props,
       value: value,
@@ -607,9 +616,12 @@ const SelectInput = createWithIntlProvider({
       return contextProps;
     });
 
+    // 嵌入模式内容常显，视为已展开，保证会发起请求
     if (props.renderContent && typeof props.renderContent === 'function') {
-      return props.renderContent(children(contextProps));
+      return props.renderContent(children(Object.assign({}, contextProps, { open: true })));
     }
+
+    const isOverlayOpen = !disabled && open;
 
     // 移动端半屏：与 Modal 一致，临时选中 + 取消/确认
     if (useMobileSheet) {
@@ -643,8 +655,8 @@ const SelectInput = createWithIntlProvider({
                       setOpen(false);
                     }}
                   >
-                    {/* 使用 SelectInput 的 children（列表内容），勿用被 JSX 覆盖的 context.children */}
-                    {children(sheetContextProps)}
+                    {/* 仅展开时挂载列表，关闭卸载以便下次展开重新请求 */}
+                    {sheetOpen ? children(sheetContextProps) : null}
                   </MobileSheetPanel>
                 </>
               );
@@ -662,7 +674,8 @@ const SelectInput = createWithIntlProvider({
           e.stopPropagation();
         }}
       >
-        {children(contextProps)}
+        {/* 仅展开时挂载列表，关闭卸载以便下次展开重新请求 */}
+        {isOverlayOpen ? children(contextProps) : null}
       </div>
     );
 
@@ -670,7 +683,7 @@ const SelectInput = createWithIntlProvider({
       <Provider value={contextProps}>
         {isPopup ? (
           <Dropdown
-            open={!disabled && open}
+            open={isOverlayOpen}
             onOpenChange={handleOpenChange}
             placement={placement}
             arrow={false}
@@ -681,6 +694,8 @@ const SelectInput = createWithIntlProvider({
             autoAdjustOverflow={autoAdjustOverflow}
             transitionName={transitionName}
             trigger="click"
+            destroyPopupOnHide
+            destroyOnHidden
             popupRender={() => overlayContent}
             dropdownRender={() => overlayContent}
           >

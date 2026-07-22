@@ -116,7 +116,7 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
   return (
     <SelectInput {...props} ref={ref}>
       {targetProps => {
-        const { props, value, onOpenChange, isMobile } = targetProps;
+        const { props, value, onOpenChange, isMobile, open } = targetProps;
         const { footer, isPopup, valueKey, single, allowSelectedAll, showSelectedTag, api, options, renderTree, selectedAllValue } = props;
         const components = {
           selectedAll: !single && allowSelectedAll && (
@@ -128,7 +128,7 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
               <SelectedAll />
             </div>
           ),
-          treeList: (
+          treeList: open ? (
             <Fetch
               {...Object.assign(
                 {},
@@ -157,7 +157,7 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
                 );
               }}
             />
-          ),
+          ) : null,
           selectedTag: showSelectedTag && (
             <div
               className={classnames(style['selected-tag'], 'select-tree-selected-tag', {
