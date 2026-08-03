@@ -85,6 +85,9 @@ const pxToNumber = value => {
   return match ? Number(match[0]) : 0;
 };
 
+/** 未传 overlayWidth 时的面板最小宽度（与 .overlay-content min-width 一致） */
+const DEFAULT_OVERLAY_MIN_WIDTH = 300;
+
 // 与 Modal 模式一致：面板内用临时 value，确认后才写回
 const ModalContent = ({ children: renderContent, ...others }) => {
   const { open, value: propsValue } = others;
@@ -342,10 +345,6 @@ const SelectInput = createWithIntlProvider({
     const useMobileSheet = isMobile && !disableMobileSheet;
     const useBoundaryMount = !!(isMobile && fixedModeClass === MOBILE_POPUP_MODE.boundary);
 
-    const mergedOverlayStyle = useMemo(() => {
-      return Object.assign({}, overlayStyle, zIndex != null ? { zIndex } : null);
-    }, [overlayStyle, zIndex]);
-
     const transformValue = value => {
       if (single) {
         return isNotEmpty(value) ? [value] : [];
@@ -389,8 +388,17 @@ const SelectInput = createWithIntlProvider({
     };
 
     const popupOverlayWidth = useMemo(() => {
-      return numberToPx(Math.max(containerWidth, pxToNumber(overlayWidth)));
+      const configured = overlayWidth != null && overlayWidth !== '' ? pxToNumber(overlayWidth) : DEFAULT_OVERLAY_MIN_WIDTH;
+      return numberToPx(Math.max(containerWidth || 0, configured));
     }, [containerWidth, overlayWidth]);
+
+    // 同步给 Dropdown 外层 minWidth，避免 antd 按窄触发器裁剪面板
+    const mergedOverlayStyle = useMemo(() => {
+      return Object.assign({}, overlayStyle, zIndex != null ? { zIndex } : null, {
+        minWidth: popupOverlayWidth,
+        ['--overlay-width']: popupOverlayWidth
+      });
+    }, [overlayStyle, zIndex, popupOverlayWidth]);
 
     const resizeRef = useResize(containerWidthChange);
     const setContainerRef = useCallback(

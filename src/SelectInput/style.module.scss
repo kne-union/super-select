@@ -156,7 +156,8 @@
     0 6px 16px 0 rgba(0, 0, 0, 0.08),
     0 3px 6px -4px rgba(0, 0, 0, 0.12),
     0 9px 28px 8px rgba(0, 0, 0, 0.05);
-  min-width: unset !important;
+  /* 覆盖 antd 按触发器写的 min-width，避免窄触发器（如 FilterItem）裁切面板 */
+  min-width: var(--overlay-width, 300px) !important;
   border-radius: var(--radius-default, 2px);
   overflow: hidden;
 
