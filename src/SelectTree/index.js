@@ -63,7 +63,8 @@ const SelectTree = forwardRef(({ children, ...p }, ref) => {
                 return;
               }
               if (single) {
-                setValue([item]);
+                // 筛选场景：再次点击已选项视为清空，否则单选无法清除
+                setValue(isChecked ? [] : [item]);
               } else {
                 onSelect(item);
               }
