@@ -114,19 +114,39 @@
   flex-shrink: 0;
 }
 
+.tag-overflow {
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.tag-overflow-content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+
+  > * {
+    flex-shrink: 0;
+  }
+}
+
 .measure-layer {
   position: absolute;
   visibility: hidden;
   pointer-events: none;
+  height: 0;
+  overflow: hidden;
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  white-space: nowrap;
 
-  :global(.ant-tag) {
-    margin: 2px 4px 2px 0;
+  > * {
+    flex-shrink: 0;
   }
 }
 

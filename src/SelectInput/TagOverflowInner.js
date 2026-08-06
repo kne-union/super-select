@@ -1,92 +1,80 @@
-import React, { useState, useLayoutEffect, useRef } from 'react';
+import React, { useMemo } from 'react';
 import { Tag } from 'antd';
+import { useOverflowItems } from '@kne/overflow-items';
 import style from './style.module.scss';
 
+const TAG_GAP = 8;
+
 /**
- * 标签溢出内部渲染组件
- * 根据 innerWidth 计算标签显示数量
+ * 标签溢出：用 @kne/overflow-items 按容器宽度计算可见数量，预留 +N。
  */
-const TagOverflowInner = ({ value, innerWidth, labelKey, valueKey, onRemove, overflowTagWidth = 45, iconSpace = 20 }) => {
-  const [visibleCount, setVisibleCount] = useState(value.length);
-
-  const measureRef = useRef(null);
-
-  // 测量每个标签的实际宽度并计算可见数量
-  useLayoutEffect(() => {
-    // innerWidth 为 0 时，保持当前状态，等待正确的宽度
-    if (!measureRef.current || innerWidth === 0 || value.length === 0) {
-      setVisibleCount(value.length);
-      return;
-    }
-
-    const tagElements = measureRef.current.querySelectorAll('[data-tag-measure]');
-    if (tagElements.length === 0) return;
-
-    // 获取每个标签的实际占用宽度（包含 margin）
-    const tagWidths = Array.from(tagElements).map(el => {
-      const style = window.getComputedStyle(el);
-      const marginLeft = parseFloat(style.marginLeft) || 0;
-      const marginRight = parseFloat(style.marginRight) || 0;
-      return el.offsetWidth + marginLeft + marginRight;
-    });
-
-    const availableWidth = innerWidth - iconSpace;
-
-    let totalWidth = 0;
-    let count = 0;
-
-    for (let i = 0; i < tagWidths.length; i++) {
-      // 如果不是最后一个，需要预留 +N 标签空间
-      const needOverflowSpace = i < tagWidths.length - 1;
-      const requiredWidth = tagWidths[i] + (needOverflowSpace ? overflowTagWidth : 0);
-
-      if (totalWidth + requiredWidth <= availableWidth) {
-        totalWidth += tagWidths[i];
-        count++;
-      } else {
-        break;
-      }
-    }
-
-    // 确保至少显示一个标签
-    setVisibleCount(Math.max(1, count));
-  }, [value, innerWidth, overflowTagWidth, iconSpace]);
-
-  // 计算单个标签最大宽度：min(150px, innerWidth - 60)，初始状态默认 150px
+const TagOverflowInner = ({ value, innerWidth, labelKey, valueKey, onRemove, iconSpace = 20 }) => {
+  const list = Array.isArray(value) ? value : [];
+  const availableWidth = Math.max((innerWidth || 0) - iconSpace, 0);
   const maxTagWidth = innerWidth > 0 ? Math.min(150, Math.max(60, innerWidth - 60)) : 150;
-  const displayTags = value.slice(0, visibleCount);
-  const hiddenCount = value.length - visibleCount;
+
+  const shareItems = useMemo(
+    () =>
+      list.map(item => ({
+        key: item?.[valueKey],
+        label: item?.[labelKey]
+      })),
+    [list, labelKey, valueKey]
+  );
+
+  const { setContainerRef, setMeasureRef, setMoreMeasureRef, visibleCount, ready, hiddenCount, shouldMeasure } = useOverflowItems({
+    itemCount: list.length,
+    items: shareItems,
+    enabled: list.length > 0 && availableWidth > 0,
+    gap: TAG_GAP,
+    beforeReady: 'all',
+    debounce: 0,
+    itemSelector: '[data-tag-measure]'
+  });
+
+  const displayCount = ready ? visibleCount : list.length;
+  const displayTags = list.slice(0, displayCount);
+  const showOverflow = ready && hiddenCount > 0;
 
   return (
-    <>
-      {/* 隐藏的测量层 */}
-      <div ref={measureRef} className={style['measure-layer']}>
-        {value.map(item => (
-          <Tag key={item[valueKey]} data-tag-measure closable bordered={false} className={style['tag-item']} style={{ '--max-tag-width': `${maxTagWidth}px` }}>
-            <span className={style['tag-label']}>{item[labelKey]}</span>
+    <div ref={setContainerRef} className={style['tag-overflow']} style={{ width: availableWidth || '100%', maxWidth: '100%' }}>
+      {shouldMeasure ? (
+        <div ref={setMeasureRef} className={style['measure-layer']} aria-hidden style={{ gap: TAG_GAP }}>
+          {list.map(item => (
+            <div key={item[valueKey]} data-tag-measure>
+              <Tag closable bordered={false} className={style['tag-item']} style={{ '--max-tag-width': `${maxTagWidth}px`, margin: 0 }}>
+                <span className={style['tag-label']}>{item[labelKey]}</span>
+              </Tag>
+            </div>
+          ))}
+          <div ref={setMoreMeasureRef}>
+            <Tag className={style['overflow-tag']} style={{ margin: 0 }}>
+              +99
+            </Tag>
+          </div>
+        </div>
+      ) : null}
+      <div className={style['tag-overflow-content']} style={{ gap: TAG_GAP }}>
+        {displayTags.map(item => (
+          <Tag
+            key={item[valueKey]}
+            closable
+            bordered={false}
+            className={style['tag-item']}
+            style={{ '--max-tag-width': `${maxTagWidth}px`, margin: 0 }}
+            onClose={e => {
+              e.preventDefault();
+              onRemove(item);
+            }}
+          >
+            <span className={style['tag-label']} title={item[labelKey]}>
+              {item[labelKey]}
+            </span>
           </Tag>
         ))}
+        {showOverflow ? <Tag className={style['overflow-tag']}>+{hiddenCount}</Tag> : null}
       </div>
-      {/* 实际显示的标签 */}
-      {displayTags.map(item => (
-        <Tag
-          key={item[valueKey]}
-          closable
-          bordered={false}
-          className={style['tag-item']}
-          style={{ '--max-tag-width': `${maxTagWidth}px` }}
-          onClose={e => {
-            e.preventDefault();
-            onRemove(item);
-          }}
-        >
-          <span className={style['tag-label']} title={item[labelKey]}>
-            {item[labelKey]}
-          </span>
-        </Tag>
-      ))}
-      {hiddenCount > 0 && <Tag className={style['overflow-tag']}>+{hiddenCount}</Tag>}
-    </>
+    </div>
   );
 };
 
