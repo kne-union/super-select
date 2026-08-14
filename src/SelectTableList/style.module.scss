@@ -42,11 +42,15 @@
 }
 
 .table {
-  // 边框由 TableView 自身绘制，避免与外层叠成双框；选择面板内去掉圆角
+  // 边框由 TablePage 自身绘制，避免与外层叠成双框；选择面板内去掉圆角
   border: none;
   border-radius: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 
   :global {
     .info-page-table {
@@ -62,7 +66,8 @@
     }
 
     .info-page-table-body {
-      min-width: 100%;
+      width: 100%;
+      min-width: 0;
     }
 
     .info-page-table-row:last-child {
@@ -75,21 +80,48 @@
     .info-page-table.is-mobile-render {
       border: none;
     }
+
+    // Table 只给表体 selection-col 做了居中，表头全选 Checkbox 仍走 .col-content 的左右 margin
+    .ant-table-thead > tr > .ant-table-selection-column {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .ant-table-thead > tr > .ant-table-selection-column > * {
+      margin-inline: 0 !important;
+      width: 100% !important;
+      max-width: 100%;
+      overflow: visible;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+
+    .ant-table-selection-column .ant-checkbox-wrapper {
+      margin-inline-end: 0;
+    }
   }
 }
 
 .list {
-  max-height: 300px;
+  position: relative;
+  min-height: 0;
+  flex: 1;
+  // 桌面端高度由 Table scroll.y 决定，避免 overflow 把表体底部滚动条裁掉
+  overflow: hidden;
 
-  &:not(.is-popup) {
-    max-height: 400px;
-  }
+  // span / 未设 width 的列应铺满容器；纵向滚动条占宽后 table 100% 会多出 ~15px 横条
+  &.is-fit-columns {
+    :global {
+      .ant-table-header {
+        overflow: hidden !important;
+      }
 
-  :global {
-    .info-page-table-body [class*='kne-table-view_P-ebv'] {
-      position: sticky;
-      top: 0;
-      z-index: 1;
+      .ant-table-body {
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+      }
     }
   }
 }

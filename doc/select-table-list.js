@@ -189,6 +189,67 @@ const SelectAllTableExample = ({ isPopup }) => {
   );
 };
 
+const wideEmployeeColumns = [
+  { name: 'name', title: '姓名', width: 160 },
+  { name: 'department', title: '部门', width: 180 },
+  { name: 'position', title: '职位', width: 160 },
+  { name: 'email', title: '邮箱', width: 240 },
+  { name: 'joinDate', title: '入职日期', width: 140 },
+  {
+    name: 'status',
+    title: '状态',
+    width: 120,
+    getValueOf: item => <Tag color={item.status === 'active' ? 'success' : 'default'}>{item.status === 'active' ? '在职' : '停用'}</Tag>
+  },
+  {
+    name: 'options',
+    title: '操作',
+    width: 100,
+    getValueOf: item => (
+      <Button
+        type="link"
+        size="small"
+        danger
+        disabled={item.status === 'inactive'}
+        onClick={e => {
+          e.stopPropagation();
+        }}
+      >
+        移除
+      </Button>
+    )
+  }
+];
+
+// 列宽超出容器：横向滚动条吸附表体底部
+const WideTableExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+
+  return (
+    <Flex vertical gap={8}>
+      <span>横向超宽表格：</span>
+      <div style={{ color: '#666', fontSize: 12, lineHeight: 1.6 }}>列只设 width、不要写 span。总宽超出选择面板时出现横向滚动，滚动条在表体可视区域底部，表头保持固定。</div>
+      <SelectTableList
+        allowSelectedAll
+        options={employeeOptions}
+        columns={wideEmployeeColumns}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="请选择员工"
+        style={{ width: 600 }}
+      />
+      {value.length > 0 && (
+        <div>
+          已选 {value.length} 人：{value.map(item => item.name).join('、')}
+        </div>
+      )}
+    </Flex>
+  );
+};
+
 // 自定义底部
 const CustomFooterExample = ({ isPopup }) => {
   const [value, setValue] = useState([]);
@@ -636,6 +697,8 @@ const BaseExample = () => {
       <SearchableTableExample isPopup={isPopup} />
       <Divider />
       <SelectAllTableExample isPopup={isPopup} />
+      <Divider />
+      <WideTableExample isPopup={isPopup} />
       <Divider />
       <CustomFooterExample isPopup={isPopup} />
       <Divider />

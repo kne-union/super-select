@@ -1,16 +1,17 @@
 import React, { useState, useRef, forwardRef } from 'react';
 import SelectInput from '../SelectInput';
 import { Flex, Row, Col, Button, Tag, Popover, Empty } from 'antd';
-import { FetchScrollLoader } from '@kne/scroll-loader';
 import SearchInput from '@kne/search-input';
 import { computedIsSelectAll } from '../SelectedAll';
 import classnames from 'classnames';
 import SimpleBar from 'simplebar-react';
 import { createWithIntlProvider, useIntl } from '@kne/react-intl';
+import { isNotEmpty } from '@kne/is-empty';
+import merge from 'lodash/merge';
 import style from './style.module.scss';
 import 'simplebar-react/dist/simplebar.min.css';
-import TableView, { flattenAllTree, isTreeDataType, normalizeTreeData } from '@kne/table-view';
-import '@kne/table-view/dist/index.css';
+import TablePage, { flattenAllTree, hasColumnWidth, isTreeDataType, normalizeTreeData } from '@kne/table-page';
+import '@kne/table-page/dist/index.css';
 import { CentralContent } from '@kne/info-page';
 import '@kne/info-page/dist/index.css';
 
@@ -71,6 +72,20 @@ const filterTreeOptions = (options, searchProps, getSearchCallback, targetProps,
   return options.filter(item => getSearchCallback(searchProps, item, targetProps));
 };
 
+const getListFromPageData = data => {
+  if (Array.isArray(data?.pageData)) {
+    return data.pageData;
+  }
+  if (Array.isArray(data?.list)) {
+    return data.list;
+  }
+  return [];
+};
+
+const TABLE_LIST_MAX_HEIGHT_POPUP = 300;
+const TABLE_LIST_MAX_HEIGHT_EMBED = 400;
+const TABLE_HEADER_HEIGHT = 48;
+
 const SelectTableList = createWithIntlProvider(
   'zh-CN',
   zhCn,
@@ -79,7 +94,8 @@ const SelectTableList = createWithIntlProvider(
   forwardRef((p, ref) => {
     const { formatMessage } = useIntl();
     const [tagSearchText, setTagSearchText] = useState('');
-    const fetchListRef = useRef();
+    const tablePageRef = useRef();
+    const listScrollRef = useRef();
     const props = Object.assign(
       {},
       {
@@ -155,7 +171,9 @@ const SelectTableList = createWithIntlProvider(
             defaultExpandedKeys,
             onExpandedKeysChange,
             indentSize,
-            checkRelation
+            checkRelation,
+            pagination: paginationProp,
+            dataFormat
           } = props;
           const isSelectedAll = computedIsSelectAll(value, selectedAllValue, valueKey);
           const resolvedTreeTitleKey = treeTitleKey || labelKey;
@@ -165,7 +183,7 @@ const SelectTableList = createWithIntlProvider(
               {typeof footer === 'function'
                 ? footer({
                     reload: () => {
-                      fetchListRef.current?.fetchApi && fetchListRef.current?.fetchApi.reload();
+                      tablePageRef.current?.reload();
                     },
                     close: () => {
                       onOpenChange(false);
@@ -175,48 +193,26 @@ const SelectTableList = createWithIntlProvider(
             </div>
           );
 
-          const renderScrollList = renderContent =>
-            open ? (
-              <FetchScrollLoader
-                {...props}
-                className={classnames(style['list'], 'select-table-list-scroll-list', {
-                  'is-popup': isPopup
-                })}
-                useSimpleBar={!isMobile}
-                searchProps={searchProps}
-                getSearchProps={getSearchProps}
-                api={Object.assign(
-                  {},
-                  options
-                    ? {
-                        data: { options, searchProps },
-                        loader: ({ data }) => {
-                          const { options, searchProps } = data;
-                          return {
-                            pageData: filterTreeOptions(options, searchProps, getSearchCallback, targetProps, {
-                              dataType,
-                              valueKey,
-                              parentKey,
-                              childrenKey
-                            })
-                          };
-                        }
-                      }
-                    : api
-                )}
-              >
-                {fetchProps => {
-                  fetchListRef.current = fetchProps;
-                  const { list } = fetchProps;
-                  const contextProps = Object.assign({}, fetchProps, targetProps, { isSelectedAll });
-                  if (!(list && list.length > 0)) {
-                    return props.empty || <Empty className={classnames(style['empty'])} />;
-                  }
+          const tablePageFetchConfig = options
+            ? {
+                data: { options, searchProps },
+                loader: ({ data }) => {
+                  const { options: nextOptions, searchProps: nextSearchProps } = data;
+                  const pageData = filterTreeOptions(nextOptions, nextSearchProps, getSearchCallback, targetProps, {
+                    dataType,
+                    valueKey,
+                    parentKey,
+                    childrenKey
+                  });
+                  return {
+                    pageData,
+                    totalCount: pageData.length
+                  };
+                }
+              }
+            : merge({}, api, typeof getSearchProps === 'function' && isNotEmpty(searchProps) ? { data: getSearchProps(searchProps) || {} } : {});
 
-                  return renderContent(list, contextProps);
-                }}
-              </FetchScrollLoader>
-            ) : null;
+          const allColumnsHaveWidth = Array.isArray(columns) && columns.length > 0 && columns.every(hasColumnWidth);
 
           const tableSelection = {
             allowSelectedAll,
@@ -231,7 +227,7 @@ const SelectTableList = createWithIntlProvider(
               setValue(prev => {
                 const prevMap = new Map((prev || []).map(item => [item[valueKey], item]));
                 const listMap = new Map(
-                  flattenSelectList(fetchListRef.current?.list, {
+                  flattenSelectList(getListFromPageData(tablePageRef.current?.data), {
                     dataType,
                     rowKey: valueKey,
                     parentKey,
@@ -311,8 +307,8 @@ const SelectTableList = createWithIntlProvider(
                                     .map(item => Object.assign({}, item, { span: 12 }))}
                                   dataSource={Object.assign({}, item)}
                                   context={Object.assign({}, targetProps, {
-                                    fetchApi: fetchListRef.current?.fetchApi,
-                                    list: fetchListRef.current?.list
+                                    fetchApi: tablePageRef.current,
+                                    list: getListFromPageData(tablePageRef.current?.data)
                                   })}
                                 />
                               }
@@ -338,50 +334,71 @@ const SelectTableList = createWithIntlProvider(
             <div className={classnames(style['table-panel'], { [style['single-body']]: single })}>
               <div className={style['filter-wrap']}>{filterRender(Object.assign({}, targetProps))}</div>
               <div className={classnames(style['table'], 'select-table')}>
-                {renderScrollList((list, contextProps) => {
-                  const tableViewProps = {
-                    dataSource: list,
-                    columns,
-                    rowKey: valueKey,
-                    rowSelection: tableSelection,
-                    context: contextProps,
-                    dataType,
-                    parentKey,
-                    childrenKey,
-                    hasChildrenKey,
-                    treeTitleKey: resolvedTreeTitleKey,
-                    renderMobile:
-                      renderMobile === false
-                        ? false
-                        : typeof renderMobile === 'function'
-                          ? mobileProps =>
-                              renderMobile({
-                                ...mobileProps,
-                                ...contextProps,
-                                list: mobileProps.displayDataSource || list,
-                                dataSource: list,
-                                renderBody: (nextList = mobileProps.displayDataSource || list, nextContext = contextProps) => mobileProps.renderBody(nextList, nextContext)
-                              })
-                          : true
-                  };
-                  // 可选树形 props：仅在有值 / 用户显式传入时透传，避免 undefined 覆盖 TableView 默认值
-                  if (typeof onLoadChildren === 'function') {
-                    tableViewProps.onLoadChildren = onLoadChildren;
-                  }
-                  if (typeof onExpandedKeysChange === 'function') {
-                    tableViewProps.onExpandedKeysChange = onExpandedKeysChange;
-                  }
-                  if (indentSize != null) {
-                    tableViewProps.indentSize = indentSize;
-                  }
-                  if (Object.prototype.hasOwnProperty.call(p, 'expandedKeys')) {
-                    tableViewProps.expandedKeys = expandedKeys;
-                  }
-                  if (Object.prototype.hasOwnProperty.call(p, 'defaultExpandedKeys')) {
-                    tableViewProps.defaultExpandedKeys = defaultExpandedKeys;
-                  }
-                  return <TableView {...tableViewProps} />;
-                })}
+                {open ? (
+                  <div
+                    ref={listScrollRef}
+                    className={classnames(style['list'], 'select-table-list-scroll-list', {
+                      'is-popup': isPopup,
+                      [style['is-fit-columns']]: !allColumnsHaveWidth
+                    })}
+                  >
+                    <TablePage
+                      {...tablePageFetchConfig}
+                      ref={tablePageRef}
+                      {...(dataFormat ? { dataFormat } : null)}
+                      pagination={Object.assign(
+                        {
+                          open: false,
+                          showSizeChanger: false,
+                          showQuickJumper: false,
+                          hideOnSinglePage: true
+                        },
+                        paginationProp
+                      )}
+                      scroll={
+                        isMobile
+                          ? undefined
+                          : Object.assign(
+                              {
+                                y: (isPopup ? TABLE_LIST_MAX_HEIGHT_POPUP : TABLE_LIST_MAX_HEIGHT_EMBED) - TABLE_HEADER_HEIGHT
+                              },
+                              allColumnsHaveWidth ? null : { x: undefined }
+                            )
+                      }
+                      controllerOpen={false}
+                      columns={columns}
+                      rowKey={valueKey}
+                      rowSelection={tableSelection}
+                      columnRenderProps={Object.assign({}, targetProps, { isSelectedAll })}
+                      empty={props.empty || <Empty className={classnames(style['empty'])} />}
+                      dataType={dataType}
+                      parentKey={parentKey}
+                      childrenKey={childrenKey}
+                      hasChildrenKey={hasChildrenKey}
+                      treeTitleKey={resolvedTreeTitleKey}
+                      renderMobile={
+                        renderMobile === false
+                          ? false
+                          : typeof renderMobile === 'function'
+                            ? mobileProps =>
+                                renderMobile({
+                                  ...mobileProps,
+                                  ...targetProps,
+                                  isSelectedAll,
+                                  list: mobileProps.displayDataSource || mobileProps.dataSource,
+                                  dataSource: mobileProps.dataSource,
+                                  renderBody: (nextList = mobileProps.displayDataSource || mobileProps.dataSource, nextContext) => mobileProps.renderBody(nextList, nextContext)
+                                })
+                            : true
+                      }
+                      {...(typeof onLoadChildren === 'function' ? { onLoadChildren } : null)}
+                      {...(typeof onExpandedKeysChange === 'function' ? { onExpandedKeysChange } : null)}
+                      {...(indentSize != null ? { indentSize } : null)}
+                      {...(Object.prototype.hasOwnProperty.call(p, 'expandedKeys') ? { expandedKeys } : null)}
+                      {...(Object.prototype.hasOwnProperty.call(p, 'defaultExpandedKeys') ? { defaultExpandedKeys } : null)}
+                    />
+                  </div>
+                ) : null}
               </div>
               {(single && footerEl) || (!isMobile && <div className={classnames(style['footer'], 'select-table-footer')} />)}
             </div>
