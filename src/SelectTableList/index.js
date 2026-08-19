@@ -10,8 +10,9 @@ import { isNotEmpty } from '@kne/is-empty';
 import merge from 'lodash/merge';
 import style from './style.module.scss';
 import 'simplebar-react/dist/simplebar.min.css';
-import TablePage, { flattenAllTree, hasColumnWidth, isTreeDataType, normalizeTreeData } from '@kne/table-page';
-import '@kne/table-page/dist/index.css';
+import { flattenAllTree, hasColumnWidth, isTreeDataType, normalizeTreeData } from '@kne/table-view';
+import '@kne/table-view/dist/index.css';
+import FetchTable from './FetchTable';
 import { CentralContent } from '@kne/info-page';
 import '@kne/info-page/dist/index.css';
 
@@ -345,7 +346,7 @@ const SelectTableList = createWithIntlProvider(
                       [style['is-fit-columns']]: !allColumnsHaveWidth
                     })}
                   >
-                    <TablePage
+                    <FetchTable
                       {...tablePageFetchConfig}
                       ref={tablePageRef}
                       {...(dataFormat ? { dataFormat } : null)}
