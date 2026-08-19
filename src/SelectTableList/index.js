@@ -193,6 +193,9 @@ const SelectTableList = createWithIntlProvider(
             </div>
           );
 
+          const paginationParamsType = paginationProp?.paramsType || 'data';
+          const searchRequestProps = typeof getSearchProps === 'function' && isNotEmpty(searchProps) ? { [paginationParamsType]: getSearchProps(searchProps) || {} } : {};
+
           const tablePageFetchConfig = options
             ? {
                 data: { options, searchProps },
@@ -210,7 +213,7 @@ const SelectTableList = createWithIntlProvider(
                   };
                 }
               }
-            : merge({}, api, typeof getSearchProps === 'function' && isNotEmpty(searchProps) ? { data: getSearchProps(searchProps) || {} } : {});
+            : merge({}, api, searchRequestProps);
 
           const allColumnsHaveWidth = Array.isArray(columns) && columns.length > 0 && columns.every(hasColumnWidth);
 
