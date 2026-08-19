@@ -352,7 +352,7 @@ const SelectTableList = createWithIntlProvider(
                       {...(dataFormat ? { dataFormat } : null)}
                       pagination={Object.assign(
                         {
-                          open: false,
+                          open: true,
                           showSizeChanger: false,
                           showQuickJumper: false,
                           hideOnSinglePage: true
