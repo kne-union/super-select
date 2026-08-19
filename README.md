@@ -743,6 +743,59 @@ const SearchableTableExample = ({ isPopup }) => {
   );
 };
 
+const remoteSearchListFilter = { language: 'zh-CN' };
+
+// 远程搜索：getSearchProps 必须写入 params（paramsType=params），不能写进 data
+const RemoteSearchTableExample = ({ isPopup }) => {
+  const [value, setValue] = useState([]);
+  const [lastRequest, setLastRequest] = useState(null);
+  const api = React.useMemo(
+    () => ({
+      params: { filter: remoteSearchListFilter },
+      loader: request => {
+        const snapshot = { params: request?.params || {}, data: request?.data || {} };
+        setTimeout(() => setLastRequest(snapshot), 0);
+        const keyword = (snapshot.params.filter?.keyword || '').toLowerCase();
+        const pageData = employeeOptions.filter(item => {
+          if (!keyword) {
+            return true;
+          }
+          return item.name.toLowerCase().includes(keyword) || item.email.toLowerCase().includes(keyword) || item.department.toLowerCase().includes(keyword);
+        });
+        return { pageData, totalCount: pageData.length };
+      }
+    }),
+    []
+  );
+
+  return (
+    <Flex vertical gap={8}>
+      <span>远程搜索（paramsType=params）：</span>
+      <div style={{ color: '#666', fontSize: 12, lineHeight: 1.6 }}>
+        模拟 GET 列表，loader 只读 params.filter.keyword。修好后搜「员工1」或「技术」列表会过滤，且下方 params.filter 含 keyword、data 为空对象；未修好时关键词进 data，列表不变。建议切到「弹窗」模式再搜。
+      </div>
+      <SelectTableList
+        api={api}
+        columns={employeeColumns}
+        valueKey="id"
+        labelKey="name"
+        value={value}
+        onChange={setValue}
+        isPopup={isPopup}
+        placeholder="搜索姓名、邮箱或部门"
+        getSearchProps={({ searchText }) => ({
+          filter: Object.assign({}, remoteSearchListFilter, searchText ? { keyword: searchText } : {})
+        })}
+        pagination={{ paramsType: 'params' }}
+        style={{ width: 600 }}
+      />
+      {lastRequest ? (
+        <pre style={{ margin: 0, fontSize: 12, background: '#f5f5f5', padding: 8, borderRadius: 4, overflow: 'auto' }}>{JSON.stringify(lastRequest, null, 2)}</pre>
+      ) : null}
+    </Flex>
+  );
+};
+
 // 全选功能
 const SelectAllTableExample = ({ isPopup }) => {
   const [value, setValue] = useState([]);
@@ -1272,6 +1325,8 @@ const BaseExample = () => {
       <SingleTableExample isPopup={isPopup} />
       <Divider />
       <SearchableTableExample isPopup={isPopup} />
+      <Divider />
+      <RemoteSearchTableExample isPopup={isPopup} />
       <Divider />
       <SelectAllTableExample isPopup={isPopup} />
       <Divider />
