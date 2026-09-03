@@ -7,9 +7,10 @@ import classnames from 'classnames';
 import isEqual from 'lodash/isEqual';
 import last from 'lodash/last';
 import { Flex, Dropdown, Modal, App } from 'antd';
+import { useZIndex } from 'antd/es/_util/hooks';
 import { DownOutlined, CloseCircleFilled } from '@ant-design/icons';
 import { isNotEmpty } from '@kne/is-empty';
-import { MOBILE_POPUP_MODE, useMobilePopupMount, usePopupContainer, useScrollElement } from '@kne/responsive-utils';
+import { MOBILE_POPUP_MODE, usePopupMount, useScrollElement } from '@kne/responsive-utils';
 import style from './style.module.scss';
 import zhCn from '../locale/zh-CN';
 import enUS from '../locale/en-US';
@@ -22,6 +23,14 @@ const MOBILE_SHEET_MIN_HEIGHT = '30%';
 const MOBILE_MASK_Z_INDEX = 1000;
 const MOBILE_POPUP_Z_INDEX = 1050;
 const MASK_ANIMATION_DURATION = 180;
+
+/** Modal 内半屏 sheet 对齐 antd Dropdown：消费 zIndexContext，保留移动端 UX */
+const resolveMobileSheetZIndex = popupZIndex => {
+  if (popupZIndex == null) {
+    return { maskZIndex: MOBILE_MASK_Z_INDEX, panelZIndex: MOBILE_POPUP_Z_INDEX };
+  }
+  return { maskZIndex: popupZIndex - 1, panelZIndex: popupZIndex };
+};
 
 let parentScrollLockCount = 0;
 let parentScrollLocked = [];
@@ -116,7 +125,7 @@ const ModalContent = ({ children: renderContent, ...others }) => {
   return <Provider value={contextProps}>{renderContent(contextProps)}</Provider>;
 };
 
-const MobileSheetMask = ({ open, mountNode, fixedModeClass, onClose }) => {
+const MobileSheetMask = ({ open, mountNode, fixedModeClass, onClose, zIndex = MOBILE_MASK_Z_INDEX }) => {
   const [renderMask, setRenderMask] = useState(false);
   const [maskClosing, setMaskClosing] = useState(false);
 
@@ -144,7 +153,7 @@ const MobileSheetMask = ({ open, mountNode, fixedModeClass, onClose }) => {
   return createPortal(
     <div
       className={classnames(style['mobile-sheet-mask'], maskClosing && style['mobile-sheet-mask-leave'], fixedModeClass)}
-      style={{ zIndex: MOBILE_MASK_Z_INDEX }}
+      style={{ zIndex }}
       onClick={onClose}
       onTouchMove={e => {
         e.preventDefault();
@@ -170,14 +179,14 @@ const MobileSheetHeader = ({ title, cancelText, confirmText, onCancel, onConfirm
   );
 };
 
-const MobileSheetPanel = ({ open, mountNode, fixedModeClass, overlayClassName, title, cancelText, confirmText, onCancel, onConfirm, children }) => {
+const MobileSheetPanel = ({ open, mountNode, fixedModeClass, overlayClassName, title, cancelText, confirmText, onCancel, onConfirm, children, zIndex = MOBILE_POPUP_Z_INDEX }) => {
   if (!open || !mountNode) {
     return null;
   }
   return createPortal(
     <div
       className={classnames(style['mobile-sheet-popup'], style['mobile-sheet-portal'], fixedModeClass, overlayClassName)}
-      style={{ zIndex: MOBILE_POPUP_Z_INDEX, maxHeight: MOBILE_SHEET_MAX_HEIGHT, minHeight: MOBILE_SHEET_MIN_HEIGHT }}
+      style={{ zIndex, maxHeight: MOBILE_SHEET_MAX_HEIGHT, minHeight: MOBILE_SHEET_MIN_HEIGHT }}
       onTouchMove={e => {
         // 仅非列表区域阻止穿透；列表滚动容器内允许原生滚动
         const scrollable = e.target.closest('.simplebar-content-wrapper, .simplebar-content, .select-list-scroll-list, .select-table-list-scroll-list, .select-tree-scroll-list, .load-container, .info-page-table-mobile-card-list');
@@ -237,14 +246,15 @@ const SelectInput = createWithIntlProvider({
         size: 'default',
         disableMobileSheet: false,
         renderModal: contextProps => {
-          const { props, open, onComplete, onOpenChange, isMobile, getPopupContainer, formatMessage, fixedModeClass } = contextProps;
+          const { props, open, onComplete, onOpenChange, isMobile, getPopupContainer, formatMessage, fixedModeClass, mobileSheetZIndex } = contextProps;
           const { placeholder, children, overlayClassName, disableMobileSheet } = props;
           if (isMobile && !disableMobileSheet) {
             const mountNode = typeof getPopupContainer === 'function' ? getPopupContainer() : null;
             const closeWithoutCommit = () => onOpenChange(false);
+            const { maskZIndex, panelZIndex } = mobileSheetZIndex || resolveMobileSheetZIndex();
             return (
               <>
-                <MobileSheetMask open={open} mountNode={mountNode} fixedModeClass={fixedModeClass} onClose={closeWithoutCommit} />
+                <MobileSheetMask open={open} mountNode={mountNode} fixedModeClass={fixedModeClass} onClose={closeWithoutCommit} zIndex={maskZIndex} />
                 <MobileSheetPanel
                   open={open}
                   mountNode={mountNode}
@@ -258,6 +268,7 @@ const SelectInput = createWithIntlProvider({
                     onComplete();
                     onOpenChange(false);
                   }}
+                  zIndex={panelZIndex}
                 >
                   {open ? children(contextProps) : null}
                 </MobileSheetPanel>
@@ -322,7 +333,6 @@ const SelectInput = createWithIntlProvider({
       disableMobileSheet
     } = props;
 
-    const getPopupContainerDefault = usePopupContainer();
     const getScrollElement = useScrollElement();
     const wrapCustomGetPopupContainer = useMemo(() => {
       if (typeof getPopupContainerProp === 'function') {
@@ -336,12 +346,14 @@ const SelectInput = createWithIntlProvider({
     const {
       isMobile,
       fixedModeClass,
-      getPopupContainer: getSheetPopupContainer,
+      getPopupContainer: resolveGetPopupContainer,
       anchorRef
-    } = useMobilePopupMount({
+    } = usePopupMount({
       cover: 'viewport',
       getPopupContainer: wrapCustomGetPopupContainer
     });
+    const [antdPopupZIndex] = useZIndex('Dropdown');
+    const mobileSheetZIndex = useMemo(() => resolveMobileSheetZIndex(antdPopupZIndex), [antdPopupZIndex]);
     const useMobileSheet = isMobile && !disableMobileSheet;
     const useBoundaryMount = !!(isMobile && fixedModeClass === MOBILE_POPUP_MODE.boundary);
 
@@ -407,24 +419,6 @@ const SelectInput = createWithIntlProvider({
         anchorRef(node);
       },
       [anchorRef, resizeRef]
-    );
-
-    const resolveGetPopupContainer = useCallback(
-      triggerNode => {
-        if (typeof getPopupContainerProp === 'function') {
-          const customContainer = getPopupContainerProp(triggerNode);
-          if (customContainer) {
-            return customContainer;
-          }
-        } else if (getPopupContainerProp) {
-          return getPopupContainerProp;
-        }
-        if (useMobileSheet) {
-          return getSheetPopupContainer(triggerNode);
-        }
-        return getPopupContainerDefault(triggerNode);
-      },
-      [getPopupContainerDefault, getPopupContainerProp, getSheetPopupContainer, useMobileSheet]
     );
 
     // 打开时再取挂载节点，避免落到错误容器
@@ -533,6 +527,7 @@ const SelectInput = createWithIntlProvider({
       children,
       isMobile,
       useBoundaryMount,
+      mobileSheetZIndex,
       fixedModeClass,
       getPopupContainer: resolveGetPopupContainer,
       formatMessage
@@ -648,7 +643,7 @@ const SelectInput = createWithIntlProvider({
               const { onComplete } = sheetContextProps;
               return (
                 <>
-                  <MobileSheetMask open={sheetOpen} mountNode={popupMountNode} fixedModeClass={fixedModeClass} onClose={closeWithoutCommit} />
+                  <MobileSheetMask open={sheetOpen} mountNode={popupMountNode} fixedModeClass={fixedModeClass} onClose={closeWithoutCommit} zIndex={mobileSheetZIndex.maskZIndex} />
                   <MobileSheetPanel
                     open={sheetOpen}
                     mountNode={popupMountNode}
@@ -662,6 +657,7 @@ const SelectInput = createWithIntlProvider({
                       onComplete();
                       setOpen(false);
                     }}
+                    zIndex={mobileSheetZIndex.panelZIndex}
                   >
                     {/* 仅展开时挂载列表，关闭卸载以便下次展开重新请求 */}
                     {sheetOpen ? children(sheetContextProps) : null}
