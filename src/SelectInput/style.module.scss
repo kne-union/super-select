@@ -469,12 +469,13 @@
     }
 
     // 树节点展开箭头：点击区放大到整行高度
-    .ant-tree .ant-tree-switcher {
+    .ant-tree .ant-tree-treenode .ant-tree-switcher {
       width: 32px;
       align-self: stretch;
       display: flex;
       align-items: center;
       justify-content: center;
+      transform: none;
     }
 
     // Cascader：把半屏（含 min-height:30%）可用高度交给 scroller 撑满
