@@ -2582,6 +2582,20 @@ render(<BaseExample />);
   - 超出容器宽度的标签自动隐藏，显示 `+N` 标签表示隐藏数量
   - 标签宽度根据实际内容动态计算，确保精确显示
 
+##### 移动端半屏样式类名
+
+移动端以底部半屏展示选择面板，以下全局类名可供宿主覆盖样式（组件内部样式类名带 hash，不要依赖）：
+
+| 类名                          | 说明                             |
+| ----------------------------- | -------------------------------- |
+| `select-mobile-sheet`         | 半屏面板根节点                   |
+| `select-mobile-sheet-mask`    | 遮罩                             |
+| `select-mobile-sheet-header`  | 标题栏                           |
+| `select-mobile-sheet-title`   | 标题                             |
+| `select-mobile-sheet-cancel`  | 取消按钮                         |
+| `select-mobile-sheet-confirm` | 确定按钮                         |
+| `over-content`                | 面板内容区（与桌面端下拉层同名） |
+
 #### SelectList
 
 基于 SelectInput 的列表选择组件，适用于常规的列表选择场景。

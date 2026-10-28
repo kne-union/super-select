@@ -152,7 +152,7 @@ const MobileSheetMask = ({ open, mountNode, fixedModeClass, onClose, zIndex = MO
 
   return createPortal(
     <div
-      className={classnames(style['mobile-sheet-mask'], maskClosing && style['mobile-sheet-mask-leave'], fixedModeClass)}
+      className={classnames(style['mobile-sheet-mask'], 'select-mobile-sheet-mask', maskClosing && style['mobile-sheet-mask-leave'], fixedModeClass)}
       style={{ zIndex }}
       onClick={onClose}
       onTouchMove={e => {
@@ -165,14 +165,14 @@ const MobileSheetMask = ({ open, mountNode, fixedModeClass, onClose, zIndex = MO
 
 const MobileSheetHeader = ({ title, cancelText, confirmText, onCancel, onConfirm }) => {
   return (
-    <div className={style['mobile-sheet-header']}>
-      <button type="button" className={style['mobile-sheet-action']} onClick={onCancel}>
+    <div className={classnames(style['mobile-sheet-header'], 'select-mobile-sheet-header')}>
+      <button type="button" className={classnames(style['mobile-sheet-action'], 'select-mobile-sheet-cancel')} onClick={onCancel}>
         {cancelText}
       </button>
-      <div className={style['mobile-sheet-title']} title={title}>
+      <div className={classnames(style['mobile-sheet-title'], 'select-mobile-sheet-title')} title={title}>
         {title}
       </div>
-      <button type="button" className={classnames(style['mobile-sheet-action'], style['mobile-sheet-confirm'])} onClick={onConfirm}>
+      <button type="button" className={classnames(style['mobile-sheet-action'], style['mobile-sheet-confirm'], 'select-mobile-sheet-confirm')} onClick={onConfirm}>
         {confirmText}
       </button>
     </div>
@@ -185,7 +185,7 @@ const MobileSheetPanel = ({ open, mountNode, fixedModeClass, overlayClassName, t
   }
   return createPortal(
     <div
-      className={classnames(style['mobile-sheet-popup'], style['mobile-sheet-portal'], fixedModeClass, overlayClassName)}
+      className={classnames(style['mobile-sheet-popup'], style['mobile-sheet-portal'], 'select-mobile-sheet', fixedModeClass, overlayClassName)}
       style={{ zIndex, maxHeight: MOBILE_SHEET_MAX_HEIGHT, minHeight: MOBILE_SHEET_MIN_HEIGHT }}
       onTouchMove={e => {
         // 仅非列表区域阻止穿透；列表滚动容器内允许原生滚动
