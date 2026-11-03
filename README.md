@@ -2584,6 +2584,38 @@ render(<BaseExample />);
   - 超出容器宽度的标签自动隐藏，显示 `+N` 标签表示隐藏数量
   - 标签宽度根据实际内容动态计算，确保精确显示
 
+##### 移动端半屏样式类名
+
+移动端以底部半屏展示选择面板，以下全局类名可供宿主覆盖样式（组件内部样式类名带 hash，不要依赖）：
+
+| 类名                          | 说明                             |
+| ----------------------------- | -------------------------------- |
+| `select-mobile-sheet`         | 半屏面板根节点                   |
+| `select-mobile-sheet-mask`    | 遮罩                             |
+| `select-mobile-sheet-header`  | 标题栏                           |
+| `select-mobile-sheet-title`   | 标题                             |
+| `select-mobile-sheet-cancel`  | 取消按钮                         |
+| `select-mobile-sheet-confirm` | 确定按钮                         |
+| `over-content`                | 面板内容区（与桌面端下拉层同名） |
+
+##### 输入框样式变量
+
+输入框外观读取以下 CSS 变量，在任意祖先元素上设置即可覆盖（如移动端表单布局去边框），未设置时保持默认外观：
+
+| 变量                                       | 说明             | 默认值                         |
+| ------------------------------------------ | ---------------- | ------------------------------ |
+| `--super-select-input-border-color`        | 边框颜色         | `var(--font-color-grey-3)`     |
+| `--super-select-input-hover-border-color`  | 悬停边框颜色     | `var(--primary-color)`         |
+| `--super-select-input-bg`                  | 背景色           | `#fff`                         |
+| `--super-select-input-color`               | 文字颜色         | `inherit`                      |
+| `--super-select-input-placeholder-color`   | 占位文字颜色     | `var(--font-color-grey-2)`     |
+| `--super-select-input-padding-x`           | 左右内边距       | 随尺寸：`11px` / small `7px`   |
+| `--super-select-input-radius`              | 圆角             | `var(--radius-default, 6px)`   |
+| `--super-select-input-disabled-bg`         | 禁用背景色       | `var(--bg-color-grey-2)`       |
+| `--super-select-input-disabled-color`      | 禁用文字颜色     | `var(--font-color-grey-2)`     |
+| `--super-select-input-icon-color`          | 右侧图标颜色     | `var(--font-color-grey-2)`     |
+| `--super-select-input-arrow-rotate`        | 下拉箭头旋转角度 | `0deg`（如 `-90deg` 改为向右） |
+
 #### SelectList
 
 基于 SelectInput 的列表选择组件，适用于常规的列表选择场景。
