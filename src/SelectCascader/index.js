@@ -133,6 +133,29 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
     prevOpenRef.current = open;
   }, [open, value, mapping, treeUtils, valueKey, isPopup]);
 
+  // 移动端多列竖直堆叠：切换后子级列若完全不在可视区，滚动到子级列
+  const scrollerRef = useRef(null);
+  const columnsRef = useRef(null);
+  const scrollToLevelRef = useRef(null);
+  useEffect(() => {
+    const level = scrollToLevelRef.current;
+    const scroller = scrollerRef.current;
+    if (!isMobile || level === null || !scroller || !columnsRef.current) {
+      return;
+    }
+    const column = columnsRef.current.children[level];
+    // 懒加载时子级列在数据返回后才渲染
+    if (!column) {
+      return;
+    }
+    scrollToLevelRef.current = null;
+    const scrollerRect = scroller.getBoundingClientRect();
+    const columnRect = column.getBoundingClientRect();
+    if (columnRect.top >= scrollerRect.bottom || columnRect.bottom <= scrollerRect.top) {
+      scroller.scrollTo({ top: scroller.scrollTop + columnRect.top - scrollerRect.top, behavior: 'smooth' });
+    }
+  }, [selectedIds, mapping, isMobile]);
+
   // 懒加载支持
   const loadMorePropsRef = useRef({});
   loadMorePropsRef.current = {
@@ -288,8 +311,8 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
       }}
     >
       {onSearch && <SearchInput className={classnames(style['search-input'], { 'is-popup': isPopup })} placeholder={searchPlaceholder} value={searchText} onSearch={setSearchText} simple={isPopup} showSearchButton={!isPopup} />}
-      <ScrollBox className={classnames(style['scroller'], 'select-cascader-scroller')} {...(isMobile ? {} : { options: { autoHide: false } })}>
-        <div className={classnames(style['columns'], { [style['is-mobile']]: isMobile })}>
+      <ScrollBox className={classnames(style['scroller'], 'select-cascader-scroller')} {...(isMobile ? { ref: scrollerRef } : { options: { autoHide: false } })}>
+        <div ref={columnsRef} className={classnames(style['columns'], { [style['is-mobile']]: isMobile })}>
           {selectedIds.map((selectedId, index) => {
             const selectNode = mapping.get(selectedId);
             const siblingNodes = treeUtils.getSiblingNode(selectedId);
@@ -361,6 +384,7 @@ const CascaderInner = ({ options, value, setValue, maxLength, single, onlyAllowL
                       if (!node) return;
 
                       if (isNotLastNode(node.id)) {
+                        scrollToLevelRef.current = index + 1;
                         setSelectedIds(treeUtils.getSelectedQueue(node.id));
                       } else {
                         const { checked } = treeUtils.computedCheckboxStatus(node.id, currentIds);

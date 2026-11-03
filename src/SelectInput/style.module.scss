@@ -1,17 +1,19 @@
 @use '~@kne/responsive-utils/scss' as resp;
 
+// --super-select-input-* 只在使用处读取、不在此声明，祖先（如移动端表单布局）设置后可继承覆盖
 .select-input {
   --line-height: 32px;
   --font-size: 14px;
   --padding-x: 11px;
-  background-color: #fff;
+  background-color: var(--super-select-input-bg, #fff);
+  color: var(--super-select-input-color, inherit);
   font-size: var(--font-size);
-  border: 1px solid var(--font-color-grey-3);
-  border-radius: var(--radius-default, 6px);
+  border: 1px solid var(--super-select-input-border-color, var(--font-color-grey-3));
+  border-radius: var(--super-select-input-radius, var(--radius-default, 6px));
   cursor: pointer;
   min-width: 150px;
   position: relative;
-  padding: 0 var(--padding-x);
+  padding: 0 var(--super-select-input-padding-x, var(--padding-x));
   align-items: flex-start;
 
   :global {
@@ -21,12 +23,12 @@
   }
 
   &:not(.disabled):hover {
-    border-color: var(--primary-color);
+    border-color: var(--super-select-input-hover-border-color, var(--primary-color));
   }
 
   &.disabled {
-    background: var(--bg-color-grey-2);
-    color: var(--font-color-grey-2);
+    background: var(--super-select-input-disabled-bg, var(--bg-color-grey-2));
+    color: var(--super-select-input-disabled-color, var(--font-color-grey-2));
     cursor: not-allowed;
 
     :global {
@@ -153,11 +155,15 @@
 .select-input-icon {
   line-height: var(--line-height);
   font-size: 12px;
-  color: var(--font-color-grey-2);
+  color: var(--super-select-input-icon-color, var(--font-color-grey-2));
+
+  :global(.anticon-down) {
+    transform: rotate(var(--super-select-input-arrow-rotate, 0deg));
+  }
 }
 
 .placeholder {
-  color: var(--font-color-grey-2);
+  color: var(--super-select-input-placeholder-color, var(--font-color-grey-2));
 }
 
 .overlay-content {
@@ -425,11 +431,11 @@
       align-items: center;
     }
 
-    // 搜索框：灰底无边框，聚焦时白底主色描边
+    // 搜索框：白底，聚焦时主色描边
     .ant-input-affix-wrapper {
       border-color: transparent;
       border-radius: 10px;
-      background: rgba(118, 118, 128, 0.1);
+      background: #fff;
       box-shadow: none;
 
       &:hover {
@@ -449,7 +455,7 @@
 
     .ant-input-search-button {
       border-color: transparent;
-      background: rgba(118, 118, 128, 0.1);
+      background: #fff;
       box-shadow: none;
     }
 
@@ -469,12 +475,13 @@
     }
 
     // 树节点展开箭头：点击区放大到整行高度
-    .ant-tree .ant-tree-switcher {
+    .ant-tree .ant-tree-treenode .ant-tree-switcher {
       width: 32px;
       align-self: stretch;
       display: flex;
       align-items: center;
       justify-content: center;
+      transform: none;
     }
 
     // Cascader：把半屏（含 min-height:30%）可用高度交给 scroller 撑满

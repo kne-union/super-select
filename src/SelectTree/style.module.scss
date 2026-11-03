@@ -152,16 +152,29 @@
     }
   }
 
+  // 触屏 hover 会粘住，改用按压态（与列表项一致）
   .default-list-item {
     padding: 10px 8px !important;
     min-height: 40px;
     box-sizing: border-box;
+
+    &:not(.is-selected):hover {
+      background: transparent;
+    }
+
+    &:not(.is-selected):active {
+      background: rgba(17, 24, 39, 0.04);
+    }
   }
 
   .default-list {
     :global {
       .ant-tree-switcher {
         transform: translateY(10px);
+      }
+
+      .ant-tree-treenode .ant-tree-switcher:not(.ant-tree-switcher-noop):hover::before {
+        background-color: transparent;
       }
     }
   }

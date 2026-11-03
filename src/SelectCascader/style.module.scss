@@ -388,6 +388,30 @@
     border-bottom: none;
   }
 
+  // 竖直堆叠时用底色区分层级：一级白底，逐级加深
+  .content-item .custom-menu {
+    background: transparent;
+  }
+
+  .content-item:nth-child(n + 2) {
+    box-shadow:
+      inset 0 8px 8px -8px rgba(0, 0, 0, 0.12),
+      inset 0 -8px 8px -8px rgba(0, 0, 0, 0.06);
+
+    // 下面还有更深一级时去掉底部阴影，否则两级交界处像凸起
+    &:has(+ .content-item) {
+      box-shadow: inset 0 8px 8px -8px rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  .content-item:nth-child(2) {
+    background: rgba(17, 24, 39, 0.03);
+  }
+
+  .content-item:nth-child(n + 3) {
+    background: rgba(17, 24, 39, 0.06);
+  }
+
   &:not(.is-popup),
   &.is-popup {
     .content-item,
