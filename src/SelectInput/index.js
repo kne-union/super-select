@@ -280,7 +280,6 @@ const SelectInput = createWithIntlProvider({
               className={overlayClassName}
               width={1000}
               open={open}
-              destroyOnClose
               destroyOnHidden
               title={placeholder}
               onCancel={() => {
@@ -692,16 +691,14 @@ const SelectInput = createWithIntlProvider({
             placement={placement}
             arrow={false}
             getPopupContainer={resolveGetPopupContainer}
-            overlayClassName={classnames(style['overlay'], overlayClassName)}
-            overlayStyle={mergedOverlayStyle}
+            classNames={{ root: classnames(style['overlay'], overlayClassName) }}
+            styles={{ root: mergedOverlayStyle }}
             align={align}
             autoAdjustOverflow={autoAdjustOverflow}
             transitionName={transitionName}
             trigger="click"
-            destroyPopupOnHide
             destroyOnHidden
             popupRender={() => overlayContent}
-            dropdownRender={() => overlayContent}
           >
             <span>{inputInnerRender()}</span>
           </Dropdown>

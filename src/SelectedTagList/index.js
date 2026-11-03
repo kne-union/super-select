@@ -9,7 +9,11 @@ import 'simplebar-react/dist/simplebar.min.css';
 
 import zhCn from '../locale/zh-CN';
 
-const SelectedTagList = createWithIntlProvider('zh-CN', zhCn, 'super-select')(() => {
+const SelectedTagList = createWithIntlProvider(
+  'zh-CN',
+  zhCn,
+  'super-select'
+)(() => {
   const { formatMessage } = useIntl();
   const { props, value, onRemove } = useContext();
   const { single, maxLength, labelKey, valueKey } = Object.assign({}, props);
@@ -28,7 +32,7 @@ const SelectedTagList = createWithIntlProvider('zh-CN', zhCn, 'super-select')(()
                 className={style['tag']}
                 key={item[valueKey]}
                 closable
-                bordered={false}
+                variant="filled"
                 onClose={e => {
                   e.preventDefault();
                   onRemove(item);

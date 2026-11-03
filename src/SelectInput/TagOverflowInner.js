@@ -42,7 +42,7 @@ const TagOverflowInner = ({ value, innerWidth, labelKey, valueKey, onRemove, ico
         <div ref={setMeasureRef} className={style['measure-layer']} aria-hidden style={{ gap: TAG_GAP }}>
           {list.map(item => (
             <div key={item[valueKey]} data-tag-measure>
-              <Tag closable bordered={false} className={style['tag-item']} style={{ '--max-tag-width': `${maxTagWidth}px`, margin: 0 }}>
+              <Tag closable variant="filled" className={style['tag-item']} style={{ '--max-tag-width': `${maxTagWidth}px`, margin: 0 }}>
                 <span className={style['tag-label']}>{item[labelKey]}</span>
               </Tag>
             </div>
@@ -59,7 +59,7 @@ const TagOverflowInner = ({ value, innerWidth, labelKey, valueKey, onRemove, ico
           <Tag
             key={item[valueKey]}
             closable
-            bordered={false}
+            variant="filled"
             className={style['tag-item']}
             style={{ '--max-tag-width': `${maxTagWidth}px`, margin: 0 }}
             onClose={e => {

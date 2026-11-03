@@ -290,7 +290,7 @@ const SelectTableList = createWithIntlProvider(
                             className={style['tag']}
                             key={item[valueKey]}
                             closable
-                            bordered={false}
+                            variant="filled"
                             onClose={e => {
                               e.preventDefault();
                               onRemove(item);
