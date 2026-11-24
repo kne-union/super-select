@@ -41,6 +41,20 @@
       }
     }
 
+    // selectable={false} 时 rc-tree/antd 会给节点加 treenode-unselectable，
+    // 并套用与 disabled 相同的灰字 + not-allowed；自定义 titleRender 仍可点，需还原外观。
+    // :not(.ant-tree-treenode-disabled) 排除真禁用；!important 压过 antd CSS-in-JS。
+    .ant-tree-treenode-unselectable:not(.ant-tree-treenode-disabled) {
+      .ant-tree-node-content-wrapper {
+        color: var(--ant-color-text, rgba(0, 0, 0, 0.88)) !important;
+        cursor: pointer !important;
+
+        &:hover {
+          color: var(--ant-color-text, rgba(0, 0, 0, 0.88)) !important;
+        }
+      }
+    }
+
     // 整块（三角 + :before 背景）一起下移，对齐加了 padding 的 Item
     .ant-tree-switcher {
       margin-right: 0;
@@ -69,13 +83,18 @@
 
     :global(.select-tree-item-label),
     .single-checked {
-      color: var(--primary-color);
+      // 压过上方 unselectable 文字色还原
+      color: var(--primary-color) !important;
     }
   }
 
   &.is-disabled {
     color: var(--font-color-grey-2);
     cursor: not-allowed;
+
+    :global(.select-tree-item-label) {
+      color: var(--font-color-grey-2) !important;
+    }
   }
 
   :global(.select-tree-item-content) {

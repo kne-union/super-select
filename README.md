@@ -2725,7 +2725,7 @@ render(<BaseExample />);
 
 #### SelectTree
 
-树形选择组件，适用于层级数据的展示和选择。
+树形选择组件，适用于层级数据的展示和选择。内部对 antd `Tree` 使用 `selectable={false}` 并由 `titleRender` 自定义选中；样式已覆盖 antd 对 `treenode-unselectable` 误套的 disabled 灰字，真正 `disabled` 的节点仍保持禁用外观。
 
 | 属性名       | 说明                     | 类型                          | 默认值   |
 | ------------ | ------------------------ | ----------------------------- | -------- |
